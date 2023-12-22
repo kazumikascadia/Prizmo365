@@ -32,21 +32,34 @@ module.exports = {
             .setTimestamp(+new Date());
 
         // fetched server information
-        const serverIcon = Guild.iconURL;
-        const serverName = Guild.name;
+        const server = interaction.guild;
+        const serverIcon = server.iconURL;
+        const serverName = server.name;
 
         // fetched bot information
 
         // selects the specific command
         if (subcommand === 'user') {
             // fetch user info
-            const mUser = interaction.options.getUser('target') || iUser;
+            const mUser = await interaction.options.getUser('target').fetch(true) || iUser.fetch(true);
+            const uid = mUser.id;
+            const mavatar = mUser.displayAvatarURL({ dynamic: true, size: 1024, format: 'png' }) || mUser.defaultAvatarURL({ dynamic: true, size: 960, format: 'png' });
+            const gUser = server.members.fetch(uid);
+            const accentColor = mUser.hexAccentColor;
+            const roles = gUser.roles;
 
             // setting up the embed
             infoEmbed
                 .setTitle(`Info on ${mUser.nickname ?? mUser.displayName}...`)
-                .setDescription('words');
-
+                .setDescription(`${mUser} is currently set to ${mUser.presence}.`)
+                .addFields(
+                    { name: 'Roles:', value: `${roles}` },
+                    { name: 'Joined Discord:', value: `${mUser.createdAt}`, inline: true },
+                    { name: 'Joined Server:', value: `${gUser.joinedAt}`, inline: true },
+                )
+                .setColor(accentColor)
+                .setImage(mavatar)
+                .setFooter({ text: `ID: ${uid}` });
         }
         // if (subcommand === 'server') {
         //     infoEmbed
