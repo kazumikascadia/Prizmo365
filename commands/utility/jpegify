@@ -1,3 +1,4 @@
+// on hold
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const wait = require('node:timers/promises').setTimeout;
 
@@ -10,7 +11,7 @@ module.exports = {
         const iUser = interaction.user;
         const nickname = iUser.nickname ?? iUser.displayName;
         const avatar = iUser.displayAvatarURL();
-        let embed = new EmbedBuilder
+        let embed = new EmbedBuilder()
             .setTitle('Commencing!')
             .setDescription('Now, send in the image you want to jpegify.')
             .setAuthor({ name: nickname, iconURL: avatar })
@@ -19,17 +20,22 @@ module.exports = {
         const msg = await interaction.reply({ embeds: [embed] });
 
         const collectorFilter = m => m.content.includes('discord');
-        const collector = interaction.channel.createMessageCollector({ filter: collectorFilter, time: 15000, maxProcessed: 1 });
+        const collector = interaction.channel.createMessageCollector({ filter: collectorFilter, time: 15000 });
+
+        let mCo;
+        let mSi;
 
         collector.on('collect', m => {
-            embed.setDescription(`${m.content}`);
+            mCo = m.content;
+            console.log(`Collected: ${m.content}`);
         });
         collector.on('end', c => {
-            console.log(`${c.size}`);
+            mSi = c.size;
+            console.log(`Of: ${c.size}`);
         });
 
-        await wait(120);
-        embed = embed.setDescription('Altered');
+        await wait(15000);
+        embed = embed.setDescription(`Collected: ${mCo} of ${mSi}`);
 
         msg.edit({ embeds: [embed] });
     },
