@@ -9,18 +9,16 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('user')
-                .setDescription('Provides info on a specific user.'),
-        )
+                .setDescription('Provides info on a specific user.')
+                .addUserOption(option => option.setName('target').setRequired(true).setDescription('A specified user.')))
         .addSubcommand(subcommand =>
             subcommand
                 .setName('server')
-                .setDescription('Provides info on the overall server.'),
-        )
+                .setDescription('Provides info on the overall server.'))
         .addSubcommand(subcommand =>
             subcommand
                 .setName('bot')
-                .setDescription('Provides info on the bot.'),
-        ),
+                .setDescription('Provides info on the bot.')),
     async execute(interaction) {
         // user information
         const iUser = interaction.user;
@@ -33,8 +31,6 @@ module.exports = {
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date());
 
-        // fetched user information
-
         // fetched server information
         const serverIcon = Guild.iconURL;
         const serverName = Guild.name;
@@ -42,17 +38,26 @@ module.exports = {
         // fetched bot information
 
         // selects the specific command
-        // if (subcommand === 'user') {
+        if (subcommand === 'user') {
+            // fetch user info
+            const mUser = interaction.options.getUser('target') || iUser;
 
-        // }
-        if (subcommand === 'server') {
+            // setting up the embed
             infoEmbed
-                .setTitle(serverName)
-                .setThumbnail(serverIcon)
-                .setDescription('You are a part of this server.');
+                .setTitle(`Info on ${mUser.nickname ?? mUser.displayName}...`)
+                .setDescription('words');
+
         }
+        // if (subcommand === 'server') {
+        //     infoEmbed
+        //         .setTitle(serverName)
+        //         .setThumbnail(serverIcon)
+        //         .setDescription('You are a part of this server.');
+        // }
         // if (subcommand === 'bot') {
 
         // }
+
+        interaction.reply({ embeds: [infoEmbed] });
     },
 };
