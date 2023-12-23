@@ -64,8 +64,14 @@ module.exports = {
                 VerifiedDeveloper: 'Verified Bot Developer',
             };
             const uFlags = mUser.flags.toArray();
+            let title;
 
-            console.log(uFlags);
+            if (!mUser.bot) {
+                title = mUser.username;
+            }
+            else {
+                title = mUser.username + ' [BOT]';
+            }
 
             if (`${roles}` == '') {
                 roles = 'No roles';
@@ -74,7 +80,7 @@ module.exports = {
 
             // setting up the embed
             infoEmbed
-                .setTitle(mUser.username)
+                .setTitle(title)
                 .setDescription(`Known as ${mUser}`)
                 .addFields(
                     { name: `Roles [${rLength}]:`, value: roles ?? 'No roles' },
