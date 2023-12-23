@@ -1,6 +1,7 @@
 // work in progress
 
 const { SlashCommandBuilder, EmbedBuilder, Guild } = require('discord.js');
+const { forEach } = require('mathjs');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -43,17 +44,24 @@ module.exports = {
             // fetch user info
             const mUser = await interaction.options.getUser('target').fetch(true) || iUser.fetch(true);
             const uid = mUser.id;
-            const mavatar = mUser.displayAvatarURL({ dynamic: true, size: 1024, format: 'png' }) || mUser.defaultAvatarURL({ dynamic: true, size: 960, format: 'png' });
-            const gUser = server.members.fetch(uid);
+            const mavatar = mUser.displayAvatarURL({ dynamic: true, size: 1024, format: 'png' }) ?? mUser.defaultAvatarURL({ dynamic: true, size: 960, format: 'png' });
+            const gUser = server.members.cache.get(uid);
             const accentColor = mUser.hexAccentColor;
-            const roles = gUser.roles;
+            let roles = gUser.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).join(', ');
+
+            if (`${roles}` == '') {
+                roles = 'No roles';
+            }
+
+            console.log(gUser.presence);
+
 
             // setting up the embed
             infoEmbed
-                .setTitle(`Info on ${mUser.nickname ?? mUser.displayName}...`)
-                .setDescription(`${mUser} is currently set to ${mUser.presence}.`)
+                .setTitle(mUser.username)
+                .setDescription(`${mUser} is currently set to ${server.get(presence)}.`)
                 .addFields(
-                    { name: 'Roles:', value: `${roles}` },
+                    { name: 'Roles:', value: roles ?? 'No roles' },
                     { name: 'Joined Discord:', value: `${mUser.createdAt}`, inline: true },
                     { name: 'Joined Server:', value: `${gUser.joinedAt}`, inline: true },
                 )
