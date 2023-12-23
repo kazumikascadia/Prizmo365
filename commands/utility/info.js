@@ -1,7 +1,6 @@
 // work in progress
 
-const { SlashCommandBuilder, EmbedBuilder, Guild } = require('discord.js');
-const { forEach } = require('mathjs');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js'), moment = require('moment');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -48,22 +47,40 @@ module.exports = {
             const gUser = server.members.cache.get(uid);
             const accentColor = mUser.hexAccentColor;
             let roles = gUser.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).join(', ');
+            let rLength = roles.split(', ').length;
+            const flags = {
+                ActiveDeveloper: 'Active Developer',
+                BugHunterLevel1: 'Bug Hunter Level 1',
+                BugHunterLevel2: 'Bug Hunter Level 2',
+                CertifiedModerator: 'Certified Moderator Alumni',
+                HypeSquadOnlineHouse1: 'House Bravery Member',
+                HypeSquadOnlineHouse2: 'House Brilliance Member',
+                HypeSquadOnlineHouse3: 'House Balance Member',
+                HypeSquad: 'HypeSquad Events Member',
+                Parnter: 'Partnered Server Owner',
+                PremiumEarlySupporter: 'Early Nitro Supporter',
+                Staff: 'Discord Employee',
+                VerifiedBot: 'Verified Bot',
+                VerifiedDeveloper: 'Verified Bot Developer',
+            };
+            const uFlags = mUser.flags.toArray();
+
+            console.log(uFlags);
 
             if (`${roles}` == '') {
                 roles = 'No roles';
+                rLength = '0';
             }
-
-            console.log(gUser.presence);
-
 
             // setting up the embed
             infoEmbed
                 .setTitle(mUser.username)
-                .setDescription(`${mUser} is currently set to ${server.get(presence)}.`)
+                .setDescription(`Known as ${mUser}`)
                 .addFields(
-                    { name: 'Roles:', value: roles ?? 'No roles' },
-                    { name: 'Joined Discord:', value: `${mUser.createdAt}`, inline: true },
-                    { name: 'Joined Server:', value: `${gUser.joinedAt}`, inline: true },
+                    { name: `Roles [${rLength}]:`, value: roles ?? 'No roles' },
+                    { name: 'Flags:', value: `${uFlags.length ? uFlags.map(flag => flags[flag]).join(', ') : 'None'}` },
+                    { name: 'Joined Discord:', value: `${moment.utc(mUser.createdAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(mUser.createdAt).fromNow()})`, inline: true },
+                    { name: 'Joined Server:', value: `${moment.utc(gUser.joinedAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(gUser.joinedAt).fromNow()})`, inline: true },
                 )
                 .setColor(accentColor)
                 .setImage(mavatar)
