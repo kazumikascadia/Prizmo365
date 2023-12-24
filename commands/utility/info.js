@@ -1,6 +1,6 @@
 // work in progress
 
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js'), moment = require('moment');
+const { SlashCommandBuilder, EmbedBuilder, Client } = require('discord.js'), moment = require('moment');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,10 +20,12 @@ module.exports = {
                 .setName('bot')
                 .setDescription('Provides info on the bot.')),
     async execute(interaction) {
-        // user information
+        // basic information
         const iUser = interaction.user;
         const nickname = iUser.nickname ?? iUser.displayName;
         const avatar = iUser.displayAvatarURL();
+        const server = interaction.guild;
+        server.members.fetch();
 
         // setup
         const subcommand = interaction.options.getSubcommand();
@@ -31,10 +33,6 @@ module.exports = {
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date());
 
-        // fetched server information
-        const server = interaction.guild;
-        const serverIcon = server.iconURL;
-        const serverName = server.name;
 
         // fetched bot information
 
@@ -63,6 +61,12 @@ module.exports = {
                 VerifiedBot: 'Verified Bot',
                 VerifiedDeveloper: 'Verified Bot Developer',
             };
+            const statuses = {
+                online: 'Online',
+                idle: 'Idle',
+                dnd: 'Do Not Disturb',
+                offline: 'Offline',
+            };
             const uFlags = mUser.flags.toArray();
             let title;
 
@@ -81,7 +85,7 @@ module.exports = {
             // setting up the embed
             infoEmbed
                 .setTitle(title)
-                .setDescription(`Known as ${mUser}`)
+                .setDescription(`Known as ${mUser}; currently set to ${statuses[gUser.presence ? gUser.presence.status : 'offline']}`)
                 .addFields(
                     { name: `Roles [${rLength}]:`, value: roles ?? 'No roles' },
                     { name: 'Flags:', value: `${uFlags.length ? uFlags.map(flag => flags[flag]).join(', ') : 'None'}` },
@@ -89,15 +93,34 @@ module.exports = {
                     { name: 'Joined Server:', value: `${moment.utc(gUser.joinedAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(gUser.joinedAt).fromNow()})`, inline: true },
                 )
                 .setColor(accentColor)
-                .setImage(mavatar)
+                .setThumbnail(mavatar)
                 .setFooter({ text: `ID: ${uid}` });
         }
-        // if (subcommand === 'server') {
-        //     infoEmbed
-        //         .setTitle(serverName)
-        //         .setThumbnail(serverIcon)
-        //         .setDescription('You are a part of this server.');
-        // }
+
+        if (subcommand === 'server') {
+            // fetched server information
+            const serverIcon = server.iconURL({ dynamic: true, size: 1024, format: 'png' }) ?? iUser.defaultAvatarURL;
+            const serverName = server.name;
+            const voiceChannelAmount = server.channels.cache.filter(c => c.type === 2).size;
+            const textChannelAmount = server.channels.cache.filter(c => c.type === 0).size;
+            const humanCount = server.members.cache.filter(m => !m.user.bot).size;
+            const botCount = server.members.cache.filter(m => m.user.bot).size;
+            const onlineCount = server.members.cache.filter(m => m.presence == 'online');
+            console.log(onlineCount);
+
+            // setting up the embed
+            infoEmbed
+                .setTitle(serverName)
+                .setDescription(`${server.description ?? 'No description available for this server...'}`)
+                .setThumbnail(serverIcon)
+                .addFields(
+                    { name: 'Owner:', value: `<@${server.ownerId}>` },
+                    { name: 'Channels:', value: `Total: ${textChannelAmount + voiceChannelAmount} \nText Channels: ${textChannelAmount} \nVoice Channels: ${voiceChannelAmount}`, inline: true },
+                    { name: 'Members:', value: `Total: ${server.memberCount} \nHumans: ${humanCount} \nBots: ${botCount}`, inline: true },
+                )
+                .setFooter({ text: `ID: ${server.id}` });
+        }
+
         // if (subcommand === 'bot') {
 
         // }
