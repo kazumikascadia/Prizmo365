@@ -1,6 +1,6 @@
 // work in progress
 
-const { SlashCommandBuilder, EmbedBuilder, Client } = require('discord.js'), moment = require('moment');
+const { SlashCommandBuilder, EmbedBuilder, Client, GatewayIntentBits } = require('discord.js'), moment = require('moment');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,19 +20,28 @@ module.exports = {
                 .setName('bot')
                 .setDescription('Provides info on the bot.')),
     async execute(interaction) {
+        const client = new Client({
+            intents:
+                [
+                    GatewayIntentBits.Guilds,
+                    GatewayIntentBits.GuildPresences,
+                    GatewayIntentBits.GuildMembers,
+                ],
+        });
+
         // basic information
         const iUser = interaction.user;
         const nickname = iUser.nickname ?? iUser.displayName;
         const avatar = iUser.displayAvatarURL();
         const server = interaction.guild;
-        server.members.fetch();
 
         // setup
         const subcommand = interaction.options.getSubcommand();
         const infoEmbed = new EmbedBuilder()
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date());
-
+        await server.members.fetch();
+        await server.fetch();
 
         // fetched bot information
 
@@ -65,7 +74,8 @@ module.exports = {
                 online: 'Online',
                 idle: 'Idle',
                 dnd: 'Do Not Disturb',
-                offline: 'Offline',
+                offline: 'Invisible',
+                off: 'Offline',
             };
             const uFlags = mUser.flags.toArray();
             let title;
@@ -85,7 +95,7 @@ module.exports = {
             // setting up the embed
             infoEmbed
                 .setTitle(title)
-                .setDescription(`Known as ${mUser}; currently set to ${statuses[gUser.presence ? gUser.presence.status : 'offline']}`)
+                .setDescription(`Known as ${mUser}; currently set to ${statuses[gUser.presence ? gUser.presence.status : 'off']}`)
                 .addFields(
                     { name: `Roles [${rLength}]:`, value: roles ?? 'No roles' },
                     { name: 'Flags:', value: `${uFlags.length ? uFlags.map(flag => flags[flag]).join(', ') : 'None'}` },
@@ -105,8 +115,8 @@ module.exports = {
             const textChannelAmount = server.channels.cache.filter(c => c.type === 0).size;
             const humanCount = server.members.cache.filter(m => !m.user.bot).size;
             const botCount = server.members.cache.filter(m => m.user.bot).size;
-            const onlineCount = server.members.cache.filter(m => m.presence == 'online');
-            console.log(onlineCount);
+            // const onlineCount = server.members.cache.filter(m => m.presence).size;
+            const roles = server.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).join(', ', 10);
 
             // setting up the embed
             infoEmbed
@@ -114,7 +124,9 @@ module.exports = {
                 .setDescription(`${server.description ?? 'No description available for this server...'}`)
                 .setThumbnail(serverIcon)
                 .addFields(
-                    { name: 'Owner:', value: `<@${server.ownerId}>` },
+                    { name: 'Owner:', value: `<@${server.ownerId}>`, inline: true },
+                    { name: 'Created:', value: `${moment.utc(server.createdAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(server.createdAt).fromNow()})`, inline: true },
+                    { name: `Roles [${roles.size}]:`, value: ` ${roles}... and ${roles.size - 10} more` },
                     { name: 'Channels:', value: `Total: ${textChannelAmount + voiceChannelAmount} \nText Channels: ${textChannelAmount} \nVoice Channels: ${voiceChannelAmount}`, inline: true },
                     { name: 'Members:', value: `Total: ${server.memberCount} \nHumans: ${humanCount} \nBots: ${botCount}`, inline: true },
                 )
