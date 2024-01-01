@@ -116,7 +116,19 @@ module.exports = {
             const humanCount = server.members.cache.filter(m => !m.user.bot).size;
             const botCount = server.members.cache.filter(m => m.user.bot).size;
             // const onlineCount = server.members.cache.filter(m => m.presence).size;
-            const roles = server.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).join(', ', 10);
+            const roles = server.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).slice(0, 10);
+            const rolesAmt = server.roles.cache.filter(r => r.name !== '@everyone').size;
+            let rVal;
+
+            console.log(server.features);
+
+            // changes the appearance of roles depending on how many there are (if over 10, displays over 10)
+            if (rolesAmt <= 10) {
+                rVal = `${roles.join(', ')}`;
+            }
+            else {
+                rVal = `${roles.join(', ')}... and ${rolesAmt - 10} more`;
+            }
 
             // setting up the embed
             infoEmbed
@@ -126,9 +138,10 @@ module.exports = {
                 .addFields(
                     { name: 'Owner:', value: `<@${server.ownerId}>`, inline: true },
                     { name: 'Created:', value: `${moment.utc(server.createdAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(server.createdAt).fromNow()})`, inline: true },
-                    { name: `Roles [${roles.size}]:`, value: ` ${roles}... and ${roles.size - 10} more` },
+                    { name: `Roles [${rolesAmt}]:`, value: rVal },
                     { name: 'Channels:', value: `Total: ${textChannelAmount + voiceChannelAmount} \nText Channels: ${textChannelAmount} \nVoice Channels: ${voiceChannelAmount}`, inline: true },
                     { name: 'Members:', value: `Total: ${server.memberCount} \nHumans: ${humanCount} \nBots: ${botCount}`, inline: true },
+                    // { name: 'Features:'}
                 )
                 .setFooter({ text: `ID: ${server.id}` });
         }
