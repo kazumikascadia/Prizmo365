@@ -115,12 +115,44 @@ module.exports = {
             const textChannelAmount = server.channels.cache.filter(c => c.type === 0).size;
             const humanCount = server.members.cache.filter(m => !m.user.bot).size;
             const botCount = server.members.cache.filter(m => m.user.bot).size;
-            // const onlineCount = server.members.cache.filter(m => m.presence).size;
             const roles = server.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).slice(0, 10);
             const rolesAmt = server.roles.cache.filter(r => r.name !== '@everyone').size;
             let rVal;
-
-            console.log(server.features);
+            const features = {
+                ANIMATED_BANNER: 'Animated Guild Banner',
+                ANIMATED_ICON: 'Animated Guild Icon',
+                APPLICATION_COMMAND_PERMISSIONS_V2: 'Old Permissions Configuration',
+                AUTO_MODERATION: 'Auto-Moderation',
+                BANNER: 'Guild Banner',
+                COMMUNITY: 'Community Server',
+                CREATOR_MONETIZABLE_PROVISIONAL: 'Monetized',
+                CREATOR_STORE_PAGE: 'Role Subscription Store',
+                DEVELOPER_SUPPORT_SERVER: 'Development Support Server',
+                DISCOVERABLE: 'Discoverable in Server Directory',
+                FEATURABLE: 'Featured in Server Directory',
+                HAS_DIRECTORY_ENTRY: 'Listed in Server Directory',
+                HUB: 'Student Hub',
+                LINKED_TO_HUB: 'Student Hub Link',
+                INVITE_SPLASH: 'Invite Splash Screen',
+                WELCOME_SCREEN_ENABLED: 'Welcome Screen',
+                INVITES_DISABLED: '',
+                MEMBER_VERIFICATION_GATE_ENABLED: 'Membership Screening',
+                MORE_STICKERS: 'Expanded Sticker Count',
+                NEWS: 'News Channel',
+                PARTNERED: 'Partnered Server',
+                VERIFIED: 'Verified Server',
+                PREVIEW_ENABLED: 'Previewable',
+                PRIVATE_THREADS: 'Private Threads Access',
+                VANITY_URL: 'Vanity URL',
+                ROLE_SUBSCRIPTIONS_ENABLED: '',
+                ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE: '',
+                ROLE_ICONS: 'Role Icons',
+                RAID_ALERTS_DISABLED: '',
+                SOUNDBOARD: 'Soundboard',
+                GUILD_ONBOARDING: 'Guild Onboarding',
+                THREADS_ENABLED: 'Threads',
+            };
+            const sFeatures = server.features.map(feature => features[feature]).filter(feature => feature !== undefined, feature => feature !== '').join(', ');
 
             // changes the appearance of roles depending on how many there are (if over 10, displays over 10)
             if (rolesAmt <= 10) {
@@ -141,7 +173,7 @@ module.exports = {
                     { name: `Roles [${rolesAmt}]:`, value: rVal },
                     { name: 'Channels:', value: `Total: ${textChannelAmount + voiceChannelAmount} \nText Channels: ${textChannelAmount} \nVoice Channels: ${voiceChannelAmount}`, inline: true },
                     { name: 'Members:', value: `Total: ${server.memberCount} \nHumans: ${humanCount} \nBots: ${botCount}`, inline: true },
-                    // { name: 'Features:'}
+                    { name: 'Features:', value: `${sFeatures.length ? sFeatures : 'No features'}` },
                 )
                 .setFooter({ text: `ID: ${server.id}` });
         }
