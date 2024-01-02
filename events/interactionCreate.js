@@ -1,6 +1,5 @@
 // derived from https://discordjs.guide/
 
-
 const { Events, EmbedBuilder } = require('discord.js');
 
 module.exports = {

@@ -1,30 +1,32 @@
 {
-  "name": "prizmo365",
-  "version": "a1.13.1",
-  "description": "A multipurpose Discord bot.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ."
-  },
-  "author": "kazumikascadia",
-  "license": "MIT",
-  "dependencies": {
-    "@napi-rs/canvas": "^0.1.44",
-    "canvas": "^2.11.2",
-    "canvas-constructor": "^7.0.1",
-    "chalk": "^4.1.2",
-    "common-tags": "^1.8.2",
-    "convert": "^4.13.2",
-    "dayjs": "^1.11.10",
-    "discord.js": "^14.12.1",
-    "i": "^0.3.7",
-    "i18next": "^23.5.1",
-    "mathjs": "^11.11.2",
-    "moment": "^2.29.4",
-    "ms": "^2.1.3"
-  },
-  "devDependencies": {
-    "eslint": "^8.50.0"
-  }
+    "name": "prizmo365",
+    "version": "a1.13.4",
+    "description": "A multipurpose Discord bot.",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node .",
+        "dev": "node devIndex.js"
+    },
+    "author": "kazumikascadia",
+    "license": "MIT",
+    "dependencies": {
+        "@napi-rs/canvas": "^0.1.44",
+        "canvas": "^2.11.2",
+        "canvas-constructor": "^7.0.1",
+        "chalk": "^4.1.2",
+        "common-tags": "^1.8.2",
+        "convert": "^4.13.2",
+        "dayjs": "^1.11.10",
+        "discord.js": "^14.12.1",
+        "i": "^0.3.7",
+        "i18next": "^23.5.1",
+        "mathjs": "^11.11.2",
+        "moment": "^2.29.4",
+        "ms": "^2.1.3"
+    },
+    "devDependencies": {
+        "eslint": "^8.50.0"
+    },
+    "vUpdate": "a1.13.4"
 }

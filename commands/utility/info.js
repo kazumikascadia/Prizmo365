@@ -116,6 +116,11 @@ module.exports = {
             const roles = server.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).slice(0, 10);
             const rolesAmt = server.roles.cache.filter(r => r.name !== '@everyone').size;
             let rVal;
+            let color;
+            if (color == undefined) {
+                color = 'Blue';
+            }
+
             const features = {
                 ANIMATED_BANNER: 'Animated Guild Banner',
                 ANIMATED_ICON: 'Animated Guild Icon',
@@ -163,6 +168,7 @@ module.exports = {
             // setting up the embed
             infoEmbed
                 .setTitle(serverName)
+                .setColor(color)
                 .setDescription(`${server.description ?? 'No description available for this server...'}`)
                 .setThumbnail(serverIcon)
                 .addFields(

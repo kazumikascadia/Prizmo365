@@ -4,8 +4,9 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const chalk = require('chalk');
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
-const { token } = require('./config.json');
+const { Client, Collection, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const { token, clientId, version } = require('./config.json');
+const { data } = require('./commands/utility/set');
 
 // Create a new client instance
 const client = new Client({
@@ -14,6 +15,8 @@ const client = new Client({
 			GatewayIntentBits.Guilds,
 			GatewayIntentBits.GuildPresences,
 			GatewayIntentBits.GuildMembers,
+			GatewayIntentBits.GuildMessages,
+			GatewayIntentBits.MessageContent,
 		],
 });
 
@@ -61,5 +64,32 @@ for (const file of eventFiles) {
 }
 console.log(chalk.cyanBright('[LOADED]'), 'Events loaded!');
 
+// const pkgFile = './package.json';
+// let pData = JSON.parse(fs.readFileSync(pkgFile));
+// pData['version'] = `${version}`;
+// fs.writeFileSync(pkgFile, JSON.stringify(pData, null, 4));
+
 // Log into Discord with your client's token
 client.login(token);
+
+client.on('messageCreate', async message => {
+	if (message.author.bot) return false;
+	const iUser = message.author;
+	const nickname = iUser.nickname ?? iUser.displayName;
+	const avatar = iUser.displayAvatarURL();
+	const repEmbed = new EmbedBuilder()
+		.setAuthor({ name: nickname, iconURL: avatar })
+		.setTimestamp(+new Date())
+		.setTitle('Prizmo365')
+		.setDescription('Hello! I\'m Prizmo, your friendly neighborhood assisant!')
+		.setColor('#17ac86');
+	if (message.mentions.has(clientId)) {
+		message.reply({ embeds: [repEmbed] });
+	}
+
+	if (message.author.id == '306372629650997260' && message.content == 'r') {
+		console.log('Forced restart.');
+		await message.reply('Restarting...');
+		process.exit();
+	}
+});
