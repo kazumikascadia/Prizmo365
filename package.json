@@ -1,12 +1,13 @@
 {
     "name": "prizmo365",
-    "version": "a1.14.2",
+    "version": "a2.0.2",
     "description": "A multipurpose Discord bot.",
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node .",
-        "dev": "node devIndex.js"
+        "dev": "node devIndex.js",
+        "deploy": "node deploy-commands.js"
     },
     "author": "kazumikascadia",
     "license": "MIT",

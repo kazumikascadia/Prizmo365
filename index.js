@@ -4,9 +4,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const chalk = require('chalk');
-const { Client, Collection, GatewayIntentBits, EmbedBuilder } = require('discord.js');
-const { token, clientId, version } = require('./config.json');
-const { data } = require('./commands/utility/set');
+const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { token, clientId, version } = require('./config.json'), deployment = require('./deploy-commands');
 
 // Create a new client instance
 const client = new Client({
@@ -19,6 +18,8 @@ const client = new Client({
 			GatewayIntentBits.MessageContent,
 		],
 });
+
+deployment.deploy();
 
 console.log(chalk.yellowBright('[STARTING]'), 'Loading commands...');
 

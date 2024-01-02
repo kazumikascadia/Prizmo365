@@ -10,10 +10,15 @@ module.exports = {
         const guildId = message.guild.id;
         const serverData = 'data/serverdata.json';
         let iData = JSON.parse(fs.readFileSync(serverData));
-        // console.log(iData);
         const defaultSettings = {
-            'servercolor': '',
             'owner': `${message.guild.ownerId}`,
+            'color': '',
+            'levels': 'false',
+            'welcomechannel': '',
+            'exitchannel': '',
+            'autorole': '',
+            'suggestionschannel': '',
+            'starboardchannel': '',
         };
 
         if (!iData[guildId]) {
@@ -23,7 +28,6 @@ module.exports = {
                 JSON.stringify(iData, null, 4),
             );
         }
-        // console.log(iData);
 
         const iUser = message.author;
         const nickname = iUser.nickname ?? iUser.displayName;
@@ -41,8 +45,14 @@ module.exports = {
         if (message.author.id == ownerId && message.content == 'dr') {
             iData = {
                 'default': {
-                    'servercolor': '',
                     'owner': '',
+                    'color': '',
+                    'levels': 'false',
+                    'welcomechannel': '',
+                    'exitchannel': '',
+                    'autorole': '',
+                    'suggestionschannel': '',
+                    'starboardchannel': '',
                 },
             };
             fs.writeFileSync(

@@ -1,4 +1,6 @@
-const { ButtonBuilder, ButtonStyle, ActionRowBuilder, SlashCommandBuilder, EmbedBuilder, Client, GatewayIntentBits, AttachmentBuilder } = require('discord.js'), moment = require('moment'), fs = require('fs'), { token, link } = require('../../config.json');
+const { ButtonBuilder, ButtonStyle, ActionRowBuilder, SlashCommandBuilder, EmbedBuilder, Client, GatewayIntentBits, AttachmentBuilder } = require('discord.js');
+const moment = require('moment'), fs = require('fs');
+const { token, link } = require('../../config.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -115,11 +117,18 @@ module.exports = {
             const botCount = server.members.cache.filter(m => m.user.bot).size;
             const roles = server.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).slice(0, 10);
             const rolesAmt = server.roles.cache.filter(r => r.name !== '@everyone').size;
+            const guildId = server.id;
             let rVal;
+            const serverData = 'data/serverdata.json';
+            const iData = JSON.parse(fs.readFileSync(serverData));
             let color;
-            if (color == undefined) {
-                color = 'Blue';
+            if (iData[guildId]) {
+                if (iData[guildId].color == '') {
+                    color == 'Blue';
+                }
+                else { color = iData[guildId].color; }
             }
+            else { color == 'Blue'; }
 
             const features = {
                 ANIMATED_BANNER: 'Animated Guild Banner',
@@ -168,7 +177,7 @@ module.exports = {
             // setting up the embed
             infoEmbed
                 .setTitle(serverName)
-                .setColor(color)
+                .setColor(color ?? 'Blue')
                 .setDescription(`${server.description ?? 'No description available for this server...'}`)
                 .setThumbnail(serverIcon)
                 .addFields(
