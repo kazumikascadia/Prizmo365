@@ -27,6 +27,7 @@ module.exports = {
                 serverData,
                 JSON.stringify(iData, null, 4),
             );
+            console.log(`Guild ${message.guild.name} added to database, ID${guildId}`);
         }
 
         const iUser = message.author;
@@ -59,6 +60,7 @@ module.exports = {
                 serverData,
                 JSON.stringify(iData, null, 4),
             );
+            console.log('Database reset forcefully.');
         }
 
         if (message.author.id == ownerId && message.content == 'r') {

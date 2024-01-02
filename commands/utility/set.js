@@ -64,6 +64,7 @@ module.exports = {
                 serverData,
                 JSON.stringify(iData, null, 4),
             );
+            console.log(`Guild ${interaction.guild.name} added to database, ID${guildId}`);
         }
 
         if (subcommand == 'servercolor') {
