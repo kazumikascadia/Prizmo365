@@ -1,6 +1,4 @@
-// work in progress
-
-const { SlashCommandBuilder, EmbedBuilder, Client, GatewayIntentBits } = require('discord.js'), moment = require('moment');
+const { ButtonBuilder, ButtonStyle, ActionRowBuilder, SlashCommandBuilder, EmbedBuilder, Client, GatewayIntentBits, AttachmentBuilder } = require('discord.js'), moment = require('moment'), fs = require('fs'), { token, link } = require('../../config.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -40,10 +38,7 @@ module.exports = {
         const infoEmbed = new EmbedBuilder()
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date());
-        await server.members.fetch();
-        await server.fetch();
-
-        // fetched bot information
+        await client.login(token).then(client.guilds.fetch()).then(server.fetch()).then(server.members.fetch());
 
         // selects the specific command
         if (subcommand === 'user') {
@@ -105,6 +100,9 @@ module.exports = {
                 .setColor(accentColor)
                 .setThumbnail(mavatar)
                 .setFooter({ text: `ID: ${uid}` });
+
+            interaction.reply({ embeds: [infoEmbed] });
+
         }
 
         if (subcommand === 'server') {
@@ -176,12 +174,40 @@ module.exports = {
                     { name: 'Features:', value: `${sFeatures.length ? sFeatures : 'No features'}` },
                 )
                 .setFooter({ text: `ID: ${server.id}` });
+
+            interaction.reply({ embeds: [infoEmbed] });
+
         }
 
-        // if (subcommand === 'bot') {
+        if (subcommand === 'bot') {
+            // fetched bot info
+            const botConfig = JSON.parse(fs.readFileSync('config.json'));
+            const file = new AttachmentBuilder('./images/Prizmo_i-white.png');
 
-        // }
+            const addButton = new ButtonBuilder()
+                .setLabel('Add to your own server!')
+                .setStyle(ButtonStyle.Link)
+                .setDisabled(true)
+                .setURL(link);
 
-        interaction.reply({ embeds: [infoEmbed] });
+            const row = new ActionRowBuilder()
+                .addComponents(addButton);
+
+            // embed setup
+            infoEmbed
+                .setTitle('Prizmo365 Information')
+                .setColor('#17ac86')
+                .setThumbnail('attachment://Prizmo_i-white.png')
+                .setDescription('Thank you for using Prizmo!')
+                .addFields(
+                    { name: 'Creator and Arists:', value: '<@306372629650997260>, <@526864658234212352>' },
+                    { name: 'Version:', value: `${botConfig.version}`, inline: true },
+                    { name: 'Used In:', value: `${client.guilds.cache.size} servers`, inline: true },
+                )
+                .setFooter({ text: 'ID: 734214062627356683' }),
+
+                interaction.reply({ embeds: [infoEmbed], files: [file], components: [row] });
+
+        }
     },
 };
