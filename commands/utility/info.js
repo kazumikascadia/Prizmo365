@@ -207,7 +207,7 @@ module.exports = {
                 .setDescription('Thank you for using Prizmo!')
                 .addFields(
                     { name: 'Creator and Arists:', value: '<@306372629650997260>, <@526864658234212352>' },
-                    { name: 'Version:', value: `${botConfig.version}`, inline: true },
+                    { name: 'Version:', value: `${botConfig.version} (closed alpha)`, inline: true },
                     { name: 'Used In:', value: `${client.guilds.cache.size} servers`, inline: true },
                 )
                 .setFooter({ text: 'ID: 734214062627356683' }),

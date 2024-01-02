@@ -35,7 +35,7 @@ module.exports = {
         const guildId = interaction.guild.id;
 
         const defaultSettings = {
-            "servercolor": ""
+            'servercolor': '',
         };
 
         if (subcommand == 'initiate') {

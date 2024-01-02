@@ -71,25 +71,3 @@ console.log(chalk.cyanBright('[LOADED]'), 'Events loaded!');
 
 // Log into Discord with your client's token
 client.login(token);
-
-client.on('messageCreate', async message => {
-	if (message.author.bot) return false;
-	const iUser = message.author;
-	const nickname = iUser.nickname ?? iUser.displayName;
-	const avatar = iUser.displayAvatarURL();
-	const repEmbed = new EmbedBuilder()
-		.setAuthor({ name: nickname, iconURL: avatar })
-		.setTimestamp(+new Date())
-		.setTitle('Prizmo365')
-		.setDescription('Hello! I\'m Prizmo, your friendly neighborhood assisant!')
-		.setColor('#17ac86');
-	if (message.mentions.has(clientId)) {
-		message.reply({ embeds: [repEmbed] });
-	}
-
-	if (message.author.id == '306372629650997260' && message.content == 'r') {
-		console.log('Forced restart.');
-		await message.reply('Restarting...');
-		process.exit();
-	}
-});
