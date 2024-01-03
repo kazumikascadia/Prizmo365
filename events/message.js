@@ -19,6 +19,7 @@ module.exports = {
             'autorole': '',
             'suggestionschannel': '',
             'starboardchannel': '',
+            'requiredstars': '',
         };
 
         if (!iData[guildId]) {
@@ -54,6 +55,7 @@ module.exports = {
                     'autorole': '',
                     'suggestionschannel': '',
                     'starboardchannel': '',
+                    'requiredstars': '',
                 },
             };
             fs.writeFileSync(

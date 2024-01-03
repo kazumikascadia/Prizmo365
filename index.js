@@ -4,7 +4,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const chalk = require('chalk');
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, Partials, Events } = require('discord.js');
 const { token, clientId, version } = require('./config.json'), deployment = require('./deploy-commands');
 
 // Create a new client instance
@@ -16,7 +16,13 @@ const client = new Client({
 			GatewayIntentBits.GuildMembers,
 			GatewayIntentBits.GuildMessages,
 			GatewayIntentBits.MessageContent,
+			GatewayIntentBits.GuildMessageReactions,
 		],
+	partials: [
+		Partials.Message,
+		Partials.Channel,
+		Partials.Reaction,
+	],
 });
 
 deployment.deploy();
@@ -72,3 +78,4 @@ console.log(chalk.cyanBright('[LOADED]'), 'Events loaded!');
 
 // Log into Discord with your client's token
 client.login(token);
+
