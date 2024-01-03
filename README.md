@@ -2,6 +2,8 @@
 Prizmo 365 (or just Prizmo) is an open source Discord bot built using Discord.js v14 and derived from the Discord.js guide. 
 All commands are created by kazumikascadia and designed to be multipurpose, with no real thematic approach in mind.
 
+If you want to learn more, check out my [Trello](https://trello.com/b/bGNCDIGQ/prizmo365-devboard) page. This will be kept up to date with planned features, updates, new commands, and more.
+
 ## Legal Rights
 Under the MIT License, you are free to use Prizmo's code as you wish. 
 ### Credit
