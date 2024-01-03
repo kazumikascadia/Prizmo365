@@ -205,15 +205,25 @@ module.exports = {
                 .setDisabled(true)
                 .setURL(link);
 
+            const trelloButton = new ButtonBuilder()
+                .setLabel('Trello Page')
+                .setStyle(ButtonStyle.Link)
+                .setURL('https://trello.com/b/bGNCDIGQ');
+
+                const gitButton = new ButtonBuilder()
+                .setLabel('Github Repository')
+                .setStyle(ButtonStyle.Link)
+                .setURL('https://trello.com/b/bGNCDIGQ');
+
             const row = new ActionRowBuilder()
-                .addComponents(addButton);
+                .addComponents(addButton, trelloButton, gitButton);
 
             // embed setup
             infoEmbed
                 .setTitle('Prizmo365 Information')
                 .setColor('#17ac86')
                 .setThumbnail('attachment://Prizmo_i-white.png')
-                .setDescription('Thank you for using Prizmo!')
+                .setDescription('**Prizmo365** is a work in progress Discord.js bot built with a multipurpose mindset. It is currently in a closed alpha build but should be released to the public within the coming months.\n Best of all, Prizmo is **completely free** and **entirely open-source**. You can find all of Prizmo\'s code in its Github repository, and you are completely free to use all of it. Furthermore, once the bot is released, there are no current plans for monetization. Donations will, however, always be accepted, but are not currently open.\n\nPrizmo365 - meant for 365 days a year usage.')
                 .addFields(
                     { name: 'Creator and Arists:', value: '<@306372629650997260>, <@526864658234212352>' },
                     { name: 'Version:', value: `${botConfig.version} (closed alpha)`, inline: true },
