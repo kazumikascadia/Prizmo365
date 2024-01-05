@@ -1,5 +1,6 @@
 # Prizmo365
 <img alt="Prizmo365 white logo" src="https://cdn.discordapp.com/attachments/1192947932849246380/1192952918819745914/Prizmo_i-white.png?ex=65aaf2fb&is=65987dfb&hm=0e53bebc6a7bd6935a12f72e316a43bd0d6f9f79682db8d6daa46beff96cebae&" width="250">
+
 **An Open-Source, Feature Rich Discord Bot**
 
 ## What is Prizmo
@@ -20,6 +21,20 @@ In case you're curious, the name "Prizmo365" is a creation from long ago, when I
 
 ### Trello
 If you're curious to learn more about the project, check out my [Trello](https://trello.com/b/bGNCDIGQ/prizmo365-devboard) page. This will be kept up to date with planned features, updates, new commands, and more.
+
+## Features
+Prizmo is currently a work in progress, though is still packed of a variety of features. All of Prizmo's current features can be found below.
+
+- An 8 ball command which can provide an 8 ball response to any statement.
+- A command to split apart all of the letters in a sentence and list out how many letters of the alphabet are used, excluding anything that does not fall between A-Z.
+- A full dice rolling command complete with the ability to select the amount and size of the dice (and return 10 of the rolls within that amount).
+- A command to generate a random hex color code and display it in an embed.
+- A rock paper scissors command so that you can play rock paper scissors against Prizmo.
+- A command to convert from one unit type to another, with units falling into time, measurements, square areas, and volume.
+- A full info command to discover info on the server of location or on any user in that server.
+- The ability to send starred messages to a starboard channel.
+- With server customization using the /set command.
+- ... and more to come soon!
 
 ## Contributions
 Because Prizmo365 is an open-source Discord bot created by one developer, contributions are absolutely accepted and are even extremely useful. If you would like to contribute, you can request features and report bugs or vulnerabilities. Programming contributions will also be accepted; for the time being, please DM @kazumikascadia on Discord to provide code contributions. 
