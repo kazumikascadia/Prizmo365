@@ -23,6 +23,10 @@ module.exports = {
 		// creates a usable array for the undesirable characters and a second for the output
 		const undesirables = [];
 		const output = [];
+		// set up the embed with starting variables
+		const aEmbed = new EmbedBuilder()
+			.setAuthor({ name: nickname, iconURL: avatar })
+			.setTimestamp(+new Date());
 
 		// sorts the array
 		array.sort();
@@ -43,20 +47,35 @@ module.exports = {
 			}
 		});
 
-		// turns the length of the output array into a constant
-		const letters = output.length;
-		// formats the list into a proper sentence
-		const fOutput = new Intl.ListFormat('en', { style: 'long', type: 'conjunction' });
-		const fOutput2 = fOutput.format(output);
-		// creates the final embed
-		const aEmbed = new EmbedBuilder()
-			.setTitle('Your word, split apart.')
-			.setDescription(`Your word or sentence,\n> ${input}\ncontains the following letters: \n> ${fOutput2}. \nOverall, it contains ${letters}/26 letters.`)
-			.setColor('Green')
-			.setAuthor({ name: nickname, iconURL: avatar })
-			.setTimestamp(+new Date());
+		// check if the output is actually greater than one; if it isn't, it means that there will be no output, which cannot be accepted
+		// if the output is greater than one, continue as normal
+		if (output.length > 1) {
+			// turns the length of the output array into a constant
+			const letters = output.length;
+			// formats the list into a proper sentence
+			const fOutput = new Intl.ListFormat('en', { style: 'long', type: 'conjunction' });
+			const fOutput2 = fOutput.format(output);
+			// creates the final embed
+			aEmbed
+				.setTitle('Your word, split apart.')
+				.setDescription(`Your word or sentence,\n> ${input}\ncontains the following letters: \n> ${fOutput2}. \nOverall, it contains ${letters}/26 letters.`)
+				.setColor('Green');
 
-		// replies to the interaction with the embed
-		interaction.reply({ embeds: [aEmbed] });
+			// replies to the interaction with the embed
+			interaction.reply({ embeds: [aEmbed] });
+		}
+		// in all other cases, send an error
+		else {
+			// creates the final embed, telling the user what is wrong
+			aEmbed
+				.setTitle('Error')
+				.setDescription('Because you put no actual letters into your statement, none can be counted.')
+				.setColor('Red');
+
+			// sends the message
+			interaction.reply({ embeds: [aEmbed] });
+
+		}
+
 	},
 };
