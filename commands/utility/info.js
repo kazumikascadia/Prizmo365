@@ -20,6 +20,7 @@ module.exports = {
                 .setName('bot')
                 .setDescription('Provides info on the bot.')),
     async execute(interaction) {
+        // create a new client variable to be used in this command, specifically using certain intents to fetch guild members and presences
         const client = new Client({
             intents:
                 [
@@ -29,29 +30,36 @@ module.exports = {
                 ],
         });
 
-        // basic information
+        // fetch the information of the user who used this command, as well as the guild they are in
         const iUser = interaction.user;
         const nickname = iUser.nickname ?? iUser.displayName;
         const avatar = iUser.displayAvatarURL();
         const server = interaction.guild;
 
-        // setup
+        // grab the used subcommand and set up the embed with just two info variables
         const subcommand = interaction.options.getSubcommand();
         const infoEmbed = new EmbedBuilder()
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date());
+        // login again and grab all guilds, then fetching their memberbase
+        // this keeps the info commands up to date, so that they will always display CURRENT information
         await client.login(token).then(client.guilds.fetch()).then(server.fetch()).then(server.members.fetch());
 
-        // selects the specific command
+        // checks if the subcommand is the user subcommand
         if (subcommand === 'user') {
-            // fetch user info
+            // fetches user information on the desired target; if no target, use the interaction user
+            // since this command requires a target, it will always have a selected target (subject to change)
+            // this section grabs the targets id, avatar, their place in the current guild, their accent hex color, and their guild roles
             const mUser = await interaction.options.getUser('target').fetch(true) || iUser.fetch(true);
             const uid = mUser.id;
             const mavatar = mUser.displayAvatarURL({ dynamic: true, size: 1024, format: 'png' }) ?? mUser.defaultAvatarURL({ dynamic: true, size: 960, format: 'png' });
             const gUser = server.members.cache.get(uid);
             const accentColor = mUser.hexAccentColor;
+            // find all of the roles of the selected user, then map and join them together in a string (all excluding @everyone)
             let roles = gUser.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).join(', ');
+            // create a new variable just for the length of the roles string
             let rLength = roles.split(', ').length;
+            // create a dictionary for all user flags (items that appear on the user as badges)
             const flags = {
                 ActiveDeveloper: 'Active Developer',
                 BugHunterLevel1: 'Bug Hunter Level 1',
@@ -67,6 +75,9 @@ module.exports = {
                 VerifiedBot: 'Verified Bot',
                 VerifiedDeveloper: 'Verified Bot Developer',
             };
+            // create an array of all the user's flags
+            const uFlags = mUser.flags.toArray();
+            // create a dictionary for all user presences; specifically, this will differentiate if the user is offline or just hidden
             const statuses = {
                 online: 'Online',
                 idle: 'Idle',
@@ -74,22 +85,24 @@ module.exports = {
                 offline: 'Invisible',
                 off: 'Offline',
             };
-            const uFlags = mUser.flags.toArray();
+            // create a variable for the title of the embed
             let title;
-
+            // if the user is NOT a bot, set the title to just be their username
             if (!mUser.bot) {
                 title = mUser.username;
             }
+            // if the user is a bot, add a bot tag to the title
             else {
                 title = mUser.username + ' [BOT]';
             }
 
+            // check if the user has roles; if not, set their roles to say just 'No roles', and set rlength to 0
             if (`${roles}` == '') {
                 roles = 'No roles';
                 rLength = '0';
             }
 
-            // setting up the embed
+            // using the info embed from earlier, set the title, description, and create several fields to show information on the user
             infoEmbed
                 .setTitle(title)
                 .setDescription(`Known as ${mUser}; currently set to ${statuses[gUser.presence ? gUser.presence.status : 'off']}`)
@@ -103,6 +116,7 @@ module.exports = {
                 .setThumbnail(mavatar)
                 .setFooter({ text: `ID: ${uid}` });
 
+            // finally, send the embed in a message
             interaction.reply({ embeds: [infoEmbed] });
 
         }
@@ -210,7 +224,7 @@ module.exports = {
                 .setStyle(ButtonStyle.Link)
                 .setURL('https://trello.com/b/bGNCDIGQ');
 
-                const gitButton = new ButtonBuilder()
+            const gitButton = new ButtonBuilder()
                 .setLabel('Github Repository')
                 .setStyle(ButtonStyle.Link)
                 .setURL('https://trello.com/b/bGNCDIGQ');
