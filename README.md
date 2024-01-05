@@ -1,13 +1,28 @@
-# Prizmo 365
+# Prizmo365
+<img alt="Prizmo365 white logo" src="https://cdn.discordapp.com/attachments/1192947932849246380/1192952918819745914/Prizmo_i-white.png?ex=65aaf2fb&is=65987dfb&hm=0e53bebc6a7bd6935a12f72e316a43bd0d6f9f79682db8d6daa46beff96cebae&" width="250">
+**An Open-Source, Feature Rich Discord Bot**
+
+## What is Prizmo
+> [!WARNING]
+> This bot is currently in an early alpha build. Use at your own discretion.
+
 Prizmo is a work in progress Discord bot built with a multipurpose mindset. It is currently in a closed alpha build but should be released to the public within the coming months.
 
 Best of all, Prizmo is completely free and entirely open-source. You can find all of Prizmo’s code in this Github repository, and you are completely free to use all of it. Furthermore, once the bot is released, there are no current plans for monetization. Donations will, however, always be accepted, but are not currently open.
 
+### Using Prizmo
+At the moment, Prizmo is in an early alpha build. As such, it will not be used in servers beyond those that are created by the owner.
 
+However, since the code is all open-source, you are free to use all of it and create your own bot. Check the Sources and Libraries section for dependencies that are ABSOLUTELY NECESSARY to use this repository.
 
-Prizmo365 - meant for 365 days a year usage.
+### Namesake
+In case you're curious, the name "Prizmo365" is a creation from long ago, when I was originally extremely interested in starting my own business (which I would have called Prism). As such, Prizmo comes from a name I used at the time online, as well as a name for an idea of a security bot for the company's Discord server. In August of 2020, I decided to begin the original Prizmo project, under the title "Prizmo365" - under the idea that it would be usable 365 days a year, 24/7. With time and change, the name stuck, and here we are.
 
-If you want to learn more, check out my [Trello](https://trello.com/b/bGNCDIGQ/prizmo365-devboard) page. This will be kept up to date with planned features, updates, new commands, and more.
+### Trello
+If you're curious to learn more about the project, check out my [Trello](https://trello.com/b/bGNCDIGQ/prizmo365-devboard) page. This will be kept up to date with planned features, updates, new commands, and more.
+
+## Contributions
+Because Prizmo365 is an open-source Discord bot created by one developer, contributions are absolutely accepted and are even extremely useful. If you would like to contribute, you can request features and report bugs or vulnerabilities. Programming contributions will also be accepted; for the time being, please DM @kazumikascadia on Discord to provide code contributions. 
 
 ### Feature Requests
 If you would like to request any features for this bot, please DM @kazumikascadia on Discord. My message requests are currently open and will remain that way. With this, please send a beginner message detailing who you are, or else I will likely not respond due to privacy concerns.
