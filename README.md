@@ -10,29 +10,38 @@ Prizmo365 - meant for 365 days a year usage.
 If you want to learn more, check out my [Trello](https://trello.com/b/bGNCDIGQ/prizmo365-devboard) page. This will be kept up to date with planned features, updates, new commands, and more.
 
 ## Legal Rights
-Under the MIT License, you are free to use Prizmo's code as you wish. 
-### Credit
-If you do use this code, please credit @kazumikascadia as the derivative.
+Under the MIT License, you are free to use Prizmo's code as you wish. Please review the LICENSE.md file for more information.
+### Usage Requests
+As a request, please credit @kazumikascadia if you are to use this code, and please do not call your project "Prizmo365", "Prizmo", or any other derivative, since the imagery and other such information of Prizmo is not provided to you within these files. If you are to modify this code, it is still within this request that you mention @kazumikascadia as the original creator. 
 
 ## Sources and Libraries
-Prizmo 365 uses a variety of sources as its foundation. These are listed as follows:
+Prizmo 365 uses a variety of sources as its foundation. Since much of the code in this repository relies on these libraries, it is ABSOLUTELY RECOMMEND that you ensure full installation to your project, since it may not function without. You are liable for your own usage of these items and should follow their legal guides on your own accord.
 
-1. Discord.js v14
-   - Found at [Discord.js Website](https://discord.js.org/#/)
-   - Foundational code derived from [Discord.js Guide](https://discordjs.guide/)
-2. Napi-RS/Canvas
-   - Found at [Napi-RS/Canvas NPM](https://www.npmjs.com/package/@napi-rs/canvas)
-4. Chalk
-   - Found at [Chalk NPM](https://www.npmjs.com/package/chalk)
-6. Convert
-   - Found at [Convert NPM](https://www.npmjs.com/package/convert)
-8. Dayjs
-   - Found at [Dayjs NPM](https://www.npmjs.com/package/dayjs)
-10. MS
-    - Found at [MS NPM](https://www.npmjs.com/package/ms)
-12. Mathjs
-    - Found at [Mathjs NPM](https://www.npmjs.com/package/mathjs)
-14. Nodejs
+1. Nodejs
+    - The entire foundational library uponwhich this project is built.
     - Found at [Node.js Website](https://nodejs.org/en)
-15. ESLint
+2. Discord.js v14
+   - Another foundational library uponwhich this project is built, and is required as a wrapper for the Discord API.
+   - Foundational code derived from [Discord.js Guide](https://discordjs.guide/)
+   - Found at [Discord.js Website](https://discord.js.org/#/)
+4. Napi-RS/Canvas
+   - Used to create certain images within the codebase (currently only the random color image).
+   - Found at [Napi-RS/Canvas NPM](https://www.npmjs.com/package/@napi-rs/canvas)
+5. Chalk
+   - Used for console formatting and prettifying; not necessary and can be removed from the code.
+   - Found at [Chalk NPM](https://www.npmjs.com/package/chalk)
+6. Dayjs
+   - Used to provide timestamps throughout the majority of the codebase.
+   - Found at [Dayjs NPM](https://www.npmjs.com/package/dayjs)
+7. MS
+    - Used to create timestamps in some commands.
+    - Found at [MS NPM](https://www.npmjs.com/package/ms)
+8. Mathjs
+    - Used in the majority of the unitconvert.js file.
+    - Found at [Mathjs NPM](https://www.npmjs.com/package/mathjs)
+9. ESLint
+    - A handy file for project efficiency and ensuring there are minimal issues with any writing.
     - Found at [ESLint Website](https://eslint.org/)
+10. Momentjs
+    - A library utilized in the info command for displaying time periods in a nice manner.
+    - Found at [Momentjs NPM](https://www.npmjs.com/package/moment)
