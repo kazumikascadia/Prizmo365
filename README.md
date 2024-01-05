@@ -13,7 +13,7 @@ If you want to learn more, check out my [Trello](https://trello.com/b/bGNCDIGQ/p
 If you would like to request any features for this bot, please DM @kazumikascadia on Discord. My message requests are currently open and will remain that way. With this, please send a beginner message detailing who you are, or else I will likely not respond due to privacy concerns.
 
 ### Bug Reports
-If, in your own personal testing, you find any bugs with the code in this repository, please DM @kazumikascadia on Discord. I will do my best to solve any bugs that may occur, and they will be published to this repository with a new release.
+If, in your own personal testing, you find any bugs with the code in this repository, please post them to the Issues section or DM @kazumikascadia on Discord. I will do my best to solve any bugs that may occur, and they will be published to this repository with a new release.
 
 ## Legal Rights
 Under the MIT License, you are free to use Prizmo's code as you wish. Please review the LICENSE.md file for more information.
