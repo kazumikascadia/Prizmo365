@@ -15,6 +15,11 @@ If you would like to request any features for this bot, please DM @kazumikascadi
 ### Bug Reports
 If, in your own personal testing, you find any bugs with the code in this repository, please post them to the Issues section or DM @kazumikascadia on Discord. I will do my best to solve any bugs that may occur, and they will be published to this repository with a new release.
 
+When providing bug reports, please provide exactly how you found the bug, where the bug is / may be located, and the release in which they occurred. If the release is not the most current, they may have been solved in a recent release; if they have not been, they should be solved by the next release.
+
+## Security
+For security issues, please refer to the SECURITY.md file.
+
 ## Legal Rights
 Under the MIT License, you are free to use Prizmo's code as you wish. Please review the LICENSE.md file for more information.
 ### Usage Requests
