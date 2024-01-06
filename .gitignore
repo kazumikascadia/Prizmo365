@@ -1,0 +1,10 @@
+config.json
+/node_modules
+start.bat
+gitignore
+/images
+/data
+devIndex.js
+package-lock.json 
+package.json 
+.eslintrc.json 
