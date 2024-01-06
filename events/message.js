@@ -8,8 +8,8 @@ module.exports = {
         if (message.author.bot) return false;
 
         const guildId = message.guild.id;
-        const serverData = 'data/serverdata.json';
-        let iData = JSON.parse(fs.readFileSync(serverData));
+        const guilddata = 'data/guilddata.json';
+        let gdImport = JSON.parse(fs.readFileSync(guilddata));
         const defaultSettings = {
             'owner': `${message.guild.ownerId}`,
             'color': '',
@@ -22,11 +22,11 @@ module.exports = {
             'requiredstars': '',
         };
 
-        if (!iData[guildId]) {
-            iData[guildId] = defaultSettings;
+        if (!gdImport[guildId]) {
+            gdImport[guildId] = defaultSettings;
             fs.writeFileSync(
-                serverData,
-                JSON.stringify(iData, null, 4),
+                guilddata,
+                JSON.stringify(gdImport, null, 4),
             );
             console.log(`Guild ${message.guild.name} added to database, ID${guildId}`);
         }
@@ -45,7 +45,7 @@ module.exports = {
         }
 
         if (message.author.id == ownerId && message.content == 'dr') {
-            iData = {
+            gdImport = {
                 'default': {
                     'owner': '',
                     'color': '',
@@ -59,8 +59,8 @@ module.exports = {
                 },
             };
             fs.writeFileSync(
-                serverData,
-                JSON.stringify(iData, null, 4),
+                guilddata,
+                JSON.stringify(gdImport, null, 4),
             );
             console.log('Database reset forcefully.');
         }

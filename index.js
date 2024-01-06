@@ -4,8 +4,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const chalk = require('chalk');
-const { Client, Collection, GatewayIntentBits, Partials, Events } = require('discord.js');
-const { token, clientId, version } = require('./config.json'), deployment = require('./deploy-commands');
+const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js');
+const { token } = require('./config.json'), deployment = require('./deploy-commands');
 
 // Create a new client instance
 const client = new Client({
@@ -71,11 +71,5 @@ for (const file of eventFiles) {
 }
 console.log(chalk.cyanBright('[LOADED]'), 'Events loaded!');
 
-// const pkgFile = './package.json';
-// let pData = JSON.parse(fs.readFileSync(pkgFile));
-// pData['version'] = `${version}`;
-// fs.writeFileSync(pkgFile, JSON.stringify(pData, null, 4));
-
-// Log into Discord with your client's token
 client.login(token);
 
