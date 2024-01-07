@@ -52,10 +52,21 @@ module.exports = {
                         .setDescription('The amount of required stars.')
                         .setRequired(true),
                 ),
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('suggestionschannel')
+                .setDescription('The channel where suggestions will be sent.')
+                .addChannelOption(option =>
+                    option
+                        .setName('channel')
+                        .setDescription('Sets the channel you want to be the suggestions channel.')
+                        .setRequired(true),
+                ),
         ),
     async execute(interaction) {
-        const serverData = 'data/serverdata.json';
-        const iData = JSON.parse(fs.readFileSync(serverData));
+        const guilddata = 'data/guilddata.json';
+        const gdImport = JSON.parse(fs.readFileSync(guilddata));
         const iUser = interaction.user;
         const nickname = iUser.nickname ?? iUser.displayName;
         const avatar = iUser.displayAvatarURL();
@@ -65,7 +76,7 @@ module.exports = {
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date());
 
-        if (!iData[guildId]) {
+        if (!gdImport[guildId]) {
             const defaultSettings = {
                 'owner': `${interaction.guild.ownerId}`,
                 'color': '',
@@ -77,10 +88,10 @@ module.exports = {
                 'starboardchannel': '',
                 'requiredstars': '',
             };
-            iData[guildId] = defaultSettings;
+            gdImport[guildId] = defaultSettings;
             fs.writeFileSync(
-                serverData,
-                JSON.stringify(iData, null, 4),
+                guilddata,
+                JSON.stringify(gdImport, null, 4),
             );
             console.log(`Guild ${interaction.guild.name} added to database, ID${guildId}`);
         }
@@ -97,10 +108,10 @@ module.exports = {
             }
             else { nColor = 'Random'; }
 
-            iData[guildId].color = nColor;
+            gdImport[guildId].color = nColor;
             fs.writeFileSync(
-                serverData,
-                JSON.stringify(iData, null, 2),
+                guilddata,
+                JSON.stringify(gdImport, null, 2),
             );
 
             setEmbed.setDescription(`Server color changed to ${chColor}.`).setColor(nColor);
@@ -112,11 +123,11 @@ module.exports = {
             const starChannelId = starChannel.id;
             const reqStars = interaction.options.getInteger('starcount').toString();
 
-            iData[guildId].starboardchannel = starChannelId;
-            iData[guildId].requiredstars = reqStars;
+            gdImport[guildId].starboardchannel = starChannelId;
+            gdImport[guildId].requiredstars = reqStars;
             fs.writeFileSync(
-                serverData,
-                JSON.stringify(iData, null, 2),
+                guilddata,
+                JSON.stringify(gdImport, null, 2),
             );
 
             const channelEmbed = new EmbedBuilder()
@@ -125,9 +136,9 @@ module.exports = {
                 .setColor('Gold')
                 .setTimestamp(+new Date());
 
-            setEmbed.setDescription(`Starboard channel set to **${starChannel}** with a required amount of **${reqStars}**.`).setColor('Gold');
-
             if (interaction.guild.channels.cache.get(starChannelId).type == '0') {
+                setEmbed.setDescription(`Starboard channel set to **${starChannel}** with a required amount of **${reqStars}**.`).setColor('Gold');
+
                 starChannel.send({ embeds: [channelEmbed] });
             }
             else {
@@ -136,6 +147,33 @@ module.exports = {
 
             interaction.reply({ embeds: [setEmbed] });
         }
-    },
 
+        if (subcommand == 'suggestionschannel') {
+            const suggestChannel = interaction.options.getChannel('channel');
+            const suggestChannelId = suggestChannel.id;
+
+            gdImport[guildId].suggestionschannel = suggestChannelId;
+            fs.writeFileSync(
+                guilddata,
+                JSON.stringify(gdImport, null, 2),
+            );
+
+            const channelEmbed = new EmbedBuilder()
+                .setDescription('This channel has been set to receive suggestion messages!')
+                .setFooter({ text: `Channel ID: ${suggestChannelId}` })
+                .setColor('Green')
+                .setTimestamp(+new Date());
+
+            if (interaction.guild.channels.cache.get(suggestChannelId).type == '0') {
+                setEmbed.setDescription(`Suggestions channel set to **${suggestChannel}**.`);
+
+                suggestChannel.send({ embeds: [channelEmbed] });
+            }
+            else {
+                setEmbed.setDescription(`Suggestions channel set to **${suggestChannel}**.\n However, since that is not a text channel, the suggestions will not work.`);
+            }
+
+            interaction.reply({ embeds: [setEmbed] });
+        }
+    },
 };
