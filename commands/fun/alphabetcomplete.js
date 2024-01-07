@@ -40,7 +40,59 @@ function filterInput(input) {
         .sort()
         .filter((c) => {
             return allowedCharacters.includes(c);
-        });
+        })
+        .toString();
+}
+
+function generateStandardEmbed(interaction, originalInput,
+    formattedFilteredInput, letterCount) {
+    const user = interaction.user;
+    const nickname = user.nickname ?? user.displayName;
+    const avatar = user.displayAvatarURL();
+
+    return new EmbedBuilder()
+        .setAuthor({ name: nickname, iconURL: avatar })
+        .setTimestamp(+new Date())
+        .setTitle('Your word, split apart.')
+        .setDescription(
+            `Your word or sentence,\n> ${originalInput}\ncontains the following letters: \n> ${formattedFilteredInput}. \nOverall, it contains ${letterCount}/26 letters.`,
+        )
+        .setColor('Green');
+}
+
+function generateErrorEmbed(interaction) {
+    const user = interaction.user;
+    const nickname = user.nickname ?? user.displayName;
+    const avatar = user.displayAvatarURL();
+
+    return new EmbedBuilder()
+        .setAuthor({ name: nickname, iconURL: avatar })
+        .setTimestamp(+new Date())
+        .setTitle('Error')
+        .setDescription(
+            'Because you put no actual letters into your statement, none can be counted.',
+        )
+        .setColor('Red');
+}
+
+function respondToValidInput(interaction, originalInput, filteredInput) {
+    const letterCount = filteredInput.length;
+
+    // Formats the list into a proper sentence
+    const formatter = new Intl.ListFormat('en', {
+        style: 'long',
+        type: 'conjunction',
+    });
+
+    const formattedFilteredInput = formatter.format(filteredInput.split(''));
+
+    // Replies to the interaction with the embed
+    interaction.reply({ embeds: [generateStandardEmbed(interaction, originalInput,
+        formattedFilteredInput, letterCount)] });
+}
+
+function respondToInvalidInput(interaction) {
+    interaction.reply({ embeds: [generateErrorEmbed(interaction)] });
 }
 
 module.exports = {
@@ -55,54 +107,17 @@ module.exports = {
                 .setMaxLength(1000),
         ),
     async execute(interaction) {
-        // sets up all necessary constants for the embed
-        const iUser = interaction.user;
-        const nickname = iUser.nickname ?? iUser.displayName;
-        const avatar = iUser.displayAvatarURL();
-
-        // set up the embed with starting variables
-        const aEmbed = new EmbedBuilder()
-            .setAuthor({ name: nickname, iconURL: avatar })
-            .setTimestamp(+new Date());
-
         // Gather and filter the input.
         const input = interaction.options.getString('input');
         const filteredInput = filterInput(input);
 
-        // check if the output is actually greater than one; if it isn't, it means that there will be no output, which cannot be accepted
-        // if the output is greater than one, continue as normal
+        // If the filtered input is not greater than 1, it means that there will be no output, which
+        // cannot be accepted. if the filtered input is greater than one, continue as normal
         if (filteredInput.length > 1) {
-            // turns the length of the output array into a constant
-            const letters = filteredInput.length;
-            // formats the list into a proper sentence
-            const fOutput = new Intl.ListFormat('en', {
-                style: 'long',
-                type: 'conjunction',
-            });
-            const fOutput2 = fOutput.format(filteredInput);
-            // creates the final embed
-            aEmbed
-                .setTitle('Your word, split apart.')
-                .setDescription(
-                    `Your word or sentence,\n> ${input}\ncontains the following letters: \n> ${fOutput2}. \nOverall, it contains ${letters}/26 letters.`,
-                )
-                .setColor('Green');
-
-            // replies to the interaction with the embed
-            interaction.reply({ embeds: [aEmbed] });
+            respondToValidInput(interaction, input, filteredInput);
         }
-        // in all other cases, send an error
         else {
-            // creates the final embed, telling the user what is wrong
-            aEmbed
-                .setTitle('Error')
-                .setDescription(
-                    'Because you put no actual letters into your statement, none can be counted.',
-                )
-                .setColor('Red');
-
-            // sends the message
-            interaction.reply({ embeds: [aEmbed] });
+            respondToInvalidInput(interaction);
         }
     },
 };
