@@ -1,3 +1,5 @@
+// refactored by @fekie
+
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 // We create the list of allowed characters. These are only
@@ -41,7 +43,7 @@ function filterInput(input) {
         .filter((c) => {
             return allowedCharacters.includes(c);
         })
-        .toString();
+        .join('');
 }
 
 function generateStandardEmbed(interaction, originalInput,
@@ -110,6 +112,8 @@ module.exports = {
         // Gather and filter the input.
         const input = interaction.options.getString('input');
         const filteredInput = filterInput(input);
+
+        console.log(filteredInput);
 
         // If the filtered input is not greater than 1, it means that there will be no output, which
         // cannot be accepted. if the filtered input is greater than one, continue as normal
