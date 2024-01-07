@@ -113,8 +113,6 @@ module.exports = {
         const input = interaction.options.getString('input');
         const filteredInput = filterInput(input);
 
-        console.log(filteredInput);
-
         // If the filtered input is not greater than 1, it means that there will be no output, which
         // cannot be accepted. if the filtered input is greater than one, continue as normal
         if (filteredInput.length > 1) {

@@ -1,6 +1,36 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { unit, round } = require('mathjs');
 
+function generateValidEmbed(interaction, amt, unit1, newAmt, unit2) {
+    const iUser = interaction.user;
+    const nickname = iUser.nickname ?? iUser.displayName;
+    const avatar = iUser.displayAvatarURL();
+
+    const convertEmbed = new EmbedBuilder()
+        .setTitle('Unit Conversions')
+        .setAuthor({ name: nickname, iconURL: avatar })
+        .setDescription(`Converted ${amt} ${unit1} to ${newAmt.toString()} ${unit2}.`)
+        .setColor('Blue')
+        .setTimestamp(+new Date());
+
+    interaction.reply({ embeds: [convertEmbed] });
+}
+
+function generateInvalidEmbed(interaction) {
+    const iUser = interaction.user;
+    const nickname = iUser.nickname ?? iUser.displayName;
+    const avatar = iUser.displayAvatarURL();
+
+    const convertEmbed = new EmbedBuilder()
+        .setTitle('Unit Conversions')
+        .setAuthor({ name: nickname, iconURL: avatar })
+        .setDescription('You can\'t convert two of the same unit!')
+        .setColor('Red')
+        .setTimestamp(+new Date());
+
+    interaction.reply({ embeds: [convertEmbed] });
+}
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('convert')
@@ -221,37 +251,17 @@ module.exports = {
                 ),
         ),
     async execute(interaction) {
-        const iUser = interaction.user;
-        const nickname = iUser.nickname ?? iUser.displayName;
-        const avatar = iUser.displayAvatarURL();
+        // grab all inputs
         const amt = interaction.options.getNumber('amount');
-
-        // set unit1 and unit2 to input
         const unit1 = interaction.options.getString('unit1');
         const unit2 = interaction.options.getString('unit2');
-
-        const convertEmbed = new EmbedBuilder()
-            .setTitle('Unit Conversions')
-            .setAuthor({ name: nickname, iconURL: avatar })
-            .setColor('Blue')
-            .setTimestamp(+new Date());
-
         const newAmt = unit(amt, unit1).to(unit2).toNumber();
-        console.log(newAmt);
 
         if (unit1 == unit2) {
-            convertEmbed.setDescription('You can\'t convert two of the same unit!').setColor('Red');
-        }
-        else if (newAmt < 0) {
-            const newAmt2 = round(newAmt, 5).toString();
-            convertEmbed.setDescription(`Converted ${amt} ${unit1} to ${newAmt2} ${unit2} (rounded).`);
-            console.log(newAmt2);
+            generateInvalidEmbed(interaction);
         }
         else {
-            convertEmbed.setDescription(`Converted ${amt} ${unit1} to ${newAmt.toString()} ${unit2} (rounded).`);
-            console.log(newAmt);
+            generateValidEmbed(interaction, amt, unit1, unit2, newAmt);
         }
-
-        interaction.reply({ embeds: [convertEmbed] });
     },
 };
