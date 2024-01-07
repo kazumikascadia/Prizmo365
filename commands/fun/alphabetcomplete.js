@@ -1,34 +1,34 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 // We create the list of allowed characters. These are only
 // in uppercase which means that characters must be converted to uppercase.
 const allowedCharacters = [
-    "A",
-    "B",
-    "C",
-    "D",
-    "E",
-    "F",
-    "G",
-    "H",
-    "I",
-    "J",
-    "K",
-    "L",
-    "M",
-    "N",
-    "O",
-    "P",
-    "Q",
-    "R",
-    "S",
-    "T",
-    "U",
-    "V",
-    "W",
-    "X",
-    "Y",
-    "Z",
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
 ];
 
 // Accepts the input from an interaction and returns a sorted
@@ -36,7 +36,7 @@ const allowedCharacters = [
 function filterInput(input) {
     return input
         .toUpperCase()
-        .split("")
+        .split('')
         .sort()
         .filter((c) => {
             return allowedCharacters.includes(c);
@@ -45,14 +45,14 @@ function filterInput(input) {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("alphabet")
-        .setDescription("Tells the amount of letters in an alphabet.")
+        .setName('alphabet')
+        .setDescription('Tells the amount of letters in an alphabet.')
         .addStringOption((option) =>
             option
-                .setName("input")
-                .setDescription("The word/sentence you want to put in.")
+                .setName('input')
+                .setDescription('The word/sentence you want to put in.')
                 .setRequired(true)
-                .setMaxLength(1000)
+                .setMaxLength(1000),
         ),
     async execute(interaction) {
         // sets up all necessary constants for the embed
@@ -75,18 +75,18 @@ module.exports = {
             // turns the length of the output array into a constant
             const letters = filteredInput.length;
             // formats the list into a proper sentence
-            const fOutput = new Intl.ListFormat("en", {
-                style: "long",
-                type: "conjunction",
+            const fOutput = new Intl.ListFormat('en', {
+                style: 'long',
+                type: 'conjunction',
             });
             const fOutput2 = fOutput.format(filteredInput);
             // creates the final embed
             aEmbed
-                .setTitle("Your word, split apart.")
+                .setTitle('Your word, split apart.')
                 .setDescription(
-                    `Your word or sentence,\n> ${input}\ncontains the following letters: \n> ${fOutput2}. \nOverall, it contains ${letters}/26 letters.`
+                    `Your word or sentence,\n> ${input}\ncontains the following letters: \n> ${fOutput2}. \nOverall, it contains ${letters}/26 letters.`,
                 )
-                .setColor("Green");
+                .setColor('Green');
 
             // replies to the interaction with the embed
             interaction.reply({ embeds: [aEmbed] });
@@ -95,11 +95,11 @@ module.exports = {
         else {
             // creates the final embed, telling the user what is wrong
             aEmbed
-                .setTitle("Error")
+                .setTitle('Error')
                 .setDescription(
-                    "Because you put no actual letters into your statement, none can be counted."
+                    'Because you put no actual letters into your statement, none can be counted.',
                 )
-                .setColor("Red");
+                .setColor('Red');
 
             // sends the message
             interaction.reply({ embeds: [aEmbed] });
