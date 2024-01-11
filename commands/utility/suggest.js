@@ -1,4 +1,4 @@
-const { EmbedBuilder, SlashCommandBuilder, Client, GatewayIntentBits } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, Client, GatewayIntentBits, Embed } = require('discord.js');
 const fs = require('fs');
 const { token } = require('../../config.json');
 
@@ -78,9 +78,22 @@ module.exports = {
             sdImport = JSON.parse(fs.readFileSync(suggestdata));
 
         const guildId = interaction.guild.id;
+        const iUser = interaction.user,
+            nickname = iUser.nickname ?? iUser.displayName,
+            avatar = iUser.displayAvatarURL();
+
+        const fEmbed = new EmbedBuilder()
+            .setAuthor({ name: nickname, iconURL: avatar })
+            .setTimestamp(+new Date())
+            .setTitle('Failed!')
+            .setDescription('This server does not have a suggestions channel!');
+
 
         // checks all requirements
-        if (!gdImport[guildId] || gdImport[guildId].suggestionschannel == '') return false;
+        if (!gdImport[guildId] || gdImport[guildId].suggestionschannel == '') {
+            interaction.reply({ embeds: [fEmbed], ephemeral: true });
+            return false;
+        }
         if (!interaction.guild.channels.cache.get(gdImport[guildId].suggestionschannel)) return false;
 
         if (!sdImport[guildId]) {
@@ -94,9 +107,6 @@ module.exports = {
             );
         }
 
-        const iUser = interaction.user,
-            nickname = iUser.nickname ?? iUser.displayName,
-            avatar = iUser.displayAvatarURL();
         const subcommand = interaction.options.getSubcommand();
         const suggestEmbed = new EmbedBuilder()
             .setAuthor({ name: nickname, iconURL: avatar })
@@ -137,15 +147,20 @@ module.exports = {
             );
 
             confirmEmbed.setDescription('Suggestion submitted.');
-            suggestChannel.send({ embeds: [suggestEmbed] });
-            interaction.reply({ embeds: [confirmEmbed] });
+            const sMessage = await suggestChannel.send({ embeds: [suggestEmbed] });
+            try {
+                await sMessage.react('⬆️');
+                await sMessage.react('⬇️');
+            }
+            catch (error) { console.error('message failed to react'); }
+            interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
         }
 
         if (subcommand == 'approve') {
             if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageGuild)) {
                 confirmEmbed.setDescription('You do not have the appropriate permissions to use this command!').setColor('Red');
 
-                return interaction.reply({ embeds: [confirmEmbed] });
+                return interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
             }
 
             const sid = interaction.options.getString('suggestionid');
@@ -153,7 +168,7 @@ module.exports = {
             if (!sdImport[guildId][sid]) {
                 confirmEmbed.setDescription('This item does not exist!').setColor('Red');
 
-                return interaction.reply({ embeds: [confirmEmbed] });
+                return interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
             }
 
             const sinfo = sdImport[guildId][sid];
@@ -166,7 +181,7 @@ module.exports = {
                 else {
                     confirmEmbed.setDescription('A decision has already been made on this suggestion.').setColor('Red');
 
-                    return interaction.reply({ embeds: [confirmEmbed] });
+                    return interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
                 }
             }
 
@@ -195,14 +210,14 @@ module.exports = {
 
             confirmEmbed.setDescription('Suggestion approved.');
             suggestChannel.send({ embeds: [suggestEmbed] });
-            interaction.reply({ embeds: [confirmEmbed] });
+            interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
         }
 
         if (subcommand == 'decline') {
             if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageGuild)) {
                 confirmEmbed.setDescription('You do not have the appropriate permissions to use this command!').setColor('Red');
 
-                return interaction.reply({ embeds: [confirmEmbed] });
+                return interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
             }
 
             const sid = interaction.options.getString('suggestionid');
@@ -210,7 +225,7 @@ module.exports = {
             if (!sdImport[guildId][sid]) {
                 confirmEmbed.setDescription('This item does not exist!').setColor('Red');
 
-                return interaction.reply({ embeds: [confirmEmbed] });
+                return interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
             }
 
             const sinfo = sdImport[guildId][sid];
@@ -223,7 +238,7 @@ module.exports = {
                 else {
                     confirmEmbed.setDescription('A decision has already been made on this suggestion.').setColor('Red');
 
-                    return interaction.reply({ embeds: [confirmEmbed] });
+                    return interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
                 }
             }
 
@@ -252,13 +267,13 @@ module.exports = {
 
             confirmEmbed.setDescription('Suggestion declined.');
             suggestChannel.send({ embeds: [suggestEmbed] });
-            interaction.reply({ embeds: [confirmEmbed] });
+            interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
         }
         if (subcommand == 'consider') {
             if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageGuild)) {
                 confirmEmbed.setDescription('You do not have the appropriate permissions to use this command!').setColor('Red');
 
-                return interaction.reply({ embeds: [confirmEmbed] });
+                return interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
             }
 
             const sid = interaction.options.getString('suggestionid');
@@ -266,7 +281,7 @@ module.exports = {
             if (!sdImport[guildId][sid]) {
                 confirmEmbed.setDescription('This item does not exist!').setColor('Red');
 
-                return interaction.reply({ embeds: [confirmEmbed] });
+                return interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
             }
 
             const sinfo = sdImport[guildId][sid];
@@ -275,12 +290,12 @@ module.exports = {
             if (sinfo.status == 'considered') {
                 confirmEmbed.setDescription('This decision is already being considered.').setColor('Red');
 
-                return interaction.reply({ embeds: [confirmEmbed] });
+                return interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
             }
             if (sinfo.status !== 'new') {
                 confirmEmbed.setDescription('A decision has already been made on this suggestion.').setColor('Red');
 
-                return interaction.reply({ embeds: [confirmEmbed] });
+                return interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
             }
 
             if (sinfo.user !== 'Anonymous') {
@@ -294,7 +309,7 @@ module.exports = {
             }
 
             suggestEmbed
-                .setTitle('Suggestion Approved')
+                .setTitle('Suggestion Considered')
                 .setAuthor({ name: nName, iconURL: nAvatar })
                 .setDescription(sinfo.content)
                 .setColor('Blue')
@@ -308,7 +323,7 @@ module.exports = {
 
             confirmEmbed.setDescription('Suggestion marked as considered.');
             suggestChannel.send({ embeds: [suggestEmbed] });
-            interaction.reply({ embeds: [confirmEmbed] });
+            interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
         }
     },
 };

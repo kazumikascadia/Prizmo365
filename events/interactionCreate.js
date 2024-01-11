@@ -21,7 +21,7 @@ module.exports = {
 		if (!command) {
 			console.error(`No command matching ${interaction.commandName} was found.`);
 			failedEmbed.setDescription('That command does not exist.');
-			interaction.reply({ embeds: [failedEmbed] });
+			interaction.reply({ embeds: [failedEmbed], ephemeral: true });
 			return;
 		}
 
@@ -32,7 +32,7 @@ module.exports = {
 			console.error(`Error executing ${interaction.commandName}.`);
 			console.error(error);
 			failedEmbed.setDescription('Cannot execute that command at this moment.');
-			interaction.reply({ embeds: [failedEmbed] });
+			interaction.reply({ embeds: [failedEmbed], ephemeral: true });
 		}
 	},
 };

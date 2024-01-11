@@ -133,14 +133,14 @@ module.exports = {
             const rolesAmt = server.roles.cache.filter(r => r.name !== '@everyone').size;
             const guildId = server.id;
             let rVal;
-            const serverData = 'data/serverdata.json';
-            const iData = JSON.parse(fs.readFileSync(serverData));
+            const guilddata = 'data/guilddata.json';
+            const gdImport = JSON.parse(fs.readFileSync(guilddata));
             let color;
-            if (iData[guildId]) {
-                if (iData[guildId].color == '') {
+            if (gdImport[guildId]) {
+                if (gdImport[guildId].color == '') {
                     color == 'Blue';
                 }
-                else { color = iData[guildId].color; }
+                else { color = gdImport[guildId].color; }
             }
             else { color == 'Blue'; }
 

@@ -115,7 +115,7 @@ module.exports = {
             );
 
             setEmbed.setDescription(`Server color changed to ${chColor}.`).setColor(nColor);
-            interaction.reply({ embeds: [setEmbed] });
+            interaction.reply({ embeds: [setEmbed], ephemeral: true });
         }
 
         if (subcommand == 'starboard') {
@@ -145,7 +145,7 @@ module.exports = {
                 setEmbed.setDescription(`Starboard channel set to **${starChannel}** with a required amount of **${reqStars}**.\n However, since that is not a text channel, the starboard will not work.`).setColor('Red');
             }
 
-            interaction.reply({ embeds: [setEmbed] });
+            interaction.reply({ embeds: [setEmbed], ephemeral: true });
         }
 
         if (subcommand == 'suggestionschannel') {
@@ -173,7 +173,7 @@ module.exports = {
                 setEmbed.setDescription(`Suggestions channel set to **${suggestChannel}**.\n However, since that is not a text channel, the suggestions will not work.`);
             }
 
-            interaction.reply({ embeds: [setEmbed] });
+            interaction.reply({ embeds: [setEmbed], ephemeral: true });
         }
     },
 };

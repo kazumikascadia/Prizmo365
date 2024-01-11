@@ -5,3 +5,4 @@ start.bat
 /data
 devIndex.js
 package-lock.json 
+/.ssh

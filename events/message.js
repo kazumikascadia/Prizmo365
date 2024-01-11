@@ -41,7 +41,7 @@ module.exports = {
             .setDescription('Hello! I\'m Prizmo, your friendly neighborhood assisant!')
             .setColor('#17ac86');
         if (message.mentions.has(clientId)) {
-            message.reply({ embeds: [repEmbed] });
+            message.reply({ embeds: [repEmbed], ephemeral: true });
         }
 
         if (message.author.id == ownerId && message.content == 'dr') {

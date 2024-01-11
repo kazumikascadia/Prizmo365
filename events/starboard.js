@@ -8,6 +8,8 @@ module.exports = {
         const guildId = reaction.message.guild.id;
         const guilddata = 'data/guilddata.json';
         const gdImport = JSON.parse(fs.readFileSync(guilddata));
+        const starboarddata = 'data/starboarddata.json';
+        const sbdImport = JSON.parse(fs.readFileSync(starboarddata));
 
         // checks for any reaction partials (or, reactions on messages)
         if (reaction.partial) {
@@ -63,6 +65,29 @@ module.exports = {
         if (starContent.length > 1) {
             starboardEmbed.setDescription(starContent);
         }
+
+        if (!sbdImport[starId]) console.log(starId);
+        else return false;
+
+        const writeIn = {
+            'content': starContent,
+            'guild': guildId,
+            'stars': starCount,
+        };
+
+        // if (!sbdImport[guildId]) {
+        //     sbdImport[guildId] = format;
+        //     fs.writeFileSync(
+        //         starboarddata,
+        //         JSON.stringify(sbdImport, null, 2),
+        //     );
+        // }
+
+        sbdImport[starId] = writeIn;
+        fs.writeFileSync(
+            starboarddata,
+            JSON.stringify(sbdImport, null, 2),
+        );
 
         // finally, send the message
         starChannel.send({ content: `[Original Message](${reaction.message.url}) (from ${reaction.message.channel})`, embeds: [starboardEmbed] });
