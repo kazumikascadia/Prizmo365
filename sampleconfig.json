@@ -1,0 +1,8 @@
+{
+    "token": "your token goes here",
+    "ownerId": "your user id goes here",
+    "clientId": "your bot's id goes here",
+    "guildId": "your guild id goes here",
+    "version": "your version goes here",
+    "link": "your bot's oauth2 link goes here"
+}

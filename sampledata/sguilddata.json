@@ -1,0 +1,13 @@
+{
+    "guildId": {
+        "owner": "",
+        "color": "",
+        "levels": "false",
+        "welcomechannel": "",
+        "exitchannel": "",
+        "autorole": "",
+        "suggestionschannel": "",
+        "starboardchannel": "",
+        "requiredstars": ""
+      }
+}

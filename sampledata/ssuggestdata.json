@@ -1,0 +1,9 @@
+{
+    "guild": {
+      "id": {
+        "content": "sample",
+        "user": "uid",
+        "status": "accepted"
+      }
+    }
+}
