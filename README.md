@@ -5,16 +5,21 @@
 
 ## What is Prizmo
 > [!WARNING]
-> This bot is currently in an early alpha build. Use at your own discretion.
+> This bot is currently in its first beta build. Use at your own discretion.
 
-Prizmo is a work in progress Discord bot built with a multipurpose mindset. It is currently in a closed alpha build but should be released to the public within the coming months.
+Prizmo is a work in progress Discord bot built with a multipurpose mindset. It is currently in a open beta build and is fully accessible to the public at this [link](https://discord.com/api/oauth2/authorize?client_id=734214062627356683&permissions=8&scope=bot+applications.commands)
 
-Best of all, Prizmo is completely free and entirely open-source. You can find all of Prizmo’s code in this Github repository, and you are completely free to use all of it. Furthermore, once the bot is released, there are no current plans for monetization. Donations will, however, always be accepted, but are not currently open.
+Best of all, Prizmo is completely free and entirely open-source. You can find all of Prizmo’s code in this Github repository, and you are completely free to use all of it. There are no current plans for monetization, nor are there any open ways to donate to the bot.
 
 ### Using Prizmo
-At the moment, Prizmo is in an early alpha build. As such, it will not be used in servers beyond those that are created by the owner.
+At the moment, Prizmo is in its first beta build, and as such is fully available to be used by the public. Use this [link](https://discord.com/api/oauth2/authorize?client_id=734214062627356683&permissions=8&scope=bot+applications.commands) to add the bot to your server.
 
-However, since the code is all open-source, you are free to use all of it and create your own bot. Check the Sources and Libraries section for dependencies that are ABSOLUTELY NECESSARY to use this repository.
+Alongside this, since the code is all open-source, you are free to use all of it and create your own bot. Check the Sources and Libraries section for dependencies that are ABSOLUTELY NECESSARY to use this repository. You can also utilize the sample data files to set up your bot; simply change the names of each of these files and input the proper information to your channel. Below is a list of what these files should be named:
+1. Directory `sampledata` should be named `data`.
+2. `sampledata/sstarboarddata.json` should be `data/starboarddata.json`
+3. `sampledata/ssuggestdata.json` should be `data/suggestdata.json`
+4. `sampledata/sguilddata.json` should be `data/guilddata.json`
+5. `sampleconfig.json` should be `config.json`
 
 ### Namesake
 In case you're curious, the name "Prizmo365" is a creation from long ago, when I was originally extremely interested in starting my own business (which I would have called Prism). As such, Prizmo comes from a name I used at the time online, as well as a name for an idea of a security bot for the company's Discord server. In August of 2020, I decided to begin the original Prizmo project, under the title "Prizmo365" - under the idea that it would be usable 365 days a year, 24/7. With time and change, the name stuck, and here we are.
@@ -33,11 +38,12 @@ Prizmo is currently a work in progress, though is still packed of a variety of f
 - A command to convert from one unit type to another, with units falling into time, measurements, square areas, and volume.
 - A full info command to discover info on the server of location or on any user in that server.
 - The ability to send starred messages to a starboard channel.
+- Multiple commands related to suggesting information to the server.
 - With server customization using the /set command.
 - ... and more to come soon!
 
 ## Contributions
-Because Prizmo365 is an open-source Discord bot created by one developer, contributions are absolutely accepted and are even extremely useful. If you would like to contribute, you can request features and report bugs or vulnerabilities. Programming contributions will also be accepted; for the time being, please DM @kazumikascadia on Discord to provide code contributions. 
+Because Prizmo365 is an open-source Discord bot created by one developer, contributions are absolutely accepted and are even extremely useful. If you would like to contribute, you can request features and report bugs or vulnerabilities. Programming contributions will also be accepted; submit a pull request and it will most likely be accepted if it is a working and good change. You can also DM @kazumikascadia on Discord for more suggestions.
 
 ### Feature Requests
 If you would like to request any features for this bot, please DM @kazumikascadia on Discord. My message requests are currently open and will remain that way. With this, please send a beginner message detailing who you are, or else I will likely not respond due to privacy concerns.
