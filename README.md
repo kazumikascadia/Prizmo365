@@ -1,7 +1,7 @@
 # Prizmo365
 <img alt="Prizmo365 white logo" src="https://cdn.discordapp.com/attachments/1192947932849246380/1192952918819745914/Prizmo_i-white.png?ex=65aaf2fb&is=65987dfb&hm=0e53bebc6a7bd6935a12f72e316a43bd0d6f9f79682db8d6daa46beff96cebae&" width="250">
 
-**An Open-Source, Feature Rich Discord Bot**
+**An Open-Source, Multipurpose Discord Bot**
 
 ## What is Prizmo
 > [!WARNING]
