@@ -78,7 +78,9 @@ function generateErrorEmbed(interaction) {
 }
 
 function respondToValidInput(interaction, originalInput, filteredInput) {
-    const letterCount = filteredInput.length;
+    const fInput = [];
+    filteredInput.split('').forEach(e => { if (!fInput.includes(e)) fInput.push(e); });
+    const letterCount = fInput.length;
 
     // Formats the list into a proper sentence
     const formatter = new Intl.ListFormat('en', {
@@ -86,11 +88,13 @@ function respondToValidInput(interaction, originalInput, filteredInput) {
         type: 'conjunction',
     });
 
-    const formattedFilteredInput = formatter.format(filteredInput.split(''));
+    const formattedFilteredInput = formatter.format(fInput);
 
     // Replies to the interaction with the embed
-    interaction.reply({ embeds: [generateStandardEmbed(interaction, originalInput,
-        formattedFilteredInput, letterCount)] });
+    interaction.reply({
+        embeds: [generateStandardEmbed(interaction, originalInput,
+            formattedFilteredInput, letterCount)],
+    });
 }
 
 function respondToInvalidInput(interaction) {
