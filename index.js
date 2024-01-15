@@ -72,4 +72,3 @@ for (const file of eventFiles) {
 console.log(chalk.cyanBright('[LOADED]'), 'Events loaded!');
 
 client.login(token);
-
