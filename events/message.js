@@ -45,7 +45,7 @@ function progressLvl(leveldata, ldImport, guildId, userId, message) {
     for (let i = 1; i <= 100; i++) {
         const lvl = i;
         const lvlReq = Math.floor(150 * ((i)));
-        let msg = ({ [lvlReq]: lvl });
+        const msg = ({ [lvlReq]: lvl });
         lvlReqs.push(msg);
     }
 
@@ -107,9 +107,9 @@ module.exports = {
             .setTitle('Prizmo365')
             .setDescription('Hello! I\'m Prizmo, your friendly neighborhood assisant!')
             .setColor('#17ac86');
-        if (message.mentions.has(clientId)) {
-            message.reply({ embeds: [repEmbed], ephemeral: true });
-        }
+        // if (message.mentions.has(clientId)) {
+        //     message.reply({ embeds: [repEmbed], ephemeral: true });
+        // }
 
         // if (message.author.id == ownerId && message.content == 'dr') {
         //     gdImport = {
