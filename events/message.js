@@ -24,50 +24,54 @@ function generateData(defaultSettings, guilddata, gdImport, leveldata, ldImport,
     }
 
     if (!ldImport[guildId][userId]) {
-        ldImport[guildId][userId] = {
-            'level': '0',
-            'xp': '0',
-        };
-        fs.writeFileSync(
-            leveldata,
-            JSON.stringify(ldImport, null, 4),
-        );
+        ldImport[guildId][userId] = '0',
+            fs.writeFileSync(
+                leveldata,
+                JSON.stringify(ldImport, null, 4),
+            );
     }
 }
 
 function progressLvl(leveldata, ldImport, guildId, userId, message) {
-    const uImport = ldImport[guildId][userId];
-    const cLevel = Number(uImport.level),
-        cXp = Number(uImport.xp);
-    const nextLvl = cLevel + 1;
+    const u = message.author;
+    const gImport = ldImport[guildId];
+    const uXp = gImport[userId];
+    const rewards = gImport.rewards;
 
-    const lvlReqs = [];
-    for (let i = 1; i <= 100; i++) {
-        const lvl = i;
-        const lvlReq = Math.floor(150 * ((i)));
-        const msg = ({ [lvlReq]: lvl });
-        lvlReqs.push(msg);
+    // determines the amount of xp to be earned per level
+    let xp;
+    if (message.content.length <= 25) {
+        xp = Math.floor(Math.random() * message.content.length + 1);
     }
+    else {
+        xp = Math.floor(Math.random() * 25 + 1);
+    }
+    const l = Math.floor(uXp / 150);
 
-    const xp = Math.floor(Math.random() * 50 + 1);
-    const l = Math.floor(cXp / 150);
-    const reqXp = Math.floor(150 * (l + 1));
-
-    console.log(l, reqXp);
-
-    uImport.xp = (cXp + xp).toString();
+    gImport[userId] = (Number(uXp) + xp).toString();
     fs.writeFileSync(
         leveldata,
         JSON.stringify(ldImport, null, 4),
     );
 
-    if (uImport.xp >= reqXp) {
-        uImport.level = (nextLvl).toString();
-        fs.writeFileSync(
-            leveldata,
-            JSON.stringify(ldImport, null, 4),
-        );
+    // update level
+    if (!rewards[l]) {
+        null;
     }
+    else {
+        const rRole = message.guild.roles.cache.find(role => role.id === rewards[l]);
+        message.member.roles.add(rRole);
+    }
+
+    // if (uImport.xp >= reqXp) {
+    //     uImport.level = (nextLvl).toString();
+    //     fs.writeFileSync(
+    //         leveldata,
+    //         JSON.stringify(ldImport, null, 4),
+    //     );
+    // }
+
+    // if ()
 }
 
 module.exports = {
