@@ -5,7 +5,7 @@
 
 ## What is Prizmo
 > [!WARNING]
-> This bot is currently in its first beta build. Use at your own discretion.
+> This bot is currently in a beta build. Use at your own discretion.
 
 Prizmo is a work in progress Discord bot built with a multipurpose mindset. It is currently in a open beta build and is fully accessible to the public at this [link](https://discord.com/api/oauth2/authorize?client_id=734214062627356683&permissions=8&scope=bot+applications.commands)
 
