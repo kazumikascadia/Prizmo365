@@ -2,9 +2,7 @@ const { Events, EmbedBuilder } = require('discord.js');
 const { clientId, ownerId } = require('../config.json');
 const fs = require('fs');
 
-
 function generateData(defaultSettings, guilddata, gdImport, leveldata, ldImport, guildId, userId) {
-
 
     if (!gdImport[guildId]) {
         gdImport[guildId] = defaultSettings;
@@ -33,6 +31,7 @@ function generateData(defaultSettings, guilddata, gdImport, leveldata, ldImport,
 }
 
 function progressLvl(leveldata, ldImport, guildId, userId, message) {
+    if (message.author.bot) return false;
     const u = message.author;
     const gImport = ldImport[guildId];
     const uXp = gImport[userId];
