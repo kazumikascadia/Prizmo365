@@ -2,6 +2,7 @@ const { Events, EmbedBuilder } = require('discord.js');
 const { clientId, ownerId } = require('../config.json');
 const fs = require('fs');
 const level = require('../commands/utility/level');
+const { e } = require('mathjs');
 
 function generateData(defaultSettings, guilddata, gdImport, leveldata, ldImport, guildId, userId) {
 
@@ -39,6 +40,11 @@ function progressLvl(leveldata, ldImport, guildId, userId, message) {
     let lvl = Number(uData[0]), uXp = Number(uData[1]);
     const reqXp = ((lvl + 1) * 150);
     const rewards = gImport.rewards;
+    const lvlchannelId = gImport.lvlchannel;
+    const lvlchannel = message.guild.channels.cache.get(gImport.lvlchannel);
+    const iUser = message.author;
+    const nickname = iUser.nickname ?? iUser.displayName;
+    const avatar = iUser.displayAvatarURL();
 
     // determines the amount of xp to be earned per level
     let xp;
@@ -57,7 +63,9 @@ function progressLvl(leveldata, ldImport, guildId, userId, message) {
     );
 
     if (uXp >= reqXp) {
-        gImport[userId] = `${lvl + 1};0`;
+        const r = uXp - reqXp;
+        uXp = r;
+        gImport[userId] = `${lvl + 1};${uXp}`;
         fs.writeFileSync(
             leveldata,
             JSON.stringify(ldImport, null, 4),
@@ -70,6 +78,21 @@ function progressLvl(leveldata, ldImport, guildId, userId, message) {
             const rRole = message.guild.roles.cache.find(role => role.id === rewards[lvl]);
             message.member.roles.add(rRole);
         }
+        if (!lvlchannelId) { return; }
+        else if (message.guild.channels.cache.get(lvlchannelId).type == '0') {
+            const lvlUpEmbed = new EmbedBuilder()
+                .setTimestamp(+new Date())
+                .setTitle('Level Up!')
+                .setAuthor({ name: nickname, iconURL: avatar })
+                .setDescription(
+                    `Congrats, ${iUser}!
+                You have levelled up to ${lvl}`,
+                )
+                .setColor('Green');
+
+            lvlchannel.send({ embeds: [lvlUpEmbed] });
+        }
+        else { return; }
     }
 }
 
@@ -94,25 +117,29 @@ module.exports = {
             'starboardchannel': '',
             'requiredstars': '',
         };
+        const iUser = message.author;
+        const nickname = iUser.nickname ?? iUser.displayName;
+        const avatar = iUser.displayAvatarURL();
 
-        generateData(defaultSettings, guilddata, gdImport, leveldata, ldImport, guildId, userId);
+        generateData(defaultSettings, guilddata, gdImport, leveldata, ldImport, guildId, userId, iUser, nickname, avatar);
 
         if (gdImport[guildId].levels == 'true') {
             progressLvl(leveldata, ldImport, guildId, userId, message);
         }
 
-        const iUser = message.author;
-        const nickname = iUser.nickname ?? iUser.displayName;
-        const avatar = iUser.displayAvatarURL();
         const repEmbed = new EmbedBuilder()
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date())
             .setTitle('Prizmo365')
-            .setDescription('Hello! I\'m Prizmo, your friendly neighborhood assisant!')
+            .setDescription(
+                `Hello! I'm Prizmo, your friendly neighborhood assisant!
+                If you'd like to use one of my commands, type in the \`/\` key without anything before it and start looking!
+                (A \`/help\` command is coming in the future, I promise!)`,
+            )
             .setColor('#17ac86');
-        // if (message.mentions.has(clientId)) {
-        //     message.reply({ embeds: [repEmbed], ephemeral: true });
-        // }
+        if (message.mentions.has(clientId) && !message.mentions.everyone) {
+            message.reply({ embeds: [repEmbed], ephemeral: true });
+        }
 
         // if (message.author.id == ownerId && message.content == 'dr') {
         //     gdImport = {

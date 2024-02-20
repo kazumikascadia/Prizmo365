@@ -39,7 +39,7 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('starboard')
-                .setDescription('Allows you to set up the server starboard')
+                .setDescription('Allows you to set up the server starboard.')
                 .addChannelOption(option =>
                     option
                         .setName('channel')
@@ -56,12 +56,28 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('suggestionschannel')
-                .setDescription('The channel where suggestions will be sent.')
+                .setDescription('Allows you to set up a suggestions channel.')
                 .addChannelOption(option =>
                     option
                         .setName('channel')
                         .setDescription('Sets the channel you want to be the suggestions channel.')
                         .setRequired(true),
+                ),
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('levels')
+                .setDescription('Allows you to set up levels in your server!')
+                .addBooleanOption(option =>
+                    option
+                        .setName('active')
+                        .setDescription('Whether levels are on or off.')
+                        .setRequired(true),
+                )
+                .addChannelOption(option =>
+                    option
+                        .setName('levelchannel')
+                        .setDescription('The channel where you want level notifications to be sent.')
                 ),
         ),
     async execute(interaction) {
