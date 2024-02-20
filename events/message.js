@@ -12,7 +12,6 @@ function generateData(defaultSettings, guilddata, gdImport, leveldata, ldImport,
             guilddata,
             JSON.stringify(gdImport, null, 4),
         );
-        // console.log(`Guild ${message.guild.name} added to database, ID${guildId}`);
     }
 
     if (!ldImport[guildId]) {
@@ -32,7 +31,7 @@ function generateData(defaultSettings, guilddata, gdImport, leveldata, ldImport,
     }
 }
 
-function progressLvl(leveldata, ldImport, guildId, userId, message) {
+function progressLvl(gdImport, leveldata, ldImport, guildId, userId, message) {
     if (message.author.bot) return false;
     const u = message.author;
     const gImport = ldImport[guildId];
@@ -40,8 +39,8 @@ function progressLvl(leveldata, ldImport, guildId, userId, message) {
     let lvl = Number(uData[0]), uXp = Number(uData[1]);
     const reqXp = ((lvl + 1) * 150);
     const rewards = gImport.rewards;
-    const lvlchannelId = gImport.lvlchannel;
-    const lvlchannel = message.guild.channels.cache.get(gImport.lvlchannel);
+    const lvlchannelId = gdImport.levelchannel;
+    const lvlchannel = message.guild.channels.cache.get(lvlchannelId);
     const iUser = message.author;
     const nickname = iUser.nickname ?? iUser.displayName;
     const avatar = iUser.displayAvatarURL();
@@ -79,7 +78,7 @@ function progressLvl(leveldata, ldImport, guildId, userId, message) {
             message.member.roles.add(rRole);
         }
         if (!lvlchannelId) { return; }
-        else if (message.guild.channels.cache.get(lvlchannelId).type == '0') {
+        else if (lvlchannel.type == '0') {
             const lvlUpEmbed = new EmbedBuilder()
                 .setTimestamp(+new Date())
                 .setTitle('Level Up!')
@@ -110,6 +109,7 @@ module.exports = {
             'owner': `${message.guild.ownerId}`,
             'color': '',
             'levels': 'false',
+            'levelchannel': '',
             'welcomechannel': '',
             'exitchannel': '',
             'autorole': '',
@@ -124,7 +124,7 @@ module.exports = {
         generateData(defaultSettings, guilddata, gdImport, leveldata, ldImport, guildId, userId, iUser, nickname, avatar);
 
         if (gdImport[guildId].levels == 'true') {
-            progressLvl(leveldata, ldImport, guildId, userId, message);
+            progressLvl(gdImport, leveldata, ldImport, guildId, userId, message);
         }
 
         const repEmbed = new EmbedBuilder()
