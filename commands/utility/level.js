@@ -1,14 +1,25 @@
 const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js'), fs = require('fs');
 
 function createPBar(reqXp, uXp) {
-    const lPer = ((uXp / reqXp) * 100);
+    let pBar = '[';
+    if (uXp == 0) {
+        pBar = '[░░░░░░░░░░]';
+        return pBar;
+    }
+    const fPer = Math.floor((uXp / reqXp) * 10);
+    const dPer = Math.floor(10 - fPer);
 
     const f = '▓';
     const d = '░';
 
-    let pBar;
+    for (let i = fPer; i > 0; i--) {
+        pBar += f;
+    }
+    for (let i = dPer; i > 0; i--) {
+        pBar += d;
+    }
 
-    while (lPer > 0)
+    pBar += ']';
 
     return pBar;
 }
@@ -37,10 +48,10 @@ module.exports = {
         const nickname = iUser.nickname ?? iUser.displayName;
         const avatar = iUser.displayAvatarURL();
 
-        const uXp = ldImport[guildId][userId];
-        const l = Math.floor(uXp / 150);
-        const reqXp = Math.floor((l + 1) * 150);
-        console.log(l, reqXp, uXp);
+        const uData = ldImport[guildId][userId].split(';');
+        const lvl = Number(uData[0]); let uXp = Number(uData[1]);
+        const reqXp = ((lvl + 1) * 150);
+        if (uXp == 0) uXp = '0';
 
         const lvlEmbed = new EmbedBuilder()
             .setAuthor({ name: nickname, iconURL: avatar })
@@ -60,7 +71,7 @@ module.exports = {
                 .setColor('Green')
                 .setTitle(`Level Progress for ${mUser.username}`)
                 .setDescription(
-                    `**Level ${l}**
+                    `**Level ${lvl}**
                     Progress to Next: ${pBar}
                     XP Progress to Next: ${uXp} / ${reqXp}`,
                 );
