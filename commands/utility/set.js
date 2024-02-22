@@ -181,7 +181,7 @@ module.exports = {
                 .setTimestamp(+new Date());
 
             if (interaction.guild.channels.cache.get(suggestChannelId).type == '0') {
-                setEmbed.setDescription(`Suggestions channel set to **${suggestChannel}**.`);
+                setEmbed.setDescription('Suggestions channel set to **${suggestChannel}**.');
 
                 suggestChannel.send({ embeds: [channelEmbed] });
             }
@@ -194,7 +194,6 @@ module.exports = {
 
         if (subcommand == 'levels') {
             const levelTrue = interaction.options.getBoolean('active');
-            console.log(levelTrue);
             const levelchannel = interaction.options.getChannel('levelschannel');
 
             const confirmEmbed = new EmbedBuilder()
@@ -210,10 +209,7 @@ module.exports = {
                 );
 
                 if (!levelchannel) {
-                    confirmEmbed.setDescription(`This server has been set up to have an active level system.
-                        However, since there is no level channel set, there will be no notifications when a user levels up.
-                        Reuse the command to set this up again.`,
-                    );
+                    confirmEmbed.setDescription(`This server has been set up to have an active level system.\nHowever, since there is no level channel set, there will be no notifications when a user levels up.\nReuse the command to set this up again.`);
                     interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
                 }
                 else {
@@ -232,15 +228,12 @@ module.exports = {
                     );
 
                     if (interaction.guild.channels.cache.get(levelchannelId).type == '0') {
-                        confirmEmbed.setDescription(
-                            `This server has been set up to have an active level system!
-                        Level notifications channel set to **${levelchannel}**.`,
-                        );
+                        confirmEmbed.setDescription(`This server has been set up to have an active level system!\nLevel notifications channel set to **${levelchannel}**.`);
 
                         levelchannel.send({ embeds: [channelEmbed] });
                     }
                     else {
-                        setEmbed.setDescription(`Suggestions channel set to **${levelchannel}**.\n However, since that is not a text channel, the suggestions will not work.`);
+                        setEmbed.setDescription(`Level notification channel set to **${levelchannel}**.\n However, since that is not a text channel, the level notifications will not work.`);
                     }
 
                     interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
@@ -253,7 +246,7 @@ module.exports = {
                     JSON.stringify(gdImport, null, 2),
                 );
 
-                confirmEmbed.setDescription(`Levels have been deactivated for this server.`);
+                confirmEmbed.setDescription('Levels have been deactivated for this server.');
 
                 interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
             }
