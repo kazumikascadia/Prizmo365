@@ -1,0 +1,12 @@
+{
+    "guildId": {
+        "rewards": {
+            "level": "roleid"
+        },
+        "lvlchannel": "channelid",
+        "userid": {
+            "level": "number",
+            "progress": "number"
+        }
+    }
+}
