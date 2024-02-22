@@ -39,7 +39,7 @@ function progressLvl(gdImport, leveldata, ldImport, guildId, userId, message) {
     let lvl = Number(uData[0]), uXp = Number(uData[1]);
     const reqXp = ((lvl + 1) * 150);
     const rewards = gImport.rewards;
-    const lvlchannelId = gdImport.levelchannel;
+    const lvlchannelId = gdImport[guildId].levelchannel;
     const lvlchannel = message.guild.channels.cache.get(lvlchannelId);
     const iUser = message.author;
     const nickname = iUser.nickname ?? iUser.displayName;
@@ -54,13 +54,21 @@ function progressLvl(gdImport, leveldata, ldImport, guildId, userId, message) {
         xp = Math.floor(Math.random() * 25 + 1);
     }
 
+    // adds more xp depending on the amount of words in the sentence
+    const m = message.content.split(' ');
+    xp = xp + (2 * m.length);
+
+    // sets user xp to be equal to the calculated xp
     uXp += xp;
+
+    // updates the leveldata file
     gImport[userId] = `${lvl};${(Number(uXp) + xp)}`;
     fs.writeFileSync(
         leveldata,
         JSON.stringify(ldImport, null, 4),
     );
 
+    // checks if user xp is greater than the required xp of 1 level higher
     if (uXp >= reqXp) {
         const r = uXp - reqXp;
         uXp = r;

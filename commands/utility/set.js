@@ -203,7 +203,7 @@ module.exports = {
                 .setTimestamp(+new Date());
 
             if (levelTrue == true) {
-                gdImport[guildId].levels == 'true';
+                gdImport[guildId].levels = 'true';
                 fs.writeFileSync(
                     guilddata,
                     JSON.stringify(gdImport, null, 2),
@@ -217,15 +217,15 @@ module.exports = {
                     interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
                 }
                 else {
+                    const levelchannelId = levelchannel.id;
+
                     const channelEmbed = new EmbedBuilder()
                         .setDescription('This channel has been set to receive level notification messages!')
                         .setFooter({ text: `Channel ID: ${levelchannelId}` })
                         .setColor('Green')
                         .setTimestamp(+new Date());
 
-                    const levelchannelId = levelchannel.id;
-
-                    gdImport[guildId].levelchannel == levelchannelId;
+                    gdImport[guildId].levelchannel = levelchannelId;
                     fs.writeFileSync(
                         guilddata,
                         JSON.stringify(gdImport, null, 2),
@@ -247,7 +247,7 @@ module.exports = {
                 }
             }
             else {
-                gdImport[guildId].levels == 'false';
+                gdImport[guildId].levels = 'false';
                 fs.writeFileSync(
                     guilddata,
                     JSON.stringify(gdImport, null, 2),
