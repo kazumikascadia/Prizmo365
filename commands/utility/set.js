@@ -39,7 +39,7 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('starboard')
-                .setDescription('Allows you to set up the server starboard')
+                .setDescription('Allows you to set up the server starboard.')
                 .addChannelOption(option =>
                     option
                         .setName('channel')
@@ -56,12 +56,28 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('suggestionschannel')
-                .setDescription('The channel where suggestions will be sent.')
+                .setDescription('Allows you to set up a suggestions channel.')
                 .addChannelOption(option =>
                     option
                         .setName('channel')
                         .setDescription('Sets the channel you want to be the suggestions channel.')
                         .setRequired(true),
+                ),
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('levels')
+                .setDescription('Allows you to set up levels in your server!')
+                .addBooleanOption(option =>
+                    option
+                        .setName('active')
+                        .setDescription('Whether levels are on or off.')
+                        .setRequired(true),
+                )
+                .addChannelOption(option =>
+                    option
+                        .setName('levelschannel')
+                        .setDescription('The channel where you want level notifications to be sent.'),
                 ),
         ),
     async execute(interaction) {
@@ -165,7 +181,7 @@ module.exports = {
                 .setTimestamp(+new Date());
 
             if (interaction.guild.channels.cache.get(suggestChannelId).type == '0') {
-                setEmbed.setDescription(`Suggestions channel set to **${suggestChannel}**.`);
+                setEmbed.setDescription('Suggestions channel set to **${suggestChannel}**.');
 
                 suggestChannel.send({ embeds: [channelEmbed] });
             }
@@ -174,6 +190,66 @@ module.exports = {
             }
 
             interaction.reply({ embeds: [setEmbed], ephemeral: true });
+        }
+
+        if (subcommand == 'levels') {
+            const levelTrue = interaction.options.getBoolean('active');
+            const levelchannel = interaction.options.getChannel('levelschannel');
+
+            const confirmEmbed = new EmbedBuilder()
+                .setDescription('This server has been set up to have an active level system!')
+                .setColor('Green')
+                .setTimestamp(+new Date());
+
+            if (levelTrue == true) {
+                gdImport[guildId].levels = 'true';
+                fs.writeFileSync(
+                    guilddata,
+                    JSON.stringify(gdImport, null, 2),
+                );
+
+                if (!levelchannel) {
+                    confirmEmbed.setDescription(`This server has been set up to have an active level system.\nHowever, since there is no level channel set, there will be no notifications when a user levels up.\nReuse the command to set this up again.`);
+                    interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
+                }
+                else {
+                    const levelchannelId = levelchannel.id;
+
+                    const channelEmbed = new EmbedBuilder()
+                        .setDescription('This channel has been set to receive level notification messages!')
+                        .setFooter({ text: `Channel ID: ${levelchannelId}` })
+                        .setColor('Green')
+                        .setTimestamp(+new Date());
+
+                    gdImport[guildId].levelchannel = levelchannelId;
+                    fs.writeFileSync(
+                        guilddata,
+                        JSON.stringify(gdImport, null, 2),
+                    );
+
+                    if (interaction.guild.channels.cache.get(levelchannelId).type == '0') {
+                        confirmEmbed.setDescription(`This server has been set up to have an active level system!\nLevel notifications channel set to **${levelchannel}**.`);
+
+                        levelchannel.send({ embeds: [channelEmbed] });
+                    }
+                    else {
+                        setEmbed.setDescription(`Level notification channel set to **${levelchannel}**.\n However, since that is not a text channel, the level notifications will not work.`);
+                    }
+
+                    interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
+                }
+            }
+            else {
+                gdImport[guildId].levels = 'false';
+                fs.writeFileSync(
+                    guilddata,
+                    JSON.stringify(gdImport, null, 2),
+                );
+
+                confirmEmbed.setDescription('Levels have been deactivated for this server.');
+
+                interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
+            }
         }
     },
 };

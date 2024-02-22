@@ -1,6 +1,6 @@
 {
     "name": "prizmo365",
-    "version": "a2.2.8",
+    "version": "a2.3.7",
     "description": "A multipurpose Discord bot.",
     "main": "index.js",
     "scripts": {
@@ -24,7 +24,9 @@
         "i18next": "^23.5.1",
         "mathjs": "^11.11.2",
         "moment": "^2.29.4",
-        "ms": "^2.1.3"
+        "ms": "^2.1.3",
+        "sequelize": "^6.37.0",
+        "sqlite3": "^5.1.7"
     },
     "devDependencies": {
         "eslint": "^8.50.0"
