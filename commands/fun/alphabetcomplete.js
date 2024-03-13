@@ -80,6 +80,7 @@ function generateErrorEmbed(interaction) {
 function respondToValidInput(interaction, originalInput, filteredInput) {
     const fInput = [];
     filteredInput.split('').forEach(e => { if (!fInput.includes(e)) fInput.push(e); });
+    console.log(fInput);
     const letterCount = fInput.length;
 
     // Formats the list into a proper sentence
