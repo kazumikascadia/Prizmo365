@@ -37,45 +37,104 @@ module.exports = {
                         .setName('target')
                         .setDescription('The user who you want to see the progress of.'),
                 ),
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('leaderboard')
+                .setDescription('Shows a leaderboard of all levels for all members in a server.')
         ),
     async execute(interaction) {
         const leveldata = 'data/leveldata.json',
             ldImport = JSON.parse(fs.readFileSync(leveldata));
+        const guilddata = 'data/guilddata.json',
+            gdImport = JSON.parse(fs.readFileSync(guilddata));
         const guildId = interaction.guild.id;
         const iUser = interaction.user;
         const mUser = await interaction.options.getUser('target') || iUser;
         const userId = await mUser.id;
         const nickname = iUser.nickname ?? iUser.displayName;
         const avatar = iUser.displayAvatarURL();
+        const subcommand = interaction.options.getSubcommand();
 
-        const uData = ldImport[guildId][userId].split(';');
-        const lvl = Number(uData[0]); let uXp = Number(uData[1]);
-        const reqXp = ((lvl + 1) * 150);
-        if (uXp == 0) uXp = '0';
-
-        const lvlEmbed = new EmbedBuilder()
-            .setAuthor({ name: nickname, iconURL: avatar })
-            .setTimestamp(+new Date());
-
-        const pBar = createPBar(reqXp, uXp);
-
-        if (!uXp) {
-            lvlEmbed
-                .setColor('Red')
+        if (gdImport[guildId].levels == 'false') {
+            const failEmbed = new EmbedBuilder()
                 .setTitle('Error!')
-                .setDescription('The specified user has no level!');
-            interaction.reply({ embeds: [lvlEmbed], ephemeral: true });
+                .setDescription('Levels are disabled for this server. So sorry!')
+                .setColor('Red')
+                .setAuthor({ name: nickname, iconURL: avatar })
+                .setTimestamp(+new Date());
+
+            return interaction.reply({ embeds: [failEmbed], ephemeral: true });
         }
-        else {
-            lvlEmbed
-                .setColor('Green')
-                .setTitle(`Level Progress for ${mUser.username}`)
-                .setDescription(
-                    `**Level ${lvl}**
-                    Progress to Next: ${pBar}
-                    XP Progress to Next: ${uXp} / ${reqXp}`,
-                );
-            interaction.reply({ embeds: [lvlEmbed] });
+
+        if (subcommand == 'progress') {
+            const uData = ldImport[guildId][userId].split(';');
+            const lvl = Number(uData[0]); let uXp = Number(uData[1]);
+            const reqXp = ((lvl + 1) * 500);
+            if (uXp == 0) uXp = '0';
+
+            const lvlEmbed = new EmbedBuilder()
+                .setAuthor({ name: nickname, iconURL: avatar })
+                .setTimestamp(+new Date());
+
+            const pBar = createPBar(reqXp, uXp);
+
+            if (!uXp) {
+                lvlEmbed
+                    .setColor('Red')
+                    .setTitle('Error!')
+                    .setDescription('The specified user has no level!');
+                interaction.reply({ embeds: [lvlEmbed], ephemeral: true });
+            }
+            else {
+                lvlEmbed
+                    .setColor('Green')
+                    .setTitle(`Level Progress for ${mUser.username}`)
+                    .setDescription(`**Level ${lvl}**\nProgress to Next: ${pBar}\nXP Progress to Next: ${uXp} / ${reqXp}`);
+                interaction.reply({ embeds: [lvlEmbed] });
+            }
+        }
+
+        if (subcommand == 'leaderboard') {
+            let allUsers = [];
+
+            for (let u in ldImport[guildId]) {
+                u = [u, ldImport[guildId][u]];
+                const uid = u[0];
+                const info = u[1].split(';'),
+                    lvl = info[0],
+                    xp = info[1];
+
+                let xpTot;
+                switch (Number(lvl)) {
+                    case 0:
+                        xpTot = Number(xp);
+                        break;
+                    case 1:
+                        xpTot = 500 + Number(xp);
+                        break;
+                    default:
+                        xpTot = ((Number(lvl) - 1) * 500) + Number(xp);
+                }
+
+                u = `${xpTot}:${uid}`;
+
+                console.log(u);
+
+                allUsers.push(u);
+            }
+
+            // for (let u in allUsers) {
+            //     console.log(u);
+
+            //     console.log(u[1]);
+
+            //     const info = u[1].split(';');
+            //     const lvl = info[0];
+            //     const xp = info[1];
+
+            //     console.log(info, lvl, xp);
+            // }
         }
     },
 };

@@ -1,5 +1,6 @@
 /* eslint-disable quotes */
 const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js'), fs = require('fs');
+const { json } = require('sequelize');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -79,10 +80,29 @@ module.exports = {
                         .setName('levelschannel')
                         .setDescription('The channel where you want level notifications to be sent.'),
                 ),
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('lvlrewards')
+                .setDescription('Allows you to set up level rewards in your server!')
+                .addIntegerOption(option =>
+                    option
+                        .setName('level')
+                        .setDescription('The level you want the reward to be given at.')
+                        .setRequired(true),
+                )
+                .addRoleOption(option =>
+                    option
+                        .setName('reward')
+                        .setDescription('The reward you want this level to give.')
+                        .setRequired(true),
+                ),
         ),
     async execute(interaction) {
         const guilddata = 'data/guilddata.json';
         const gdImport = JSON.parse(fs.readFileSync(guilddata));
+        const lvldata = 'data/leveldata.json';
+        const ldImport = JSON.parse(fs.readFileSync(lvldata));
         const iUser = interaction.user;
         const nickname = iUser.nickname ?? iUser.displayName;
         const avatar = iUser.displayAvatarURL();
@@ -248,6 +268,34 @@ module.exports = {
 
                 confirmEmbed.setDescription('Levels have been deactivated for this server.');
 
+                interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
+            }
+        }
+
+        if (subcommand == 'lvlrewards') {
+            const lvl = interaction.options.getInteger('level');
+            const role = interaction.options.getRole('reward');
+
+            const confirmEmbed = new EmbedBuilder()
+                .setTimestamp(+new Date());
+
+            if (interaction.guild.roles.cache.get(`${role.id}`)) {
+                if (!ldImport[guildId].rewards) {
+                    return false;
+                }
+                else {
+                    ldImport[guildId].rewards[lvl] = role.id;
+                    fs.writeFileSync(
+                        lvldata,
+                        JSON.stringify(ldImport, null, 2),
+                    );
+                }
+
+                confirmEmbed.setDescription(`${role} has been set as the reward for level ${lvl} in this server.`).setColor('Green');
+                interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
+            }
+            else {
+                confirmEmbed.setDescription('That role does not exist, so it was unable to be set.').setColor('Red');
                 interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
             }
         }

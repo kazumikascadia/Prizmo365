@@ -13,7 +13,9 @@ function generateData(defaultSettings, guilddata, gdImport, leveldata, ldImport,
     }
 
     if (!ldImport[guildId]) {
-        ldImport[guildId] = {};
+        ldImport[guildId] = {
+            'rewards': {},
+        };
         fs.writeFileSync(
             leveldata,
             JSON.stringify(ldImport, null, 4),
@@ -37,7 +39,7 @@ function progressLvl(gdImport, leveldata, ldImport, guildId, userId, message) {
     const gImport = ldImport[guildId];
     const uData = gImport[userId].split(';');
     let lvl = Number(uData[0]), uXp = Number(uData[1]);
-    const reqXp = ((lvl + 1) * 150);
+    const reqXp = ((lvl + 1) * 500);
     const rewards = gImport.rewards;
     const lvlchannelId = gdImport[guildId].levelchannel;
     const lvlchannel = message.guild.channels.cache.get(lvlchannelId);
@@ -121,7 +123,7 @@ function progressLvl(gdImport, leveldata, ldImport, guildId, userId, message) {
                 .setTimestamp(+new Date())
                 .setTitle('Level Up!')
                 .setAuthor({ name: nickname, iconURL: avatar })
-                .setDescription('Congrats, ${iUser}!\nYou have levelled up to ${lvl}')
+                .setDescription(`Congrats, ${iUser}!\nYou have levelled up to ${lvl}`)
                 .setColor('Green');
 
             lvlchannel.send({ embeds: [lvlUpEmbed] });
@@ -139,8 +141,8 @@ module.exports = {
         const guildId = message.guild.id;
         const guilddata = 'data/guilddata.json',
             gdImport = JSON.parse(fs.readFileSync(guilddata));
-        const leveldata = 'data/leveldata.json',
-            ldImport = JSON.parse(fs.readFileSync(leveldata));
+        const leveldata = 'data/leveldata.json';
+        let ldImport = JSON.parse(fs.readFileSync(leveldata));
         const userId = message.author.id;
         const defaultSettings = {
             'owner': `${message.guild.ownerId}`,
@@ -157,6 +159,8 @@ module.exports = {
         const iUser = message.author;
         const nickname = iUser.nickname ?? iUser.displayName;
         const avatar = iUser.displayAvatarURL();
+
+        if (message.author.bot) return false;
 
         generateData(defaultSettings, guilddata, gdImport, leveldata, ldImport, guildId, userId, iUser, nickname, avatar);
 
@@ -180,6 +184,28 @@ module.exports = {
         // elsewise, no message will be sent
         if (message.mentions.has(clientId) && !message.mentions.everyone) {
             message.reply({ embeds: [repEmbed], ephemeral: true });
+        }
+
+        // level database reset function
+        // used ONLY by the owner of the bot
+        if (message.author.id == ownerId && message.content == 'drl') {
+            ldImport = {
+                'guildId': {
+                    'rewards': {
+                        'level': 'roleid',
+                    },
+                    'lvlchannel': 'channelid',
+                    'userid': {
+                        'level': 'number',
+                        'progress': 'number',
+                    },
+                },
+            };
+            fs.writeFileSync(
+                leveldata,
+                JSON.stringify(ldImport, null, 4),
+            );
+            console.log('Database reset forcefully.');
         }
 
         // residual dev data; to be removed later
