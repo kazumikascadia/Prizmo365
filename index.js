@@ -5,10 +5,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 const chalk = require('chalk');
 const Sequelize = require('sequelize');
-const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, Partials, ActivityType } = require('discord.js');
 const { token } = require('./config.json'), deployment = require('./deploy-commands');
+const { oneLine } = require('common-tags');
 
 // Create a new client instance
+const activities = ['Subway Surfers', 'with your heart', 'with legos!', 'by myself :(', 'with my friends!', 'with my dad :)', 'with my mom :)', 'at the playground!', 'on the swings!', 'in VR!', 'BetaQuest', 'my PS4'];
+const activity = activities[Math.floor(Math.random() * activities.length)];
 const client = new Client({
 	intents:
 		[
