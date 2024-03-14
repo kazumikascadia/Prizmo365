@@ -13,8 +13,8 @@ module.exports = {
 		const act = activities[Math.floor(Math.random() * activities.length)];
 		// set the activity of the client user, showing both the previously selected activity and setting it to a desired message (for Prizmo, playing)
 		client.user.setActivity(`${act} | ${version}`, { type: ActivityType.Playing });
-		// sets a refreshing interval for every hour
-		setInterval(activity => { client.user.setActivity(`${act} | ${version}`, { type: ActivityType.Playing }); }, 3600000);
+		// sets a refreshing interval for every 15 minutes
+		setInterval(activity => { client.user.setActivity(`${act} | ${version}`, { type: ActivityType.Playing }); }, 900000);
 		// log that the bot is going online, with the stated activity and version
 		console.log(chalk.blueBright('[ONLINE]'), `Logged in as ${client.user.tag}, Version ${version}. Today I'm playing ${act}`);
 	},
