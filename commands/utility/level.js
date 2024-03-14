@@ -131,7 +131,6 @@ module.exports = {
             }
             else {
                 const f = allUsers.findIndex(u => u.uid === mUser.id);
-                console.log(f);
                 lvlEmbed
                     .setColor(gdColor ?? 'Green')
                     .setTitle(`Level Progress for ${mUser.username}`)

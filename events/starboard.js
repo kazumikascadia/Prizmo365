@@ -54,19 +54,15 @@ module.exports = {
             .setAuthor({ name: nickname, iconURL: avatar })
             .setFooter({ text: `ID: ${starId}` });
 
-        // these next two checks ensure that an empty embed is not sent, thus preventing any breaks
-        // check if the message has any attachments; if it does, grab the first one and add it to the embed
-        if (reaction.message.attachments.size > 0) {
-            const attachment = reaction.message.attachments.first().url;
-
-            starboardEmbed.setImage(attachment);
-        }
         // check if the message actually has content; if it does, add a description to the embed
         if (starContent.length > 1) {
             starboardEmbed.setDescription(starContent);
         }
+        else {
+            starboardEmbed.setDescription('*No text attached.*');
+        }
 
-        if (!sbdImport[starId]) console.log(starId);
+        if (!sbdImport[starId]);
         else return false;
 
         const writeIn = {
@@ -89,7 +85,30 @@ module.exports = {
             JSON.stringify(sbdImport, null, 2),
         );
 
-        // finally, send the message
-        starChannel.send({ content: `[Original Message](${reaction.message.url}) (from ${reaction.message.channel})`, embeds: [starboardEmbed] });
+        // check if the message has any attachments; if it does, grab the first one and add it to the embed
+        if (reaction.message.attachments.size > 0) {
+            const attachment = reaction.message.attachments.first().url;
+
+            console.log(reaction.message.attachments.first().contentType);
+
+            // check the content type of the attachment
+            // if the attachment is a video, send it as an extra file
+            if (reaction.message.attachments.first().contentType.includes('video/')) {
+                starChannel.send({ content: `[Original Message](${reaction.message.url}) (from ${reaction.message.channel})`, embeds: [starboardEmbed], files: [attachment] });
+            }
+            // if the content type is NOT a video, add it to the embed
+            else {
+                starboardEmbed.setImage(attachment);
+                starChannel.send({ content: `[Original Message](${reaction.message.url}) (from ${reaction.message.channel})`, embeds: [starboardEmbed] });
+
+            }
+
+        }
+
+        else {
+            starChannel.send({ content: `[Original Message](${reaction.message.url}) (from ${reaction.message.channel})`, embeds: [starboardEmbed] });
+        }
+
+
     },
 };
