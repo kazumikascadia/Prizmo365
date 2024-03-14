@@ -24,6 +24,37 @@ function createPBar(reqXp, uXp) {
     return pBar;
 }
 
+function sortUsers(ldImport, guildId, allUsers) {
+    delete ldImport[guildId].rewards;
+
+    for (let u in ldImport[guildId]) {
+        // if (u.toString() == 'rewards') return false;
+        u = [u, ldImport[guildId][u]];
+        const uid = u[0];
+        const info = u[1].split(';'),
+            lvl = info[0],
+            xp = info[1];
+
+        let xpTot;
+        switch (Number(lvl)) {
+            case 0:
+                xpTot = Number(xp);
+                break;
+            case 1:
+                xpTot = 500 + Number(xp);
+                break;
+            default:
+                xpTot = ((Number(lvl) - 1) * 500) + Number(xp);
+        }
+
+        u = { uid: uid, xpTot: xpTot };
+
+        allUsers.push(u);
+    }
+
+    allUsers.sort(function(a, b) { return b.xpTot - a.xpTot; });
+}
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('level')
@@ -41,7 +72,7 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('leaderboard')
-                .setDescription('Shows a leaderboard of all levels for all members in a server.')
+                .setDescription('Shows a leaderboard of all levels for all members in a server.'),
         ),
     async execute(interaction) {
         const leveldata = 'data/leveldata.json',
@@ -56,6 +87,15 @@ module.exports = {
         const avatar = iUser.displayAvatarURL();
         const subcommand = interaction.options.getSubcommand();
 
+        let gdColor;
+        if (gdImport[guildId]) {
+            if (gdImport[guildId].color == '') {
+                gdColor == 'Green';
+            }
+            else { gdColor = gdImport[guildId].color; }
+        }
+        else { gdColor == 'Green'; }
+
         if (gdImport[guildId].levels == 'false') {
             const failEmbed = new EmbedBuilder()
                 .setTitle('Error!')
@@ -66,6 +106,9 @@ module.exports = {
 
             return interaction.reply({ embeds: [failEmbed], ephemeral: true });
         }
+
+        const allUsers = [];
+        sortUsers(ldImport, guildId, allUsers);
 
         if (subcommand == 'progress') {
             const uData = ldImport[guildId][userId].split(';');
@@ -87,54 +130,27 @@ module.exports = {
                 interaction.reply({ embeds: [lvlEmbed], ephemeral: true });
             }
             else {
+                const f = allUsers.findIndex(u => u.uid === mUser.id);
+                console.log(f);
                 lvlEmbed
-                    .setColor('Green')
+                    .setColor(gdColor ?? 'Green')
                     .setTitle(`Level Progress for ${mUser.username}`)
-                    .setDescription(`**Level ${lvl}**\nProgress to Next: ${pBar}\nXP Progress to Next: ${uXp} / ${reqXp}`);
+                    .setDescription(`**Level ${lvl}** | **Rank ${f + 1}**\nProgress to Next: ${pBar}\nXP Progress to Next: ${uXp} / ${reqXp}`);
                 interaction.reply({ embeds: [lvlEmbed] });
             }
         }
 
         if (subcommand == 'leaderboard') {
-            let allUsers = [];
+            const descI = allUsers.map(u => [`${allUsers.indexOf(u) + 1}. <@${u.uid}>: **Level ${ldImport[guildId][u.uid].split(';')[0]}** at **${ldImport[guildId][u.uid].split(';')[1]} XP** (total **${u.xpTot} XP**)`]).slice(0, 20);
 
-            for (let u in ldImport[guildId]) {
-                u = [u, ldImport[guildId][u]];
-                const uid = u[0];
-                const info = u[1].split(';'),
-                    lvl = info[0],
-                    xp = info[1];
+            const lbdEmbed = new EmbedBuilder()
+                .setTitle(`Leaderboard for ${interaction.guild.name}`)
+                .setAuthor({ name: nickname, iconURL: avatar })
+                .setTimestamp(+new Date())
+                .setDescription(`**Top ${descI.length} Members**\n${descI.join('\n')}`)
+                .setColor(gdColor ?? 'Green');
 
-                let xpTot;
-                switch (Number(lvl)) {
-                    case 0:
-                        xpTot = Number(xp);
-                        break;
-                    case 1:
-                        xpTot = 500 + Number(xp);
-                        break;
-                    default:
-                        xpTot = ((Number(lvl) - 1) * 500) + Number(xp);
-                }
-
-                u = `${xpTot}:${uid}`;
-
-                console.log(u);
-
-                allUsers.push(u);
-            }
-
-            // for (let u in allUsers) {
-            //     console.log(u);
-
-            //     console.log(u[1]);
-
-            //     const info = u[1].split(';');
-            //     const lvl = info[0];
-            //     const xp = info[1];
-
-            //     console.log(info, lvl, xp);
-            // }
+            interaction.reply({ embeds: [lbdEmbed] });
         }
     },
 };
