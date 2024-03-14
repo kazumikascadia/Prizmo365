@@ -1,5 +1,5 @@
 # Prizmo365
-<img alt="Prizmo365 white logo" src="https://cdn.discordapp.com/attachments/1192947932849246380/1192952918819745914/Prizmo_i-white.png?ex=65aaf2fb&is=65987dfb&hm=0e53bebc6a7bd6935a12f72e316a43bd0d6f9f79682db8d6daa46beff96cebae&" width="250">
+<img alt="Prizmo365 white logo" src="https://github.com/kazumikascadia/Prizmo365/assets/70727046/d29624c1-82af-4703-9961-32368ec21ef2" width="250">
 
 **An Open-Source, Multipurpose Discord Bot**
 
@@ -22,11 +22,10 @@ Alongside this, since the code is all open-source, you are free to use all of it
 5. `sampleconfig.json` should be `config.json`
 6. `sampleleveldata.json` should be `leveldata.json`
 
+Wiki coming soon!
+
 ### Namesake
 In case you're curious, the name "Prizmo365" is a creation from long ago, when I was originally extremely interested in starting my own business (which I would have called Prism). As such, Prizmo comes from a name I used at the time online, as well as a name for an idea of a security bot for the company's Discord server. In August of 2020, I decided to begin the original Prizmo project, under the title "Prizmo365" - under the idea that it would be usable 365 days a year, 24/7. With time and change, the name stuck, and here we are.
-
-### Trello
-If you're curious to learn more about the project, check out my [Trello](https://trello.com/b/bGNCDIGQ/prizmo365-devboard) page. This will be kept up to date with planned features, updates, new commands, and more.
 
 ## Features
 Prizmo is currently a work in progress, though is still packed of a variety of features. All of Prizmo's current features can be found below.
@@ -40,8 +39,8 @@ Prizmo is currently a work in progress, though is still packed of a variety of f
 - A full info command to discover info on the server of location or on any user in that server.
 - The ability to send starred messages to a starboard channel.
 - Multiple commands related to suggesting information to the server.
-- A WIP level system featuring progress checks and server settings (rewards and leaderboard coming soon!).
-- With server customization using the /set command.
+- A fully fledged levelling system, featuring rewards per level and leaderboards (up to 20 members displayed).
+- With server customization using the /set command!
 - ... and more to come soon!
 
 ## Contributions
