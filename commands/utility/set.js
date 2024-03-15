@@ -201,12 +201,12 @@ module.exports = {
                 .setTimestamp(+new Date());
 
             if (interaction.guild.channels.cache.get(suggestChannelId).type == '0') {
-                setEmbed.setDescription('Suggestions channel set to **${suggestChannel}**.');
+                setEmbed.setDescription(`Suggestions channel set to **${suggestChannel}**.`).setColor('Green');
 
                 suggestChannel.send({ embeds: [channelEmbed] });
             }
             else {
-                setEmbed.setDescription(`Suggestions channel set to **${suggestChannel}**.\n However, since that is not a text channel, the suggestions will not work.`);
+                setEmbed.setDescription(`Suggestions channel set to **${suggestChannel}**.\n However, since that is not a text channel, the suggestions will not work.`).setColor('Red');
             }
 
             interaction.reply({ embeds: [setEmbed], ephemeral: true });

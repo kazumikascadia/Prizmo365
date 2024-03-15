@@ -75,15 +75,15 @@ for (const file of eventFiles) {
 }
 console.log(chalk.cyanBright('[LOADED]'), 'Events loaded!');
 
-console.log(chalk.yellowBright('[STARTING]'), 'Initiating Sequelite...');
+// console.log(chalk.yellowBright('[STARTING]'), 'Initiating Sequelite...');
 
-const sequelize = new Sequelize('database', 'user', 'password', {
-	host: 'localhost',
-	dialect: 'sqlite',
-	logging: false,
-	storage: 'database.sqlite',
-});
+// const sequelize = new Sequelize('database', 'user', 'password', {
+// 	host: 'localhost',
+// 	dialect: 'sqlite',
+// 	logging: false,
+// 	storage: 'database.sqlite',
+// });
 
-console.log(chalk.greenBright('[SUCCESS]'), 'Connected Sequelite');
+// console.log(chalk.greenBright('[SUCCESS]'), 'Connected Sequelite');
 
 client.login(token);
