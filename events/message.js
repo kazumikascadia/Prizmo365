@@ -67,7 +67,7 @@ function progressLvl(gdImport, leveldata, ldImport, guildId, userId, message) {
     else {
         // if the length is greater than 10
         // multiplies the amount of words in the sentence by 20, then adds them to the original xp amount
-        xp = xp + (20 * m.length);
+        xp = xp + 20;
     }
 
     // sets user xp to be equal to the calculated xp
