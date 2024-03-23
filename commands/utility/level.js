@@ -36,6 +36,7 @@ function sortUsers(ldImport, guildId, allUsers) {
             xp = info[1];
 
         let xpTot;
+        let b = 0;
         switch (Number(lvl)) {
             case 0:
                 xpTot = Number(xp);
@@ -44,7 +45,10 @@ function sortUsers(ldImport, guildId, allUsers) {
                 xpTot = 500 + Number(xp);
                 break;
             default:
-                xpTot = ((Number(lvl) - 1) * 500) + Number(xp);
+                for (let i = 1; i <= Number(lvl) + 1; i++) {
+                    b += i * 500;
+                }
+                xpTot = b + Number(xp);
         }
 
         u = { uid: uid, xpTot: xpTot };
