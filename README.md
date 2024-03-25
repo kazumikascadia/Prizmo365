@@ -11,6 +11,22 @@ Prizmo is a work in progress Discord bot built with a multipurpose mindset. It i
 
 This is a completely free and entirely open-source project. You can find all of Prizmo’s code in this Github repository, and you are completely free to use all of it. There are no current plans for monetization, nor are there any open ways to donate to the bot.
 
+### Features
+Prizmo is currently a work in progress, though is still packed of a variety of features. All of Prizmo's current features can be found below.
+
+- An 8 ball command which can provide an 8 ball response to any statement.
+- A command to split apart all of the letters in a sentence and list out how many letters of the alphabet are used, excluding anything that does not fall between A-Z.
+- A full dice rolling command complete with the ability to select the amount and size of the dice (and return 10 of the rolls within that amount).
+- A command to generate a random hex color code and display it in an embed.
+- A rock paper scissors command so that you can play rock paper scissors against Prizmo.
+- A command to convert from one unit type to another, with units falling into time, measurements, square areas, and volume.
+- A full info command to discover info on the server of location or on any user in that server.
+- The ability to send starred messages to a starboard channel.
+- Multiple commands related to suggesting information to the server.
+- A fully fledged levelling system, featuring rewards per level and leaderboards (up to 20 members displayed).
+- With server customization using the /set command!
+- ... and more to come soon!
+
 ### Using Prizmo
 Prizmo is a fully open bot, completely available to the public with no extra charge! You can add Prizmo to your server and use it as you wish. Use this [link](https://discord.com/api/oauth2/authorize?client_id=734214062627356683&permissions=8&scope=bot+applications.commands) to add the bot to your server.
 
@@ -26,22 +42,6 @@ Wiki coming soon!
 
 ### Namesake
 In case you're curious, the name "Prizmo365" is a creation from long ago, when I was originally extremely interested in starting my own business (which I would have called Prism). As such, Prizmo comes from a name I used at the time online, as well as a name for an idea of a security bot for the company's Discord server. In August of 2020, I decided to begin the original Prizmo project, under the title "Prizmo365" - under the idea that it would be usable 365 days a year, 24/7. With time and change, the name stuck, and here we are.
-
-## Features
-Prizmo is currently a work in progress, though is still packed of a variety of features. All of Prizmo's current features can be found below.
-
-- An 8 ball command which can provide an 8 ball response to any statement.
-- A command to split apart all of the letters in a sentence and list out how many letters of the alphabet are used, excluding anything that does not fall between A-Z.
-- A full dice rolling command complete with the ability to select the amount and size of the dice (and return 10 of the rolls within that amount).
-- A command to generate a random hex color code and display it in an embed.
-- A rock paper scissors command so that you can play rock paper scissors against Prizmo.
-- A command to convert from one unit type to another, with units falling into time, measurements, square areas, and volume.
-- A full info command to discover info on the server of location or on any user in that server.
-- The ability to send starred messages to a starboard channel.
-- Multiple commands related to suggesting information to the server.
-- A fully fledged levelling system, featuring rewards per level and leaderboards (up to 20 members displayed).
-- With server customization using the /set command!
-- ... and more to come soon!
 
 ## Contributions
 Because Prizmo365 is an open-source Discord bot created by one developer, contributions are absolutely accepted and are even extremely useful. If you would like to contribute, you can request features and report bugs or vulnerabilities. Programming contributions will also be accepted; submit a pull request and it will most likely be accepted if it is a working and good change. You can also DM @kazumikascadia on Discord for more suggestions.
