@@ -7,9 +7,7 @@
 > [!WARNING]
 > This bot is currently in a beta build. Use at your own discretion.
 
-Prizmo is a work in progress Discord bot built with a multipurpose mindset. It is currently in beta 2.3.7, with more features coming soon! 
-
-This is a completely free and entirely open-source project. You can find all of Prizmo’s code in this Github repository, and you are completely free to use all of it. There are no current plans for monetization, nor are there any open ways to donate to the bot.
+Prizmo is a work in progress Discord bot built with a multipurpose mindset. This is a completely free and entirely open-source project. You can find all of Prizmo’s code in this Github repository, and you are completely free to use all of it. There are no current plans for monetization, nor are there any open ways to donate to the bot.
 
 ### Features
 Prizmo is currently a work in progress, though is still packed of a variety of features. All of Prizmo's current features can be found below.
@@ -28,17 +26,23 @@ Prizmo is currently a work in progress, though is still packed of a variety of f
 - ... and more to come soon!
 
 ### Using Prizmo
-Prizmo is a fully open bot, completely available to the public with no extra charge! You can add Prizmo to your server and use it as you wish. Use this [link](https://discord.com/api/oauth2/authorize?client_id=734214062627356683&permissions=8&scope=bot+applications.commands) to add the bot to your server.
+Using Prizmo365 is as easy as any other Discord bot. To get started, you can add it to your server using this [link](https://discord.com/api/oauth2/authorize?client_id=734214062627356683&permissions=8&scope=bot+applications.commands) and set it up just like any other bot! Prizmo has a built-in settings command named "/set", which will allow you to set up levels, guild information, suggestions, and more. More information will be provided for this with the release of the wiki.
 
-Alongside this, since the code is all open-source, you are free to use all of it and create your own bot. Check the Sources and Libraries section for dependencies that are ABSOLUTELY NECESSARY to use this repository. You can also utilize the sample data files to set up your bot; simply change the names of each of these files and input the proper information to your channel. Below is a list of what these files should be named:
-1. Directory `sampledata` should be named `data`.
-2. `sampledata/sstarboarddata.json` should be `data/starboarddata.json`
-3. `sampledata/ssuggestdata.json` should be `data/suggestdata.json`
-4. `sampledata/sguilddata.json` should be `data/guilddata.json`
-5. `sampleconfig.json` should be `config.json`
-6. `sampleleveldata.json` should be `leveldata.json`
+Alternatively, you can create a separate branch of the bot. Follow this step by step process:
+1. Set up your own Discord bot at the Discord Developer Portal. For more information, visit [Discordjs.guide's](https://discordjs.guide/preparations/setting-up-a-bot-application.html#token-leak-scenario) information.
+2. Download the latest release and rename the sample files.
+   - Directory `sampledata` should be named `data`.
+   - `sampledata/sstarboarddata.json` should be `data/starboarddata.json`
+   - `sampledata/ssuggestdata.json` should be `data/suggestdata.json`
+   - `sampledata/sguilddata.json` should be `data/guilddata.json`
+   - `sampleconfig.json` should be `config.json`
+   - `sampleleveldata.json` should be `leveldata.json`
+3. Add the appropriate information to config.json (as stated in the config).
+4. Open your console and run `npm i` to install all of the files located in `package.json`.
+5. Once the files are installed, you should be able to add the bot to your own server and run `npm run start` to run the bot.
+   - Even though you have created this bot, it will not run forever! If there is any crash, or if your computer is no longer logged in, it will stop running. If you want it to run for a longer time you should set up a server.
 
-Wiki coming soon!
+A wiki will be coming soon to elaborate more on all of this information.
 
 ### Namesake
 In case you're curious, the name "Prizmo365" is a creation from long ago, when I was originally extremely interested in starting my own business (which I would have called Prism). As such, Prizmo comes from a name I used at the time online, as well as a name for an idea of a security bot for the company's Discord server. In August of 2020, I decided to begin the original Prizmo project, under the title "Prizmo365" - under the idea that it would be usable 365 days a year, 24/7. With time and change, the name stuck, and here we are.
@@ -63,7 +67,7 @@ Under the MIT License, you are free to use Prizmo's code as you wish. Please rev
 As a request, please credit @kazumikascadia if you are to use this code, and please do not call your project "Prizmo365", "Prizmo", or any other derivative, since the imagery and other such information of Prizmo is not provided to you within these files. If you are to modify this code, it is still within this request that you mention @kazumikascadia as the original creator. 
 
 ## Sources and Libraries
-Prizmo 365 uses a variety of sources as its foundation. Since much of the code in this repository relies on these libraries, it is ABSOLUTELY RECOMMEND that you ensure full installation to your project, since it may not function without. You are liable for your own usage of these items and should follow their legal guides on your own accord.
+Prizmo365 uses a variety of sources as its foundation. Since much of the code in this repository relies on these libraries, it is ABSOLUTELY RECOMMEND that you ensure full installation to your project, since it may not function without. You are liable for your own usage of these items and should follow their legal guides on your own accord.
 
 1. Nodejs
     - The entire foundational library uponwhich this project is built.
