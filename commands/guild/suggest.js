@@ -32,6 +32,12 @@ module.exports = {
                         .setName('suggestionid')
                         .setDescription('The ID of the suggestion you want to accept.')
                         .setRequired(true),
+                )
+                .addStringOption(option =>
+                    option
+                        .setName('comment')
+                        .setDescription('The comment you want to provide to your acceptance message.')
+                        .setMaxLength(1000),
                 ),
         )
         .addSubcommand(subcommand =>
@@ -118,6 +124,7 @@ module.exports = {
             .setTimestamp(+new Date());
         const suggestChannel = interaction.guild.channels.cache.get(gdImport[guildId].suggestionschannel);
 
+        // this is the subcommand for suggesting NEW suggestions
         if (subcommand == 'new') {
             // selects a new subcommand
             const suggestion = interaction.options.getString('suggestion');
@@ -156,6 +163,7 @@ module.exports = {
             interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
         }
 
+        // approval
         if (subcommand == 'approve') {
             if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageGuild)) {
                 confirmEmbed.setDescription('You do not have the appropriate permissions to use this command!').setColor('Red');
@@ -164,6 +172,7 @@ module.exports = {
             }
 
             const sid = interaction.options.getString('suggestionid');
+            const sComm = interaction.options.getString('comment') || 'No admin comment.';
 
             if (!sdImport[guildId][sid]) {
                 confirmEmbed.setDescription('This item does not exist!').setColor('Red');
@@ -199,6 +208,7 @@ module.exports = {
                 .setTitle('Suggestion Approved')
                 .setAuthor({ name: nName, iconURL: nAvatar })
                 .setDescription(sinfo.content)
+                .addFields({ name: `Approved by ${interaction.user.displayName}`, value: sComm })
                 .setColor('Green')
                 .setFooter({ text: `Suggestion ID: ${sid}` });
 
@@ -221,6 +231,7 @@ module.exports = {
             }
 
             const sid = interaction.options.getString('suggestionid');
+            const sComm = interaction.options.getString('comment') || 'No admin comment.';
 
             if (!sdImport[guildId][sid]) {
                 confirmEmbed.setDescription('This item does not exist!').setColor('Red');
@@ -256,6 +267,7 @@ module.exports = {
                 .setTitle('Suggestion Declined')
                 .setAuthor({ name: nName, iconURL: nAvatar })
                 .setDescription(sinfo.content)
+                .addFields({ name: `Denied by ${interaction.user.displayName}`, value: sComm })
                 .setColor('Red')
                 .setFooter({ text: `Suggestion ID: ${sid}` });
 
@@ -277,6 +289,7 @@ module.exports = {
             }
 
             const sid = interaction.options.getString('suggestionid');
+            const sComm = interaction.options.getString('comment') || 'No admin comment.';
 
             if (!sdImport[guildId][sid]) {
                 confirmEmbed.setDescription('This item does not exist!').setColor('Red');
@@ -312,6 +325,7 @@ module.exports = {
                 .setTitle('Suggestion Considered')
                 .setAuthor({ name: nName, iconURL: nAvatar })
                 .setDescription(sinfo.content)
+                .addFields({ name: `Considered by ${interaction.user.displayName}`, value: sComm })
                 .setColor('Blue')
                 .setFooter({ text: `Suggestion ID: ${sid}` });
 

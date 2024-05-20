@@ -52,13 +52,21 @@ function generateStandardEmbed(interaction, originalInput,
     const nickname = user.nickname ?? user.displayName;
     const avatar = user.displayAvatarURL();
 
+    let title;
+    let desc;
+    if (letterCount == 26) {
+        title = 'A full pangram!';
+        desc = `Your phrase,\n> ${originalInput}\ncontains the following letters: \n> ${formattedFilteredInput}. \nThis phrase contains every letter in the alphabet! Congrats on creating a pangram!`;
+    }
+    else {
+        title = 'Your phrase, split apart.';
+        desc = `Your phrase,\n> ${originalInput}\ncontains the following letters: \n> ${formattedFilteredInput}. \nOverall, it contains ${letterCount}/26 letters.`;
+    }
     return new EmbedBuilder()
         .setAuthor({ name: nickname, iconURL: avatar })
         .setTimestamp(+new Date())
-        .setTitle('Your word, split apart.')
-        .setDescription(
-            `Your word or sentence,\n> ${originalInput}\ncontains the following letters: \n> ${formattedFilteredInput}. \nOverall, it contains ${letterCount}/26 letters.`,
-        )
+        .setTitle(title)
+        .setDescription(desc)
         .setColor('Green');
 }
 
@@ -80,7 +88,6 @@ function generateErrorEmbed(interaction) {
 function respondToValidInput(interaction, originalInput, filteredInput) {
     const fInput = [];
     filteredInput.split('').forEach(e => { if (!fInput.includes(e)) fInput.push(e); });
-    console.log(fInput);
     const letterCount = fInput.length;
 
     // Formats the list into a proper sentence
