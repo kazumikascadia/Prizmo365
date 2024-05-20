@@ -5,7 +5,7 @@ const { json } = require('sequelize');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('set')
-        .setDescription('Allows the user to set server settings.')
+        .setDescription('Allows the user to set server settings. Requires Manage Guild Permissions.')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addSubcommand(subcommand =>
             subcommand
