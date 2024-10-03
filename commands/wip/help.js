@@ -29,6 +29,12 @@ module.exports = {
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date());
 
+        if (!input.value) {
+            helpEmbed
+                .setTitle('Help')
+                .setDescription()
+        }
+
         if (input.value == '8ball') {
             helpEmbed
                 .setTitle('/8ball')
@@ -38,8 +44,7 @@ module.exports = {
                         name: 'Usage',
                         value: '/8ball question: [your input]',
                     },
-                    
-                )
+                );
         }
 
         else {

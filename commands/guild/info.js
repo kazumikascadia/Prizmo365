@@ -1,4 +1,4 @@
-const { ButtonBuilder, ButtonStyle, ActionRowBuilder, SlashCommandBuilder, EmbedBuilder, Client, GatewayIntentBits, AttachmentBuilder } = require('discord.js');
+const { ButtonBuilder, ButtonStyle, ActionRowBuilder, SlashCommandBuilder, EmbedBuilder, Client, GatewayIntentBits, AttachmentBuilder, ContextMenuCommandBuilder, ApplicationCommandType, Application } = require('discord.js');
 const moment = require('moment'), fs = require('fs');
 const { token, link } = require('../../config.json');
 

@@ -14,7 +14,9 @@ module.exports = {
 			.setAuthor({ name: nickname, iconURL: avatar })
 			.setTimestamp(+new Date());
 
-		if (!interaction.isChatInputCommand()) return;
+		// if (!interaction.isChatInputCommand() || !interaction.isUserContextMenuCommand()) return;
+
+		if (interaction.isUserContextMenuCommand()) { console.log('context menu!'); }
 
 		const command = interaction.client.commands.get(interaction.commandName);
 
