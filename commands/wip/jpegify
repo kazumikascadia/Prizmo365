@@ -20,7 +20,7 @@ module.exports = {
         const msg = await interaction.reply({ embeds: [embed] });
 
         const collectorFilter = m => m.content.includes('discord');
-        const collector = interaction.channel.createMessageCollector({ filter: collectorFilter, time: 15000 }).then(interaction.channel.send('Timed out!'));
+        const collector = await interaction.channel.createMessageCollector({ filter: collectorFilter, time: 15000 });
 
         let mCo;
         let mSi;
@@ -34,8 +34,10 @@ module.exports = {
             console.log(`Of: ${c.size}`);
         });
 
-        await wait(15000);
-        embed = embed.setDescription(`Collected: ${mCo} of ${mSi}`);
+        if (m.author == iUser) { collector.stop; }
+
+        // await wait(15000);
+        embed = embed.setDescription(`Collected: ${mCo} of ${mSi}`).setImage(mCo);
 
         msg.edit({ embeds: [embed] });
     },
