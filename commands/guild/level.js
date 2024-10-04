@@ -63,6 +63,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('level')
         .setDescription('Shows information about levels.')
+        .setDMPermission(false)
         .addSubcommand(subcommand =>
             subcommand
                 .setName('progress')

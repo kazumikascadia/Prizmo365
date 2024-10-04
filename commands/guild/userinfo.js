@@ -87,7 +87,7 @@ module.exports = {
         // using the info embed from earlier, set the title, description, and create several fields to show information on the user
         infoEmbed
             .setTitle(title)
-            .setDescription(`Known as ${mUser.nickname}; currently set to ${statuses[gUser.presence ? gUser.presence.status : 'off']}`)
+            .setDescription(`Known as ${mUser}; currently set to ${statuses[gUser.presence ? gUser.presence.status : 'off']}`)
             .addFields(
                 { name: `Roles [${rLength}]:`, value: roles ?? 'No roles' },
                 { name: 'Flags:', value: `${uFlags.length ? uFlags.map(flag => flags[flag]).join(', ') : 'None'}` },

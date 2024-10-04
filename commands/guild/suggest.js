@@ -6,6 +6,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('suggest')
         .setDescription('Allows the user to suggest something to the server.')
+        .setDMPermission(false)
         .addSubcommand(subcommand =>
             subcommand
                 .setName('new')
