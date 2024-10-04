@@ -32,11 +32,11 @@ module.exports = {
         // fetches user information on the desired target; if no target, use the interaction user
         // since this command requires a target, it will always have a selected target (subject to change)
         // this section grabs the targets id, avatar, their place in the current guild, their accent hex color, and their guild roles
-        const mUser = await interaction.options.getUser('target').fetch(true) || iUser.fetch(true);
+        const mUser = await server.members.cache.get(interaction.targetId).user.fetch(true) || iUser.fetch(true);
         const uid = mUser.id;
         const mavatar = mUser.displayAvatarURL({ dynamic: true, size: 1024, format: 'png' }) ?? mUser.defaultAvatarURL({ dynamic: true, size: 960, format: 'png' });
         const gUser = server.members.cache.get(uid);
-        const accentColor = mUser.hexAccentColor;
+        const accentColor = mUser.hexAccentColor || 'Green';
         // find all of the roles of the selected user, then map and join them together in a string (all excluding @everyone)
         let roles = gUser.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).join(', ');
         // create a new variable just for the length of the roles string
@@ -87,7 +87,7 @@ module.exports = {
         // using the info embed from earlier, set the title, description, and create several fields to show information on the user
         infoEmbed
             .setTitle(title)
-            .setDescription(`Known as ${mUser}; currently set to ${statuses[gUser.presence ? gUser.presence.status : 'off']}`)
+            .setDescription(`Known as ${mUser.nickname}; currently set to ${statuses[gUser.presence ? gUser.presence.status : 'off']}`)
             .addFields(
                 { name: `Roles [${rLength}]:`, value: roles ?? 'No roles' },
                 { name: 'Flags:', value: `${uFlags.length ? uFlags.map(flag => flags[flag]).join(', ') : 'None'}` },
@@ -97,6 +97,8 @@ module.exports = {
             .setColor(accentColor)
             .setThumbnail(mavatar)
             .setFooter({ text: `ID: ${uid}` });
+
+        interaction.reply({ embeds: [infoEmbed] });
 
     },
 };
