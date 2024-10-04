@@ -5,6 +5,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('purge')
         .setDescription('Purges a collection of messages. Requires Manage Guild Permissions.')
+        .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild) // sets the command to require manage guild permissions
         .addIntegerOption(o =>
             o.setName('messagecount')

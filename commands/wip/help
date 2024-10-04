@@ -12,12 +12,11 @@ module.exports = {
                 .setDescription('The specific command you need help with.')
                 .addChoices(
                     { name: '/8ball', value: '8ball' },
-                    { name: '/alphabetcomplete', value: 'alphabetcomplete' },
+                    { name: '/alphabet', value: 'alphabet' },
                     { name: '/diceroll', value: 'diceroll' },
                     { name: '/rps', value: 'rps' },
                     { name: '/unitconvert', value: 'unitconvert' },
-                )
-                .setRequired(true),
+                ),
         ),
     async execute(interaction) {
         // setting standard constants
@@ -29,24 +28,57 @@ module.exports = {
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date());
 
-        if (input.value == '8ball') {
-            helpEmbed
-                .setTitle('/8ball')
-                .setDescription('A fun command that plays just like the magic 8 ball you had when you were a kid.')
-                .addFields(
-                    {
-                        name: 'Usage',
-                        value: '/8ball question: [your input]',
-                    },
-                    
-                )
-        }
+        console.log(input, input.value);
 
-        else {
+        if (!input) {
             helpEmbed
-                .setColor('Red')
-                .setTitle('Error...')
-                .setDescription('Apparently, that command doesn\'t have any useful information written on it yet. Check back later!');
+                .setTitle('Help')
+                .setDescription('A helpful little guide to everything Prizmo provides!');
+        }
+        else if (input) {
+            switch (input) {
+                case '8ball':
+                    helpEmbed
+                        .setTitle('/8ball')
+                        .setDescription('A fun command that plays just like the magic 8 ball you had when you were a kid.')
+                        .setColor('DarkBlue')
+                        .addFields(
+                            {
+                                name: 'Usage',
+                                value: '/8ball question: [your input]',
+                                inline: true,
+                            },
+                            {
+                                name: 'Results',
+                                value: 'Returns a statement that you would see out of an old 8 ball toy.\nFor example, it might say "Without a doubt.',
+                                inline: true,
+                            },
+                        );
+                    break;
+                case 'alphabetcomplete':
+                    helpEmbed
+                        .setTitle('/alphabet')
+                        .setDescription('A command that splits apart a phrase and tells you what and how many letters are in the phrase.')
+                        .addFields(
+                            {
+                                name: 'Usage',
+                                value: '/alphabet input: [your input]',
+                                inline: true,
+                            },
+                            {
+                                name: 'Results',
+                                value: 'Returns a statement that you would see out of an old 8 ball toy.\nFor example, it might say "Without a doubt."',
+                                inline: true,
+                            },
+                        );
+                        break;
+                default:
+                    helpEmbed
+                        .setColor('Red')
+                        .setTitle('Error...')
+                        .setDescription('Apparently, that command doesn\'t have any useful information written on it yet. Check back later!');
+                    break;
+            }
         }
 
         interaction.reply({ embeds: [helpEmbed] });

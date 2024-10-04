@@ -1,4 +1,4 @@
-const { ButtonBuilder, ButtonStyle, ActionRowBuilder, SlashCommandBuilder, EmbedBuilder, Client, GatewayIntentBits, AttachmentBuilder } = require('discord.js');
+const { ButtonBuilder, ButtonStyle, ActionRowBuilder, SlashCommandBuilder, EmbedBuilder, Client, GatewayIntentBits, AttachmentBuilder, ContextMenuCommandBuilder, ApplicationCommandType, Application } = require('discord.js');
 const moment = require('moment'), fs = require('fs');
 const { token, link } = require('../../config.json');
 
@@ -6,6 +6,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('info')
         .setDescription('Provides info on the chosen object.')
+        .setDMPermission(false)
         .addSubcommand(subcommand =>
             subcommand
                 .setName('user')

@@ -7,6 +7,7 @@ module.exports = {
         .setName('set')
         .setDescription('Allows the user to set server settings. Requires Manage Guild Permissions.')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+        .setDMPermission(false)
         .addSubcommand(subcommand =>
             subcommand
                 .setName('servercolor')
