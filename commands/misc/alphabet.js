@@ -4,34 +4,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 // We create the list of allowed characters. These are only
 // in uppercase which means that characters must be converted to uppercase.
-const allowedCharacters = [
-    'A',
-    'B',
-    'C',
-    'D',
-    'E',
-    'F',
-    'G',
-    'H',
-    'I',
-    'J',
-    'K',
-    'L',
-    'M',
-    'N',
-    'O',
-    'P',
-    'Q',
-    'R',
-    'S',
-    'T',
-    'U',
-    'V',
-    'W',
-    'X',
-    'Y',
-    'Z',
-];
+const allowedCharacters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
 // Accepts the input from an interaction and returns a sorted
 // and filtered output.
