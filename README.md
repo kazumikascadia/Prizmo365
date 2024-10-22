@@ -16,11 +16,13 @@ Prizmo is currently a work in progress, though is still packed of a variety of f
 - A command to split apart all of the letters in a sentence and list out how many letters of the alphabet are used, excluding anything that does not fall between A-Z.
 - A full dice rolling command complete with the ability to select the amount and size of the dice (and return 10 of the rolls within that amount).
 - A command to generate a random hex color code and display it in an embed.
+- A command to turn any image into a jpeg file (just for fun!).
 - A rock paper scissors command so that you can play rock paper scissors against Prizmo.
 - A command to convert from one unit type to another, with units falling into time, measurements, square areas, and volume.
 - A full info command to discover info on the server of location or on any user in that server.
 - The ability to send starred messages to a starboard channel.
 - Multiple commands related to suggesting information to the server.
+- A WIP command to create an embed in your server!
 - A fully fledged levelling system, featuring rewards per level and leaderboards (up to 20 members displayed).
 - With server customization using the /set command!
 - ... and more to come soon!
@@ -99,4 +101,4 @@ Prizmo365 uses a variety of sources as its foundation. Since much of the code in
     - Found at [Momentjs NPM](https://www.npmjs.com/package/moment)
 
 ## Credits
-Thank you to [Staria](https://github.com/StariaRose/) to hosting the server for Prizmo and to [Fekie](https://github.com/fekie) for providing code for this project. And to you, dear viewer, for viewing this program. This project wouldn't be possible without everyone involved.
+Thank you to [Staria](https://github.com/StariaRose/) for your support and to [Fekie](https://github.com/fekie) for providing code for this project. And to you, dear viewer, for viewing this program. This project wouldn't be possible without everyone involved.
