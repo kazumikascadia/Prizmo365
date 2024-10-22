@@ -18,20 +18,14 @@ module.exports = {
             return Math.floor(Math.random() * max);
         }
 
-        const allOpts = 'abcdef';
+        const allOpts = '0123456789abcdef';
         let hex = '';
         let index;
         let newI;
 
         for (let i = 0; i < 6; i++) {
-            const pnt = getRandomInt(2);
-            if (pnt == 0) {
-                index = getRandomInt(allOpts.length);
-                newI = allOpts[index];
-            }
-            else {
-                newI = getRandomInt(10);
-            }
+            index = getRandomInt(allOpts.length);
+            newI = allOpts[index];
             hex = hex + newI;
         }
 
