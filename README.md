@@ -97,6 +97,9 @@ Prizmo365 uses a variety of sources as its foundation. Since much of the code in
 10. Momentjs
     - A library utilized in the info command for displaying time periods in a nice manner.
     - Found at [Momentjs NPM](https://www.npmjs.com/package/moment)
+11. json-colors
+    - A pre-existing library of JSON colors. Created by Github User [cheprasov](https://github.com/cheprasov).
+    - Found at [json-colors](https://github.com/cheprasov/json-colors/tree/master) 
 
 ## Credits
 Thank you to [Staria](https://github.com/StariaRose/) to hosting the server for Prizmo and to [Fekie](https://github.com/fekie) for providing code for this project. And to you, dear viewer, for viewing this program. This project wouldn't be possible without everyone involved.

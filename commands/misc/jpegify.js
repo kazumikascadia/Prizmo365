@@ -1,6 +1,5 @@
 // on hold
 const { EmbedBuilder, SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
-const wait = require('node:timers/promises').setTimeout;
 
 module.exports = {
     data: new SlashCommandBuilder()
