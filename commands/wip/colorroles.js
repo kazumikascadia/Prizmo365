@@ -1,9 +1,39 @@
-const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
+const { createCanvas } = require('@napi-rs/canvas');
 const fs = require('fs');
 const crData = 'data/colorroledata.json',
     crImport = JSON.parse(fs.readFileSync(crData));
 const colorList = 'database/colors.json',
     clImport = JSON.parse(fs.readFileSync(colorList));
+
+function createColor(c) {
+    let color;
+    if (c.value.includes('#')) {
+        const cIndex = c.value.indexOf('#');
+        const cValue = c.value.slice(cIndex + 1, cIndex + 7);
+        color = parseInt('0x' + cValue);
+    }
+    else if (clImport[c.toTitle]) {
+        color = clImport[c].hex;
+    }
+    else {
+        color = 'null';
+    }
+
+    return color;
+}
+
+function createImage(c) {
+    const canvas = createCanvas(500, 500);
+    const ctx = canvas.getContext('2d');
+    const cIndex = c.value.indexOf('#');
+    const hex = c.value.slice(cIndex + 1, cIndex + 7);
+    ctx.fillStyle = '#' + hex;
+    ctx.fillRect(0, 0, 500, 500);
+
+    const attachment = new AttachmentBuilder(canvas.toBuffer('image/jpeg'), { name: 'color.jpg' });
+    return attachment;
+}
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -58,12 +88,22 @@ module.exports = {
         ),
     async execute(interaction) {
         // sets up all necessary constants for the embed
+        const server = await interaction.guild.fetch(true);
         const iUser = interaction.user;
         const uId = iUser.id;
+        const gUser = server.members.cache.get(uId);
         const nickname = iUser.nickname ?? iUser.displayName;
         const avatar = iUser.displayAvatarURL();
         const subcommand = interaction.options.getSubcommand();
-        const guild = interaction.guild.fetch();
+        const name = interaction.options.get('name');
+        const index = interaction.options.get('index');
+        const c = interaction.options.get('color');
+        const color = createColor(c);
+        const attachment = createImage(c);
+        const cEmbed = new EmbedBuilder()
+            .setAuthor({ name: nickname, iconURL: avatar })
+            .setTimestamp(+new Date());
+        const uRole = server.roles.cache.find(r => r.name === `${iUser.username}`) ?? null;
 
         if (!crImport[uId]) {
             crImport[uId] = {
@@ -86,7 +126,21 @@ module.exports = {
 
         switch (subcommand) {
             case 'create':
-                const color = interaction.options.get('color');
+                if (!server.roles.cache.find(r => r.name === `${iUser.username}`)) {
+                    server.roles.create({ name: `${iUser.username}`, color: color });
+                    console.log(gUser);
+                    iUser.roles.add(uRole);
+                }
+                else {
+                    console.log(uRole);
+                    uRole.edit({ color: color });
+                }
+                cEmbed
+                    .setTitle('Set your new Color Role!')
+                    .setDescription(`Your color has been set to ${color}`)
+                    .setImage('attachment://color.jpg');
+
+                interaction.reply({ embeds: [cEmbed], files: [attachment] });
                 break;
             case 'save':
                 break;
