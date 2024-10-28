@@ -91,7 +91,7 @@ module.exports = {
         const server = await interaction.guild.fetch(true);
         const iUser = interaction.user;
         const uId = iUser.id;
-        const gUser = server.members.cache.get(uId);
+        const gUser = interaction.guild.members.cache.get(uId);
         const nickname = iUser.nickname ?? iUser.displayName;
         const avatar = iUser.displayAvatarURL();
         const subcommand = interaction.options.getSubcommand();
@@ -103,7 +103,9 @@ module.exports = {
         const cEmbed = new EmbedBuilder()
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date());
-        const uRole = server.roles.cache.find(r => r.name === `${iUser.username}`) ?? null;
+        const roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
+        console.log(roles);
+        let uRole;
 
         if (!crImport[uId]) {
             crImport[uId] = {
@@ -126,12 +128,11 @@ module.exports = {
 
         switch (subcommand) {
             case 'create':
-                if (!server.roles.cache.find(r => r.name === `${iUser.username}`)) {
+                if (!roles.find(r => r.name === `${iUser.username}`)) {
                     server.roles.create({ name: `${iUser.username}`, color: color });
-                    console.log(gUser);
-                    iUser.roles.add(uRole);
                 }
                 else {
+                    uRole = roles.find(r => r.name === `${iUser.username}`);
                     console.log(uRole);
                     uRole.edit({ color: color });
                 }
@@ -140,6 +141,9 @@ module.exports = {
                     .setDescription(`Your color has been set to ${color}`)
                     .setImage('attachment://color.jpg');
 
+                uRole = roles.find(r => r.name === `${iUser.username}`);
+                console.log(await roles.find(r => r.name === `${iUser.username}`));
+                iUser.roles.add(uRole);
                 interaction.reply({ embeds: [cEmbed], files: [attachment] });
                 break;
             case 'save':
