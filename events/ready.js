@@ -1,7 +1,7 @@
 // derived from https://discordjs.guide/
 
-const { Events, ActivityType } = require('discord.js');
-const { version } = require('../config.json');
+const { Events, ActivityType, EmbedBuilder } = require('discord.js');
+const { version, ptsId } = require('../config.json');
 const chalk = require('chalk');
 
 module.exports = {
@@ -17,5 +17,15 @@ module.exports = {
 		setInterval(activity => { client.user.setActivity(`${act} | ${version}`, { type: ActivityType.Playing }); }, 900000);
 		// log that the bot is going online, with the stated activity and version
 		console.log(chalk.blueBright('[ONLINE]'), `Logged in as ${client.user.tag}, Version ${version}. Today I'm playing ${act}`);
+
+		const readyEmbed = new EmbedBuilder()
+			.setTimestamp(+new Date())
+			.setTitle('Online!')
+			.setColor('#17ac86')
+			.setDescription('Online!');
+
+		const pts = client.guilds.fetch(ptsId).then(guild => guild.channels.fetch);
+		pts.channels.find(c => c.name === 'uptime').send({ embeds: [readyEmbed] });
+
 	},
 };
