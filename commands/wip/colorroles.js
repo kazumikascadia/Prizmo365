@@ -101,12 +101,6 @@ module.exports = {
         const cEmbed = new EmbedBuilder()
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date());
-        const color = createColor(c, cEmbed);
-        if (color == 'null') {
-            cEmbed.setTitle('Failed!').setDescription('Can\'t catch that color! Try again!').setColor('Red');
-            return interaction.reply({ embeds: [cEmbed] });
-        }
-        const attachment = createImage(c);
 
         let roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
         // console.log(roles);
@@ -133,6 +127,12 @@ module.exports = {
 
         switch (subcommand) {
             case 'create':
+                const color = createColor(c);
+                if (color == 'null') {
+                    cEmbed.setTitle('Failed!').setDescription('Can\'t catch that color! Try again!').setColor('Red');
+                    return interaction.reply({ embeds: [cEmbed] });
+                }
+                const attachment = createImage(c);
                 if (!roles.find(r => r.name === `${iUser.username}`)) {
                     server.roles.create({ name: `${iUser.username}`, color: color });
                 }
@@ -142,7 +142,8 @@ module.exports = {
                 }
                 cEmbed
                     .setTitle('Set your new Color Role!')
-                    .setDescription(`Your color has been set to ${color}`)
+                    .setDescription(`Your color has been set to ${c}`)
+                    .setColor(color)
                     .setImage('attachment://color.jpg');
 
                 roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
@@ -152,11 +153,13 @@ module.exports = {
                 interaction.reply({ embeds: [cEmbed], files: [attachment] });
                 break;
             case 'save':
+                interaction.reply('WIP');
                 break;
             case 'list':
-                interaction.reply('Yippee!!!!!');
+                interaction.reply('WIP');
                 break;
             case 'import':
+                interaction.reply('WIP');
                 break;
         }
     },
