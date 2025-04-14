@@ -13,9 +13,9 @@ function createColor(c) {
         const cValue = c.value.slice(cIndex + 1, cIndex + 7);
         color = parseInt('0x' + cValue);
     }
-    else if (clImport[c.toTitle]) {
-        color = clImport[c].hex;
-    }
+    // else if (clImport[c.toTitle]) {
+    //     color = clImport[c].hex;
+    // }
     else {
         color = 'null';
     }
