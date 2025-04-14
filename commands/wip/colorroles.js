@@ -91,20 +91,25 @@ module.exports = {
         const server = await interaction.guild.fetch(true);
         const iUser = interaction.user;
         const uId = iUser.id;
-        const gUser = interaction.guild.members.cache.get(uId);
+        const gUser = server.members.cache.get(uId);
         const nickname = iUser.nickname ?? iUser.displayName;
         const avatar = iUser.displayAvatarURL();
         const subcommand = interaction.options.getSubcommand();
         const name = interaction.options.get('name');
         const index = interaction.options.get('index');
         const c = interaction.options.get('color');
-        const color = createColor(c);
-        const attachment = createImage(c);
         const cEmbed = new EmbedBuilder()
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date());
-        const roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
-        console.log(roles);
+        const color = createColor(c, cEmbed);
+        if (color == 'null') {
+            cEmbed.setTitle('Failed!').setDescription('Can\'t catch that color! Try again!').setColor('Red');
+            return interaction.reply({ embeds: [cEmbed] });
+        }
+        const attachment = createImage(c);
+
+        let roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
+        // console.log(roles);
         let uRole;
 
         if (!crImport[uId]) {
@@ -133,7 +138,6 @@ module.exports = {
                 }
                 else {
                     uRole = roles.find(r => r.name === `${iUser.username}`);
-                    console.log(uRole);
                     uRole.edit({ color: color });
                 }
                 cEmbed
@@ -141,9 +145,10 @@ module.exports = {
                     .setDescription(`Your color has been set to ${color}`)
                     .setImage('attachment://color.jpg');
 
+                roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
                 uRole = roles.find(r => r.name === `${iUser.username}`);
-                console.log(await roles.find(r => r.name === `${iUser.username}`));
-                iUser.roles.add(uRole);
+                uRole.edit({ position: gUser.roles.highest.position });
+                await gUser.roles.add(uRole);
                 interaction.reply({ embeds: [cEmbed], files: [attachment] });
                 break;
             case 'save':
