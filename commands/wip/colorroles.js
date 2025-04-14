@@ -69,7 +69,7 @@ module.exports = {
                 )
                 .addNumberOption(o =>
                     o.setName('index')
-                        .setDescription('The index of the color you want to save. If you ')
+                        .setDescription('The index of the color you want to save. You should check your list before changing this!')
                         .setMaxValue(10)
                         .setMinValue(1)
                         .setRequired(true),
@@ -98,6 +98,8 @@ module.exports = {
         const name = interaction.options.get('name');
         const index = interaction.options.get('index');
         const c = interaction.options.get('color');
+        let color;
+        let attachment;
         const cEmbed = new EmbedBuilder()
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date());
@@ -127,12 +129,12 @@ module.exports = {
 
         switch (subcommand) {
             case 'create':
-                const color = createColor(c);
+                color = createColor(c);
                 if (color == 'null') {
                     cEmbed.setTitle('Failed!').setDescription('Can\'t catch that color! Try again!').setColor('Red');
                     return interaction.reply({ embeds: [cEmbed] });
                 }
-                const attachment = createImage(c);
+                attachment = createImage(c);
                 if (!roles.find(r => r.name === `${iUser.username}`)) {
                     server.roles.create({ name: `${iUser.username}`, color: color });
                 }
@@ -142,7 +144,7 @@ module.exports = {
                 }
                 cEmbed
                     .setTitle('Set your new Color Role!')
-                    .setDescription(`Your color has been set to ${c}`)
+                    .setDescription(`Your color has been set to ${c.value}`)
                     .setColor(color)
                     .setImage('attachment://color.jpg');
 
@@ -152,12 +154,24 @@ module.exports = {
                 await gUser.roles.add(uRole);
                 interaction.reply({ embeds: [cEmbed], files: [attachment] });
                 break;
+
             case 'save':
-                interaction.reply('WIP');
+                color = createColor(c);
+
+                crImport[uId][index.value] = `${name.value};${c.value}`;
+                fs.writeFileSync(
+                    crData,
+                    JSON.stringify(crImport, null, 4),
+                );
+
+                cEmbed.setColor(color).setTitle('Saved!').setDescription(`Successfully saved the color ${c.value} with the name ${name.value} to index ${index.value}.`);
+                interaction.reply({ embeds: [cEmbed] });
                 break;
+
             case 'list':
                 interaction.reply('WIP');
                 break;
+
             case 'import':
                 interaction.reply('WIP');
                 break;
