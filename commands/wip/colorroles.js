@@ -130,28 +130,29 @@ module.exports = {
         switch (subcommand) {
             case 'create':
                 color = createColor(c);
+                attachment = createImage(c);
                 if (color == 'null') {
                     cEmbed.setTitle('Failed!').setDescription('Can\'t catch that color! Try again!').setColor('Red');
                     return interaction.reply({ embeds: [cEmbed] });
                 }
-                attachment = createImage(c);
-                if (!roles.find(r => r.name === `${iUser.username}`)) {
-                    server.roles.create({ name: `${iUser.username}`, color: color });
-                }
-                else {
-                    uRole = roles.find(r => r.name === `${iUser.username}`);
-                    uRole.edit({ color: color });
-                }
+
                 cEmbed
                     .setTitle('Set your new Color Role!')
                     .setDescription(`Your color has been set to ${c.value}`)
                     .setColor(color)
                     .setImage('attachment://color.jpg');
 
-                roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
-                uRole = roles.find(r => r.name === `${iUser.username}`);
-                uRole.edit({ position: gUser.roles.highest.position });
+                if (!roles.find(r => r.name === `${iUser.username}`)) {
+                    server.roles.create({ name: `${iUser.username}`, color: color, position: gUser.roles.highest.position });
+                    roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
+                    uRole = roles.find(r => r.name === `${iUser.username}`);
+                }
+                else {
+                    uRole = roles.find(r => r.name === `${iUser.username}`);
+                    uRole.edit({ color: color, position: gUser.roles.highest.position });
+                }
                 await gUser.roles.add(uRole);
+
                 interaction.reply({ embeds: [cEmbed], files: [attachment] });
                 break;
 
@@ -173,6 +174,20 @@ module.exports = {
                 break;
 
             case 'import':
+                color = createColor(crImport[uId][index.value].split(';')[1]);
+                roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
+
+                if (!roles.find(r => r.name === `${iUser.username}`)) {
+                    server.roles.create({ name: `${iUser.username}`, color: color, position: gUser.roles.highest.position });
+                    roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
+                    uRole = roles.find(r => r.name === `${iUser.username}`);
+                }
+                else {
+                    uRole = roles.find(r => r.name === `${iUser.username}`);
+                    uRole.edit({ color: color, position: gUser.roles.highest.position });
+                }
+                await gUser.roles.add(uRole);
+
                 interaction.reply('WIP');
                 break;
         }
