@@ -102,6 +102,7 @@ module.exports = {
         const c = interaction.options.get('color');
         let color;
         let attachment;
+        let mRoles;
         const cEmbed = new EmbedBuilder()
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date());
@@ -122,6 +123,8 @@ module.exports = {
             case 'create':
                 color = createColor(c);
                 attachment = createImage(c);
+                mRoles = gUser.roles.cache.filter(r => r.color !== '0').map(r => `${r}`);
+                console.log(mRoles);
                 if (color == 'null') {
                     cEmbed.setTitle('Failed!').setDescription('Can\'t catch that color! Try again!').setColor('Red');
                     return interaction.reply({ embeds: [cEmbed] });
@@ -134,7 +137,7 @@ module.exports = {
                     .setImage('attachment://color.jpg');
 
                 if (!roles.find(r => r.name === `${iUser.username}`)) {
-                    server.roles.create({ name: `${iUser.username}`, color: color, position: gUser.roles.highest.position });
+                    server.roles.create({ name: `${iUser.username}`, color: color, position: gUser.roles.highest.position + 1 });
                     roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
                     uRole = roles.find(r => r.name === `${iUser.username}`);
                 }
@@ -170,7 +173,7 @@ module.exports = {
                 roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
 
                 if (!roles.find(r => r.name === `${iUser.username}`)) {
-                    server.roles.create({ name: `${iUser.username}`, color: color, position: gUser.roles.highest.position });
+                    server.roles.create({ name: `${iUser.username}`, color: color, position: gUser.roles.highest.position + 1 });
                     roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
                     uRole = roles.find(r => r.name === `${iUser.username}`);
                 }
