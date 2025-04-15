@@ -18,14 +18,14 @@ module.exports = {
 		// log that the bot is going online, with the stated activity and version
 		console.log(chalk.blueBright('[ONLINE]'), `Logged in as ${client.user.tag}, Version ${version}. Today I'm playing ${act}`);
 
-		const readyEmbed = new EmbedBuilder()
-			.setTimestamp(+new Date())
-			.setTitle('Online!')
-			.setColor('#17ac86')
-			.setDescription('Online!');
+		// const readyEmbed = new EmbedBuilder()
+		// 	.setTimestamp(+new Date())
+		// 	.setTitle('Online!')
+		// 	.setColor('#17ac86')
+		// 	.setDescription('Online!');
 
-		const pts = client.guilds.fetch(ptsId).then(guild => guild.channels.fetch);
-		pts.channels.find(c => c.name === 'uptime').send({ embeds: [readyEmbed] });
-
+		// const pts = client.guilds.fetch(ptsId).then(guild => guild.channels.fetch);
+		// const upChannel = pts.channels.find(c => c.name === 'uptime');
+		// upChannel.send({ embeds: [readyEmbed] });
 	},
 };

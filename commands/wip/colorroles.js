@@ -7,10 +7,11 @@ const colorList = 'database/colors.json',
     clImport = JSON.parse(fs.readFileSync(colorList));
 
 function createColor(c) {
+    const c2 = c.value ?? c;
     let color;
-    if (c.value.includes('#')) {
-        const cIndex = c.value.indexOf('#');
-        const cValue = c.value.slice(cIndex + 1, cIndex + 7);
+    if (c2.includes('#')) {
+        const cIndex = c2.indexOf('#');
+        const cValue = c2.slice(cIndex + 1, cIndex + 7);
         color = parseInt('0x' + cValue);
     }
     // else if (clImport[c.toTitle]) {
@@ -26,8 +27,9 @@ function createColor(c) {
 function createImage(c) {
     const canvas = createCanvas(500, 500);
     const ctx = canvas.getContext('2d');
-    const cIndex = c.value.indexOf('#');
-    const hex = c.value.slice(cIndex + 1, cIndex + 7);
+    const c2 = c.value ?? c;
+    const cIndex = c2.indexOf('#');
+    const hex = c2.slice(cIndex + 1, cIndex + 7);
     ctx.fillStyle = '#' + hex;
     ctx.fillRect(0, 0, 500, 500);
 
@@ -66,23 +68,23 @@ module.exports = {
                     o.setName('color')
                         .setDescription('The actual color you want. You can either use a preset color or a hex color.')
                         .setRequired(true),
-                )
-                .addNumberOption(o =>
-                    o.setName('index')
-                        .setDescription('The index of the color you want to save. You should check your list before changing this!')
-                        .setMaxValue(10)
-                        .setMinValue(1)
-                        .setRequired(true),
                 ),
+            // .addNumberOption(o =>
+            //     o.setName('index')
+            //         .setDescription('The index of the color you want to save. You should check your list before changing this!')
+            //         .setMaxValue(10)
+            //         .setMinValue(1)
+            //         .setRequired(true),
+            // ),
         )
         .addSubcommand(s =>
             s.setName('import')
                 .setDescription('Imports a saved color role. Can be used in place of create.')
-                .addNumberOption(o =>
-                    o.setName('index')
-                        .setDescription('The index of the color you want to import.')
-                        .setMaxValue(10)
-                        .setMinValue(1)
+                .addStringOption(o =>
+                    o.setName('name')
+                        .setDescription('The name of your color.')
+                        .setMaxLength(10)
+                        .setMinLength(1)
                         .setRequired(true),
                 ),
         ),
@@ -96,7 +98,7 @@ module.exports = {
         const avatar = iUser.displayAvatarURL();
         const subcommand = interaction.options.getSubcommand();
         const name = interaction.options.get('name');
-        const index = interaction.options.get('index');
+        // const index = interaction.options.get('index');
         const c = interaction.options.get('color');
         let color;
         let attachment;
@@ -109,18 +111,7 @@ module.exports = {
         let uRole;
 
         if (!crImport[uId]) {
-            crImport[uId] = {
-                '1': {},
-                '2': {},
-                '3': {},
-                '4': {},
-                '5': {},
-                '6': {},
-                '7': {},
-                '8': {},
-                '9': {},
-                '10': {},
-            };
+            crImport[uId] = {};
             fs.writeFileSync(
                 crData,
                 JSON.stringify(crImport, null, 4),
@@ -159,13 +150,13 @@ module.exports = {
             case 'save':
                 color = createColor(c);
 
-                crImport[uId][index.value] = `${name.value};${c.value}`;
+                crImport[uId][name.value] = `${c.value}`;
                 fs.writeFileSync(
                     crData,
                     JSON.stringify(crImport, null, 4),
                 );
 
-                cEmbed.setColor(color).setTitle('Saved!').setDescription(`Successfully saved the color ${c.value} with the name ${name.value} to index ${index.value}.`);
+                cEmbed.setColor(color).setTitle('Saved!').setDescription(`Successfully saved the color ${c.value} with the name ${name.value}.`);
                 interaction.reply({ embeds: [cEmbed] });
                 break;
 
@@ -174,7 +165,8 @@ module.exports = {
                 break;
 
             case 'import':
-                color = createColor(crImport[uId][index.value].split(';')[1]);
+                color = createColor(crImport[uId][name.value]);
+                attachment = createImage(crImport[uId][name.value]);
                 roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
 
                 if (!roles.find(r => r.name === `${iUser.username}`)) {
@@ -188,7 +180,8 @@ module.exports = {
                 }
                 await gUser.roles.add(uRole);
 
-                interaction.reply('WIP');
+                cEmbed.setColor(color).setTitle('Successful Import').setDescription(`Successfully imported your color ${name.value}: ${crImport[uId][name.value]}.`).setImage('attachment://color.jpg');
+                interaction.reply({ embeds: [cEmbed], files: [attachment] });
                 break;
         }
     },
