@@ -1,10 +1,6 @@
 const { EmbedBuilder, SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
 const { createCanvas } = require('@napi-rs/canvas');
 const fs = require('fs');
-const crData = 'data/colorroledata.json',
-    crImport = JSON.parse(fs.readFileSync(crData));
-const colorList = 'database/colors.json',
-    clImport = JSON.parse(fs.readFileSync(colorList));
 
 function createColor(c) {
     const c2 = c.value ?? c;
@@ -37,6 +33,18 @@ function createImage(c) {
     return attachment;
 }
 
+function sortList(crImport, uId, list) {
+    const cList = crImport[uId];
+    let val;
+    for (const x in cList) {
+        const cName = cList[x].split(': ')[0];
+        const cColor = cList[x].split(': ')[1];
+
+        val = `${cName}: ${cColor}`;
+        list.push(val);
+    }
+}
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('rolecolor')
@@ -57,6 +65,13 @@ module.exports = {
         .addSubcommand(s =>
             s.setName('save')
                 .setDescription('Save a color of your liking.')
+                .addNumberOption(o =>
+                    o.setName('index')
+                        .setDescription('The index of the color you want to save. You should check your list before changing this!')
+                        .setMaxValue(20)
+                        .setMinValue(1)
+                        .setRequired(true),
+                )
                 .addStringOption(o =>
                     o.setName('name')
                         .setDescription('The name of your color.')
@@ -69,13 +84,6 @@ module.exports = {
                         .setDescription('The actual color you want. You can either use a preset color or a hex color.')
                         .setRequired(true),
                 ),
-            // .addNumberOption(o =>
-            //     o.setName('index')
-            //         .setDescription('The index of the color you want to save. You should check your list before changing this!')
-            //         .setMaxValue(10)
-            //         .setMinValue(1)
-            //         .setRequired(true),
-            // ),
         )
         .addSubcommand(s =>
             s.setName('import')
@@ -90,6 +98,10 @@ module.exports = {
         ),
     async execute(interaction) {
         // sets up all necessary constants for the embed
+        const crData = 'data/colorroledata.json',
+            crImport = JSON.parse(fs.readFileSync(crData));
+        const colorList = 'database/colors.json',
+            clImport = JSON.parse(fs.readFileSync(colorList));
         const server = await interaction.guild.fetch(true);
         const iUser = interaction.user;
         const uId = iUser.id;
@@ -98,17 +110,17 @@ module.exports = {
         const avatar = iUser.displayAvatarURL();
         const subcommand = interaction.options.getSubcommand();
         const name = interaction.options.get('name');
-        // const index = interaction.options.get('index');
+        const index = interaction.options.get('index');
         const c = interaction.options.get('color');
         let color;
         let attachment;
         let mRoles;
+        let cList;
         const cEmbed = new EmbedBuilder()
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date());
 
         let roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
-        // console.log(roles);
         let uRole;
 
         if (!crImport[uId]) {
@@ -153,7 +165,7 @@ module.exports = {
             case 'save':
                 color = createColor(c);
 
-                crImport[uId][name.value] = `${c.value}`;
+                crImport[uId][index.value] = `${name.value}: ${c.value}`;
                 fs.writeFileSync(
                     crData,
                     JSON.stringify(crImport, null, 4),
@@ -164,7 +176,10 @@ module.exports = {
                 break;
 
             case 'list':
-                interaction.reply('WIP');
+                cList = [];
+                sortList(crImport, uId, cList);
+
+                interaction.reply(`${cList}`);
                 break;
 
             case 'import':
