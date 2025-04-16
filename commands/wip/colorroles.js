@@ -1,4 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
+const { devId } = require('../../config.json');
 const { createCanvas } = require('@napi-rs/canvas');
 const fs = require('fs');
 
@@ -43,6 +44,20 @@ function sortList(crImport, uId, list) {
         val = `${cName}: ${cColor}`;
         list.push(val);
     }
+}
+
+async function findHighestRole(roles, gUser, interaction) {
+    roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
+    const m = interaction.guild.fetch(true).then(guild => guild.members.fetch());
+    const botRole = interaction.guild.members.cache.find(me => me.id === devId).roles.highest.position;
+
+    console.log(botRole);
+
+    console.log(gUser.roles.cache.filter(r => r.name !== '@everyone').filter(r => r.color != 0).filter(r => r.position < 6).map(r => `${r.name}`).join(', '));
+
+    // for (const x in gUser.roles) {
+    // }
+
 }
 
 module.exports = {
@@ -176,6 +191,7 @@ module.exports = {
                 break;
 
             case 'list':
+                findHighestRole(roles, gUser, interaction);
                 cList = [];
                 sortList(crImport, uId, cList);
                 cList = cList.map(i => [`**${cList.indexOf(i) + 1}.** ${i}`]);
