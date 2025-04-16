@@ -88,11 +88,11 @@ module.exports = {
         .addSubcommand(s =>
             s.setName('import')
                 .setDescription('Imports a saved color role. Can be used in place of create.')
-                .addStringOption(o =>
-                    o.setName('name')
-                        .setDescription('The name of your color.')
-                        .setMaxLength(10)
-                        .setMinLength(1)
+                .addNumberOption(o =>
+                    o.setName('index')
+                        .setDescription('The index of your color in the list of saved colors.')
+                        .setMaxValue(20)
+                        .setMinValue(1)
                         .setRequired(true),
                 ),
         ),
@@ -178,8 +178,12 @@ module.exports = {
             case 'list':
                 cList = [];
                 sortList(crImport, uId, cList);
+                cList = cList.map(i => [`**${cList.indexOf(i) + 1}.** ${i}`]);
+                await iUser.fetch(true);
 
-                interaction.reply(`${cList}`);
+                cEmbed.setTitle(`Role Colors for ${nickname}`).setDescription(`${cList.join('\n')}`).setColor(iUser.hexAccentColor);
+
+                interaction.reply({ embeds: [cEmbed] });
                 break;
 
             case 'import':
