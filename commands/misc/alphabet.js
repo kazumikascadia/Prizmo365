@@ -1,6 +1,7 @@
 // refactored by @fekie
 
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { returnError } = require('../../events/returnerror.js');
 
 // We create the list of allowed characters. These are only
 // in uppercase which means that characters must be converted to uppercase.
@@ -43,21 +44,6 @@ function generateStandardEmbed(interaction, originalInput,
         .setColor('Green');
 }
 
-function generateErrorEmbed(interaction) {
-    const user = interaction.user;
-    const nickname = user.nickname ?? user.displayName;
-    const avatar = user.displayAvatarURL();
-
-    return new EmbedBuilder()
-        .setAuthor({ name: nickname, iconURL: avatar })
-        .setTimestamp(+new Date())
-        .setTitle('Error')
-        .setDescription(
-            'Because you put no actual letters into your statement, none can be counted.',
-        )
-        .setColor('Red');
-}
-
 function respondToValidInput(interaction, originalInput, filteredInput) {
     const fInput = [];
     filteredInput.split('').forEach(e => { if (!fInput.includes(e)) fInput.push(e); });
@@ -76,10 +62,6 @@ function respondToValidInput(interaction, originalInput, filteredInput) {
         embeds: [generateStandardEmbed(interaction, originalInput,
             formattedFilteredInput, letterCount)],
     });
-}
-
-function respondToInvalidInput(interaction) {
-    interaction.reply({ embeds: [generateErrorEmbed(interaction)] });
 }
 
 module.exports = {
@@ -104,7 +86,7 @@ module.exports = {
             respondToValidInput(interaction, input, filteredInput);
         }
         else {
-            respondToInvalidInput(interaction);
+            returnError(interaction, 'No letters provided.');
         }
     },
 };

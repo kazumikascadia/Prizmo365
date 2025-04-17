@@ -1,6 +1,7 @@
-const { EmbedBuilder, SlashCommandBuilder, Client, GatewayIntentBits, Embed } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, Client, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
 const { token } = require('../../config.json');
+const { returnError } = require('../../events/returnerror.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -89,17 +90,9 @@ module.exports = {
             nickname = iUser.nickname ?? iUser.displayName,
             avatar = iUser.displayAvatarURL();
 
-        const fEmbed = new EmbedBuilder()
-            .setAuthor({ name: nickname, iconURL: avatar })
-            .setTimestamp(+new Date())
-            .setTitle('Failed!')
-            .setDescription('This server does not have a suggestions channel!');
-
-
         // checks all requirements
         if (!gdImport[guildId] || gdImport[guildId].suggestionschannel == '') {
-            interaction.reply({ embeds: [fEmbed], ephemeral: true });
-            return false;
+            returnError(interaction, 'No suggestions channel found.'); return false;
         }
         if (!interaction.guild.channels.cache.get(gdImport[guildId].suggestionschannel)) return false;
 
@@ -167,9 +160,7 @@ module.exports = {
         // approval
         if (subcommand == 'approve') {
             if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageGuild)) {
-                confirmEmbed.setDescription('You do not have the appropriate permissions to use this command!').setColor('Red');
-
-                return interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
+                returnError(interaction, 'Lacking permissions!'); return;
             }
 
             const sid = interaction.options.getString('suggestionid');
@@ -226,9 +217,7 @@ module.exports = {
 
         if (subcommand == 'decline') {
             if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageGuild)) {
-                confirmEmbed.setDescription('You do not have the appropriate permissions to use this command!').setColor('Red');
-
-                return interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
+                returnError(interaction, 'Lacking permissions!'); return;
             }
 
             const sid = interaction.options.getString('suggestionid');
@@ -284,9 +273,7 @@ module.exports = {
         }
         if (subcommand == 'consider') {
             if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageGuild)) {
-                confirmEmbed.setDescription('You do not have the appropriate permissions to use this command!').setColor('Red');
-
-                return interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
+                returnError(interaction, 'Lacking permissions!'); return;
             }
 
             const sid = interaction.options.getString('suggestionid');

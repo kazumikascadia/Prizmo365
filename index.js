@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const chalk = require('chalk');
 const Sequelize = require('sequelize');
-const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, Partials, EmbedBuilder } = require('discord.js');
 const { token } = require('./config.json'), deployment = require('./deploy-commands');
 
 // Create a new client instance

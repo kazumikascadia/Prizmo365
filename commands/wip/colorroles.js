@@ -1,5 +1,6 @@
 const { EmbedBuilder, SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
-const { devId } = require('../../config.json');
+const { returnError } = require('../../events/returnerror.js');
+const { clientId } = require('../../config.json');
 const { createCanvas } = require('@napi-rs/canvas');
 const fs = require('fs');
 
@@ -49,7 +50,7 @@ function sortList(crImport, uId, list) {
 async function findHighestRole(interaction) {
     const guild = await interaction.guild.fetch();
     guild.members.fetch(); guild.roles.fetch();
-    const botRole = interaction.guild.members.cache.find(me => me.id === devId).roles.highest.position;
+    const botRole = interaction.guild.members.cache.find(m => m.id === clientId).roles.highest.position;
     const posit = interaction.member.roles.cache.filter(r => r.name !== '@everyone').sort((a, b) => b.position - a.position).filter(r => r.color != 0)
         .filter(r => r.position < botRole).map(r => r.rawPosition)[0];
     return posit;
@@ -157,8 +158,7 @@ module.exports = {
                 color = createColor(c);
                 attachment = createImage(c);
                 if (color == 'null') {
-                    cEmbed.setTitle('Failed!').setDescription('Can\'t catch that color! Try again!').setColor('Red');
-                    return interaction.reply({ embeds: [cEmbed] });
+                    returnError(interaction, `Error executing ${interaction.commandName}: No such color exists.`);
                 }
                 posit = await findHighestRole(interaction);
                 await createColorRole(interaction, color, posit);
@@ -181,14 +181,15 @@ module.exports = {
                 break;
 
             case 'list':
-                cList = [];
-                sortList(crImport, uId, cList);
-                cList = cList.map(i => [`**${cList.indexOf(i) + 1}.** ${i}`]);
-                await iUser.fetch(true);
+                returnError(interaction, 'lol');
+                // cList = [];
+                // sortList(crImport, uId, cList);
+                // cList = cList.map(i => [`**${cList.indexOf(i) + 1}.** ${i}`]);
+                // await iUser.fetch(true);
 
-                cEmbed.setTitle(`Role Colors for ${nickname}`).setDescription(`${cList.join('\n')}`).setColor(iUser.hexAccentColor);
+                // cEmbed.setTitle(`Role Colors for ${nickname}`).setDescription(`${cList.join('\n')}`).setColor(iUser.hexAccentColor);
 
-                interaction.reply({ embeds: [cEmbed] });
+                // interaction.reply({ embeds: [cEmbed] });
                 break;
 
             case 'import':
