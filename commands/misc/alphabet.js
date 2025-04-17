@@ -1,7 +1,7 @@
 // refactored by @fekie
 
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { returnError } = require('../../events/returnerror.js');
+const { returnError } = require('../../events/error.js');
 
 // We create the list of allowed characters. These are only
 // in uppercase which means that characters must be converted to uppercase.

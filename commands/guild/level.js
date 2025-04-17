@@ -1,5 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js'), fs = require('fs');
-const { returnError } = require('../../events/returnerror.js');
+const { returnError } = require('../../events/error.js');
 
 function createPBar(reqXp, uXp) {
     let pBar = '[';

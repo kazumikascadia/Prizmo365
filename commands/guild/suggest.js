@@ -1,7 +1,7 @@
 const { EmbedBuilder, SlashCommandBuilder, Client, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
 const { token } = require('../../config.json');
-const { returnError } = require('../../events/returnerror.js');
+const { returnError } = require('../../events/error.js');
 
 module.exports = {
     data: new SlashCommandBuilder()

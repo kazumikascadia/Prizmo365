@@ -1,10 +1,10 @@
 const { EmbedBuilder, SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
-const { returnError } = require('../../events/returnerror.js');
+const { returnError } = require('../../events/error.js');
 const { clientId } = require('../../config.json');
 const { createCanvas } = require('@napi-rs/canvas');
 const fs = require('fs');
 
-function createColor(c) {
+function createColor(c, interaction) {
     const c2 = c.value ?? c;
     let color;
     if (c2.includes('#')) {
@@ -16,7 +16,8 @@ function createColor(c) {
     //     color = clImport[c].hex;
     // }
     else {
-        color = 'null';
+        returnError(interaction, 'No such color exists!');
+        color = false;
     }
 
     return color;
@@ -155,11 +156,9 @@ module.exports = {
 
         switch (subcommand) {
             case 'create':
-                color = createColor(c);
+                color = createColor(c, interaction);
+                if (color == false) { break; }
                 attachment = createImage(c);
-                if (color == 'null') {
-                    returnError(interaction, `Error executing ${interaction.commandName}: No such color exists.`);
-                }
                 posit = await findHighestRole(interaction);
                 await createColorRole(interaction, color, posit);
 
@@ -193,7 +192,8 @@ module.exports = {
                 break;
 
             case 'import':
-                color = createColor(crImport[uId][index.value]);
+                color = createColor(crImport[uId][index.value], interaction);
+                if (color == false) { break; }
                 attachment = createImage(crImport[uId][index.value]);
                 posit = await findHighestRole(interaction);
                 await createColorRole(interaction, color, posit);

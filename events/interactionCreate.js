@@ -1,6 +1,6 @@
 // derived from https://discordjs.guide/
 const { Events } = require('discord.js');
-const { returnError } = require ('./returnerror.js');
+const { returnError } = require ('./error.js');
 
 module.exports = {
 	name: Events.InteractionCreate,
