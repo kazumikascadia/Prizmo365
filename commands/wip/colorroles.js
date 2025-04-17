@@ -46,18 +46,29 @@ function sortList(crImport, uId, list) {
     }
 }
 
-async function findHighestRole(roles, gUser, interaction) {
-    roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
-    const m = interaction.guild.fetch(true).then(guild => guild.members.fetch());
+async function findHighestRole(interaction) {
+    const guild = await interaction.guild.fetch();
+    guild.members.fetch(); guild.roles.fetch();
     const botRole = interaction.guild.members.cache.find(me => me.id === devId).roles.highest.position;
+    const posit = interaction.member.roles.cache.filter(r => r.name !== '@everyone').sort((a, b) => b.position - a.position).filter(r => r.color != 0)
+        .filter(r => r.position < botRole).map(r => r.rawPosition)[0];
+    return posit;
+}
 
-    console.log(botRole);
+async function createColorRole(interaction, color, posit) {
+    let roles = await interaction.guild.fetch(true).then(guild => guild.roles.fetch());
+    let uRole;
 
-    console.log(gUser.roles.cache.filter(r => r.name !== '@everyone').filter(r => r.color != 0).filter(r => r.position < 6).map(r => `${r.name}`).join(', '));
-
-    // for (const x in gUser.roles) {
-    // }
-
+    if (!roles.find(r => r.name === `${interaction.user.username}`)) {
+        interaction.guild.roles.create({ name: `${interaction.user.username}`, color: color, position: posit + 1 });
+        roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
+        uRole = roles.find(r => r.name === `${interaction.user.username}`);
+    }
+    else {
+        uRole = roles.find(r => r.name === `${interaction.user.username}`);
+        uRole.edit({ color: color, position: posit });
+    }
+    interaction.member.roles.add(uRole);
 }
 
 module.exports = {
@@ -117,10 +128,8 @@ module.exports = {
             crImport = JSON.parse(fs.readFileSync(crData));
         const colorList = 'database/colors.json',
             clImport = JSON.parse(fs.readFileSync(colorList));
-        const server = await interaction.guild.fetch(true);
         const iUser = interaction.user;
         const uId = iUser.id;
-        const gUser = server.members.cache.get(uId);
         const nickname = iUser.nickname ?? iUser.displayName;
         const avatar = iUser.displayAvatarURL();
         const subcommand = interaction.options.getSubcommand();
@@ -129,14 +138,11 @@ module.exports = {
         const c = interaction.options.get('color');
         let color;
         let attachment;
-        let mRoles;
         let cList;
+        let posit;
         const cEmbed = new EmbedBuilder()
             .setAuthor({ name: nickname, iconURL: avatar })
             .setTimestamp(+new Date());
-
-        let roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
-        let uRole;
 
         if (!crImport[uId]) {
             crImport[uId] = {};
@@ -150,30 +156,14 @@ module.exports = {
             case 'create':
                 color = createColor(c);
                 attachment = createImage(c);
-                mRoles = gUser.roles.cache.filter(r => r.color !== '0').map(r => `${r}`);
-                console.log(mRoles);
                 if (color == 'null') {
                     cEmbed.setTitle('Failed!').setDescription('Can\'t catch that color! Try again!').setColor('Red');
                     return interaction.reply({ embeds: [cEmbed] });
                 }
+                posit = await findHighestRole(interaction);
+                await createColorRole(interaction, color, posit);
 
-                cEmbed
-                    .setTitle('Set your new Color Role!')
-                    .setDescription(`Your color has been set to ${c.value}`)
-                    .setColor(color)
-                    .setImage('attachment://color.jpg');
-
-                if (!roles.find(r => r.name === `${iUser.username}`)) {
-                    server.roles.create({ name: `${iUser.username}`, color: color, position: gUser.roles.highest.position + 1 });
-                    roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
-                    uRole = roles.find(r => r.name === `${iUser.username}`);
-                }
-                else {
-                    uRole = roles.find(r => r.name === `${iUser.username}`);
-                    uRole.edit({ color: color, position: gUser.roles.highest.position });
-                }
-                await gUser.roles.add(uRole);
-
+                cEmbed.setTitle('Set your new Color Role!').setDescription(`Your color has been set to ${c.value}`).setColor(color).setImage('attachment://color.jpg');
                 interaction.reply({ embeds: [cEmbed], files: [attachment] });
                 break;
 
@@ -191,7 +181,6 @@ module.exports = {
                 break;
 
             case 'list':
-                findHighestRole(roles, gUser, interaction);
                 cList = [];
                 sortList(crImport, uId, cList);
                 cList = cList.map(i => [`**${cList.indexOf(i) + 1}.** ${i}`]);
@@ -203,22 +192,13 @@ module.exports = {
                 break;
 
             case 'import':
-                color = createColor(crImport[uId][name.value]);
-                attachment = createImage(crImport[uId][name.value]);
-                roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
+                color = createColor(crImport[uId][index.value]);
+                attachment = createImage(crImport[uId][index.value]);
+                posit = await findHighestRole(interaction);
+                await createColorRole(interaction, color, posit);
 
-                if (!roles.find(r => r.name === `${iUser.username}`)) {
-                    server.roles.create({ name: `${iUser.username}`, color: color, position: gUser.roles.highest.position + 1 });
-                    roles = await interaction.guild.fetch().then(guild => guild.roles.fetch());
-                    uRole = roles.find(r => r.name === `${iUser.username}`);
-                }
-                else {
-                    uRole = roles.find(r => r.name === `${iUser.username}`);
-                    uRole.edit({ color: color, position: gUser.roles.highest.position });
-                }
-                await gUser.roles.add(uRole);
-
-                cEmbed.setColor(color).setTitle('Successful Import').setDescription(`Successfully imported your color ${name.value}: ${crImport[uId][name.value]}.`).setImage('attachment://color.jpg');
+                cEmbed.setColor(color).setTitle('Successful Import').setDescription(`Successfully imported your color **${crImport[uId][index.value].split(': ')[0]}**: 
+                    ${crImport[uId][index.value].split(': ')[1]}.`).setImage('attachment://color.jpg');
                 interaction.reply({ embeds: [cEmbed], files: [attachment] });
                 break;
         }
