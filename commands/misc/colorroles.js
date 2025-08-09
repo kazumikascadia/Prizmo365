@@ -180,15 +180,18 @@ module.exports = {
                 break;
 
             case 'list':
-                returnError(interaction, 'lol');
-                // cList = [];
-                // sortList(crImport, uId, cList);
-                // cList = cList.map(i => [`**${cList.indexOf(i) + 1}.** ${i}`]);
-                // await iUser.fetch(true);
+                cList = [];
+                if (crImport === null) {
+                    returnError('No colors to import.');
+                    break;
+                }
+                sortList(crImport, uId, cList);
+                cList = cList.map(i => [`**${cList.indexOf(i) + 1}.** ${i}`]);
+                await iUser.fetch(true);
 
-                // cEmbed.setTitle(`Role Colors for ${nickname}`).setDescription(`${cList.join('\n')}`).setColor(iUser.hexAccentColor);
+                cEmbed.setTitle(`Role Colors for ${nickname}`).setDescription(`${cList.join('\n')}`).setColor(iUser.hexAccentColor);
 
-                // interaction.reply({ embeds: [cEmbed] });
+                interaction.reply({ embeds: [cEmbed] });
                 break;
 
             case 'import':

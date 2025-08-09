@@ -1,5 +1,5 @@
 /* eslint-disable quotes */
-const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js'), fs = require('fs');
+const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, ChannelType } = require('discord.js'), fs = require('fs');
 const { json } = require('sequelize');
 
 module.exports = {
@@ -46,6 +46,7 @@ module.exports = {
                     option
                         .setName('channel')
                         .setDescription('Starboard Channel of your choosing.')
+                        .addChannelTypes(ChannelType.GuildText)
                         .setRequired(true),
                 )
                 .addIntegerOption(option =>
@@ -63,6 +64,7 @@ module.exports = {
                     option
                         .setName('channel')
                         .setDescription('Sets the channel you want to be the suggestions channel.')
+                        .addChannelTypes(ChannelType.GuildText)
                         .setRequired(true),
                 ),
         )
@@ -79,7 +81,8 @@ module.exports = {
                 .addChannelOption(option =>
                     option
                         .setName('levelschannel')
-                        .setDescription('The channel where you want level notifications to be sent.'),
+                        .setDescription('The channel where you want level notifications to be sent.')
+                        .addChannelTypes(ChannelType.GuildText),
                 ),
         )
         .addSubcommand(subcommand =>
