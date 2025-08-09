@@ -101,6 +101,16 @@ module.exports = {
                         .setDescription('The reward you want this level to give.')
                         .setRequired(true),
                 ),
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('colorroles')
+                .setDescription('Allows you to set up user role colors in your server!')
+                .addBooleanOption(o => o
+                    .setName('active')
+                    .setDescription('Whether levels are turned on or off')
+                    .setRequired(true),
+                ),
         ),
     async execute(interaction) {
         const guilddata = 'data/guilddata.json';
@@ -119,14 +129,6 @@ module.exports = {
         if (!gdImport[guildId]) {
             const defaultSettings = {
                 'owner': `${interaction.guild.ownerId}`,
-                'color': '',
-                'levels': 'false',
-                'welcomechannel': '',
-                'exitchannel': '',
-                'autorole': '',
-                'suggestionschannel': '',
-                'starboardchannel': '',
-                'requiredstars': '',
             };
             gdImport[guildId] = defaultSettings;
             fs.writeFileSync(
@@ -300,6 +302,34 @@ module.exports = {
             }
             else {
                 confirmEmbed.setDescription('That role does not exist, so it was unable to be set.').setColor('Red');
+                interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
+            }
+        }
+
+        if (subcommand == 'colorroles') {
+            const colorBoolean = interaction.options.getBoolean('active');
+            console.log(colorBoolean);
+            const confirmEmbed = new EmbedBuilder()
+                .setTimestamp(+new Date());
+
+            if (colorBoolean == true) {
+                gdImport[guildId].colorroles = 'true';
+                fs.writeFileSync(
+                    guilddata,
+                    JSON.stringify(gdImport, null, 2),
+                );
+
+                confirmEmbed.setDescription('Color roles have been activated in this server.').setColor('Green');
+                interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
+            }
+            else {
+                gdImport[guildId].colorroles = 'false';
+                fs.writeFileSync(
+                    guilddata,
+                    JSON.stringify(gdImport, null, 2),
+                );
+
+                confirmEmbed.setDescription('Color roles have been deactivated in this server.').setColor('Red');
                 interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
             }
         }

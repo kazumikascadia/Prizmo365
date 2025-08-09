@@ -141,7 +141,7 @@ module.exports = {
 
         // fetch the information of the user who used this command, as well as the guild they are in
         const iUser = interaction.user;
-        const mUser = await interaction.options.getUser('target').fetch(true) || iUser.fetch(true);
+        const mUser = await interaction.options.getUser('target') || iUser;
         const server = interaction.guild;
         const infoEmbed = gatherBaseInfo(interaction);
 

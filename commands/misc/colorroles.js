@@ -125,6 +125,16 @@ module.exports = {
                 ),
         ),
     async execute(interaction) {
+        // checks if the command is active
+        const guilddata = 'data/guilddata.json',
+            gdImport = JSON.parse(fs.readFileSync(guilddata));
+        const guildId = interaction.guild.id;
+        if (!gdImport[guildId] || !gdImport[guildId].colorroles || (gdImport[guildId].colorroles == 'false')) {
+            returnError(interaction, 'Color roles are deactivated in this server!');
+            return;
+        }
+
+
         // sets up all necessary constants for the embed
         const crData = 'data/colorroledata.json',
             crImport = JSON.parse(fs.readFileSync(crData));
