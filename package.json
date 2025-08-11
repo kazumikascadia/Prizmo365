@@ -1,6 +1,6 @@
 {
     "name": "prizmo365",
-    "version": "b2.9.4",
+    "version": "b2.9.6",
     "description": "A multipurpose Discord bot.",
     "main": "index.js",
     "scripts": {

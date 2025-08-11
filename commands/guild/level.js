@@ -102,8 +102,8 @@ module.exports = {
         }
         else { gdColor == 'Green'; }
 
-        if (gdImport[guildId].levels == 'false') {
-            returnError(interaction, `Levels are disabled for server ${interaction.guild}`);
+        if (gdImport[guildId].levels == 'false' || !gdImport[guildId].levels) {
+            returnError(interaction, 'Levels are disabled for this server.');
             return;
         }
 

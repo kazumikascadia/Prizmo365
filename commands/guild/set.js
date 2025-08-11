@@ -1,6 +1,12 @@
 /* eslint-disable quotes */
 const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, ChannelType } = require('discord.js'), fs = require('fs');
-const { json } = require('sequelize');
+
+function writeData(d, i) {
+    fs.writeFileSync(
+        d,
+        JSON.stringify(i, null, 2),
+    );
+}
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -131,10 +137,7 @@ module.exports = {
                 'owner': `${interaction.guild.ownerId}`,
             };
             gdImport[guildId] = defaultSettings;
-            fs.writeFileSync(
-                guilddata,
-                JSON.stringify(gdImport, null, 4),
-            );
+            writeData(guilddata, gdImport);
             console.log(`Guild ${interaction.guild.name} added to database, ID${guildId}`);
         }
 
@@ -151,10 +154,7 @@ module.exports = {
             else { nColor = 'Random'; }
 
             gdImport[guildId].color = nColor;
-            fs.writeFileSync(
-                guilddata,
-                JSON.stringify(gdImport, null, 2),
-            );
+            writeData(guilddata, gdImport);
 
             setEmbed.setDescription(`Server color changed to ${chColor}.`).setColor(nColor);
             interaction.reply({ embeds: [setEmbed], ephemeral: true });
@@ -167,10 +167,7 @@ module.exports = {
 
             gdImport[guildId].starboardchannel = starChannelId;
             gdImport[guildId].requiredstars = reqStars;
-            fs.writeFileSync(
-                guilddata,
-                JSON.stringify(gdImport, null, 2),
-            );
+            writeData(guilddata, gdImport);
 
             const channelEmbed = new EmbedBuilder()
                 .setDescription('This channel has been set to receive starboard messages!')
@@ -195,10 +192,7 @@ module.exports = {
             const suggestChannelId = suggestChannel.id;
 
             gdImport[guildId].suggestionschannel = suggestChannelId;
-            fs.writeFileSync(
-                guilddata,
-                JSON.stringify(gdImport, null, 2),
-            );
+            writeData(guilddata, gdImport);
 
             const channelEmbed = new EmbedBuilder()
                 .setDescription('This channel has been set to receive suggestion messages!')
@@ -229,10 +223,7 @@ module.exports = {
 
             if (levelTrue == true) {
                 gdImport[guildId].levels = 'true';
-                fs.writeFileSync(
-                    guilddata,
-                    JSON.stringify(gdImport, null, 2),
-                );
+                writeData(guilddata, gdImport);
 
                 if (!levelchannel) {
                     confirmEmbed.setDescription(`This server has been set up to have an active level system.\nHowever, since there is no level channel set, there will be no notifications when a user levels up.\nReuse the command to set this up again.`);
@@ -248,10 +239,7 @@ module.exports = {
                         .setTimestamp(+new Date());
 
                     gdImport[guildId].levelchannel = levelchannelId;
-                    fs.writeFileSync(
-                        guilddata,
-                        JSON.stringify(gdImport, null, 2),
-                    );
+                    writeData(guilddata, gdImport);
 
                     if (interaction.guild.channels.cache.get(levelchannelId).type == '0') {
                         confirmEmbed.setDescription(`This server has been set up to have an active level system!\nLevel notifications channel set to **${levelchannel}**.`);
@@ -267,10 +255,7 @@ module.exports = {
             }
             else {
                 gdImport[guildId].levels = 'false';
-                fs.writeFileSync(
-                    guilddata,
-                    JSON.stringify(gdImport, null, 2),
-                );
+                writeData(guilddata, gdImport);
 
                 confirmEmbed.setDescription('Levels have been deactivated for this server.');
 
@@ -291,10 +276,7 @@ module.exports = {
                 }
                 else {
                     ldImport[guildId].rewards[lvl] = role.id;
-                    fs.writeFileSync(
-                        lvldata,
-                        JSON.stringify(ldImport, null, 2),
-                    );
+                    writeData(lvldata, ldImport);
                 }
 
                 confirmEmbed.setDescription(`${role} has been set as the reward for level ${lvl} in this server.`).setColor('Green');
@@ -308,26 +290,19 @@ module.exports = {
 
         if (subcommand == 'colorroles') {
             const colorBoolean = interaction.options.getBoolean('active');
-            console.log(colorBoolean);
             const confirmEmbed = new EmbedBuilder()
                 .setTimestamp(+new Date());
 
             if (colorBoolean == true) {
                 gdImport[guildId].colorroles = 'true';
-                fs.writeFileSync(
-                    guilddata,
-                    JSON.stringify(gdImport, null, 2),
-                );
+                writeData(guilddata, gdImport);
 
                 confirmEmbed.setDescription('Color roles have been activated in this server.').setColor('Green');
                 interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
             }
             else {
                 gdImport[guildId].colorroles = 'false';
-                fs.writeFileSync(
-                    guilddata,
-                    JSON.stringify(gdImport, null, 2),
-                );
+                writeData(guilddata, gdImport);
 
                 confirmEmbed.setDescription('Color roles have been deactivated in this server.').setColor('Red');
                 interaction.reply({ embeds: [confirmEmbed], ephemeral: true });

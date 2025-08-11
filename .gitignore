@@ -6,3 +6,4 @@ start.bat
 devIndex.js
 package-lock.json 
 /.ssh
+rsync-e.txt
