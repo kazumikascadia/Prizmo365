@@ -12,6 +12,7 @@ function generateConfirmEmbed(subcommand, interaction) {
     const setEmbed = new EmbedBuilder()
         .setAuthor({ name: interaction.user.nickname ?? interaction.user.displayName, iconURL: interaction.user.displayAvatarURL() })
         .setTimestamp(+new Date());
+    let statement, name;
 
     switch (subcommand) {
         case 'servercolor':
@@ -25,6 +26,17 @@ function generateConfirmEmbed(subcommand, interaction) {
             break;
         case 'suggestionschannel':
             setEmbed.setDescription(`Suggestions channel set to **${interaction.options.getChannel('channel')}**.`).setColor('Green');
+            break;
+        case 'levels', 'colorroles':
+            switch (subcommand) {
+                case 'levels': name = 'Levels'; break;
+                case 'colorroles': name = 'Color Roles'; break;
+            }
+            switch (interaction.options.getBoolean('active').toString()) {
+                case 'true': statement = 'activated'; setEmbed.setColor('Green'); break;
+                case 'false': statement = 'deactivated'; setEmbed.setColor('Red'); break;
+            }
+            setEmbed.setDescription(`${name} have been ${statement} in this server.`);
             break;
     }
 
@@ -208,54 +220,18 @@ module.exports = {
         }
 
         if (subcommand == 'levels') {
-            const levelTrue = interaction.options.getBoolean('active');
-            const levelchannel = interaction.options.getChannel('levelschannel');
-
-            const confirmEmbed = new EmbedBuilder()
-                .setDescription('This server has been set up to have an active level system!')
-                .setColor('Green')
-                .setTimestamp(+new Date());
-
-            if (levelTrue == true) {
-                gdImport[guildId].levels = 'true';
-                writeData(guilddata, gdImport);
-
-                if (!levelchannel) {
-                    confirmEmbed.setDescription(`This server has been set up to have an active level system.\nHowever, since there is no level channel set, there will be no notifications when a user levels up.\nReuse the command to set this up again.`);
-                    interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
-                }
-                else {
-                    const levelchannelId = levelchannel.id;
-
-                    const channelEmbed = new EmbedBuilder()
-                        .setDescription('This channel has been set to receive level notification messages!')
-                        .setFooter({ text: `Channel ID: ${levelchannelId}` })
-                        .setColor('Green')
-                        .setTimestamp(+new Date());
-
-                    gdImport[guildId].levelchannel = levelchannelId;
-                    writeData(guilddata, gdImport);
-
-                    if (interaction.guild.channels.cache.get(levelchannelId).type == '0') {
-                        confirmEmbed.setDescription(`This server has been set up to have an active level system!\nLevel notifications channel set to **${levelchannel}**.`);
-
-                        levelchannel.send({ embeds: [channelEmbed] });
-                    }
-                    else {
-                        setEmbed.setDescription(`Level notification channel set to **${levelchannel}**.\n However, since that is not a text channel, the level notifications will not work.`);
-                    }
-
-                    interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
-                }
+            if (interaction.options.getChannel('levelschannel')) {
+                const channelEmbed = new EmbedBuilder()
+                    .setDescription('This channel has been set to receive level notification messages!')
+                    .setFooter({ text: `Channel ID: ${interaction.options.getChannel('levelschannel').id}` })
+                    .setColor('Green')
+                    .setTimestamp(+new Date());
+                interaction.options.getChannel('levelschannel').send({ embeds: [channelEmbed] });
             }
-            else {
-                gdImport[guildId].levels = 'false';
-                writeData(guilddata, gdImport);
 
-                confirmEmbed.setDescription('Levels have been deactivated for this server.');
-
-                interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
-            }
+            gdImport[guildId].levels = interaction.options.getBoolean('active');
+            writeData(guilddata, gdImport);
+            generateConfirmEmbed(subcommand, interaction);
         }
 
         if (subcommand == 'lvlrewards') {
@@ -284,24 +260,9 @@ module.exports = {
         }
 
         if (subcommand == 'colorroles') {
-            const colorBoolean = interaction.options.getBoolean('active');
-            const confirmEmbed = new EmbedBuilder()
-                .setTimestamp(+new Date());
-
-            if (colorBoolean == true) {
-                gdImport[guildId].colorroles = 'true';
-                writeData(guilddata, gdImport);
-
-                confirmEmbed.setDescription('Color roles have been activated in this server.').setColor('Green');
-                interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
-            }
-            else {
-                gdImport[guildId].colorroles = 'false';
-                writeData(guilddata, gdImport);
-
-                confirmEmbed.setDescription('Color roles have been deactivated in this server.').setColor('Red');
-                interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
-            }
+            gdImport[guildId].colorroles = interaction.options.getBoolean('active');
+            writeData(guilddata, gdImport);
+            generateConfirmEmbed(subcommand, interaction);
         }
     },
 };
