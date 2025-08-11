@@ -8,6 +8,29 @@ function writeData(d, i) {
     );
 }
 
+function generateConfirmEmbed(subcommand, interaction) {
+    const setEmbed = new EmbedBuilder()
+        .setAuthor({ name: interaction.user.nickname ?? interaction.user.displayName, iconURL: interaction.user.displayAvatarURL() })
+        .setTimestamp(+new Date());
+
+    switch (subcommand) {
+        case 'servercolor':
+            setEmbed.setDescription(`The server color has been set to **${interaction.options.getString('color')}**`)
+                .setColor(parseInt('0x' + interaction.options.getString('color')
+                    .slice(interaction.options.getString('color').indexOf('#') + 1, interaction.options.getString('color').indexOf('#') + 7)));
+            break;
+        case 'starboard':
+            setEmbed.setDescription(`Starboard channel set to **${interaction.options.getChannel('channel')}** with a required amount of **${interaction.options.getInteger('starcount').toString()}**.`)
+                .setColor('Gold');
+            break;
+        case 'suggestionschannel':
+            setEmbed.setDescription(`Suggestions channel set to **${interaction.options.getChannel('channel')}**.`).setColor('Green');
+            break;
+    }
+
+    interaction.reply({ embeds: [setEmbed], ephemeral: true });
+}
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('set')
@@ -39,7 +62,7 @@ module.exports = {
                             { name: 'Evergreen 🌲', value: 'Evergreen 🌲 (#3e721d)' },
                             { name: 'Coffee ☕', value: 'Coffee ☕ (#8a4b38)' },
                             { name: 'Salt 🧂', value: 'Salt 🧂 (#ffffff)' },
-                            { name: 'Random ❓', value: 'Random ❓ (random color)' },
+                            // { name: 'Random ❓', value: 'Random ❓ (random color)' },
                             { name: 'Blurple 🎮', value: 'Blurple 🎮 (#5865F2)' },
                         ),
                 ),
@@ -142,22 +165,12 @@ module.exports = {
         }
 
         if (subcommand == 'servercolor') {
-            const chColor = interaction.options.getString('color');
-            let nColor;
-
-            if (chColor !== 'Random ❓ (random color)') {
-                const cIndex = chColor.indexOf('#');
-                const cValue = chColor.slice(cIndex + 1, cIndex + 7);
-
-                nColor = parseInt('0x' + cValue);
-            }
-            else { nColor = 'Random'; }
+            const nColor = parseInt('0x' + interaction.options.getString('color')
+                .slice(interaction.options.getString('color').indexOf('#') + 1, interaction.options.getString('color').indexOf('#') + 7));
 
             gdImport[guildId].color = nColor;
             writeData(guilddata, gdImport);
-
-            setEmbed.setDescription(`Server color changed to ${chColor}.`).setColor(nColor);
-            interaction.reply({ embeds: [setEmbed], ephemeral: true });
+            generateConfirmEmbed(subcommand, interaction);
         }
 
         if (subcommand == 'starboard') {
@@ -165,34 +178,22 @@ module.exports = {
             const starChannelId = starChannel.id;
             const reqStars = interaction.options.getInteger('starcount').toString();
 
-            gdImport[guildId].starboardchannel = starChannelId;
-            gdImport[guildId].requiredstars = reqStars;
-            writeData(guilddata, gdImport);
-
             const channelEmbed = new EmbedBuilder()
                 .setDescription('This channel has been set to receive starboard messages!')
                 .setFooter({ text: `Channel ID: ${starChannelId}` })
                 .setColor('Gold')
                 .setTimestamp(+new Date());
 
-            if (interaction.guild.channels.cache.get(starChannelId).type == '0') {
-                setEmbed.setDescription(`Starboard channel set to **${starChannel}** with a required amount of **${reqStars}**.`).setColor('Gold');
-
-                starChannel.send({ embeds: [channelEmbed] });
-            }
-            else {
-                setEmbed.setDescription(`Starboard channel set to **${starChannel}** with a required amount of **${reqStars}**.\n However, since that is not a text channel, the starboard will not work.`).setColor('Red');
-            }
-
-            interaction.reply({ embeds: [setEmbed], ephemeral: true });
+            gdImport[guildId].starboardchannel = starChannelId;
+            gdImport[guildId].requiredstars = reqStars;
+            writeData(guilddata, gdImport);
+            starChannel.send({ embeds: [channelEmbed] });
+            generateConfirmEmbed(subcommand, interaction);
         }
 
         if (subcommand == 'suggestionschannel') {
             const suggestChannel = interaction.options.getChannel('channel');
             const suggestChannelId = suggestChannel.id;
-
-            gdImport[guildId].suggestionschannel = suggestChannelId;
-            writeData(guilddata, gdImport);
 
             const channelEmbed = new EmbedBuilder()
                 .setDescription('This channel has been set to receive suggestion messages!')
@@ -200,16 +201,10 @@ module.exports = {
                 .setColor('Green')
                 .setTimestamp(+new Date());
 
-            if (interaction.guild.channels.cache.get(suggestChannelId).type == '0') {
-                setEmbed.setDescription(`Suggestions channel set to **${suggestChannel}**.`).setColor('Green');
-
-                suggestChannel.send({ embeds: [channelEmbed] });
-            }
-            else {
-                setEmbed.setDescription(`Suggestions channel set to **${suggestChannel}**.\n However, since that is not a text channel, the suggestions will not work.`).setColor('Red');
-            }
-
-            interaction.reply({ embeds: [setEmbed], ephemeral: true });
+            gdImport[guildId].suggestionschannel = suggestChannelId;
+            writeData(guilddata, gdImport);
+            suggestChannel.send({ embeds: [channelEmbed] });
+            generateConfirmEmbed(subcommand, interaction);
         }
 
         if (subcommand == 'levels') {
