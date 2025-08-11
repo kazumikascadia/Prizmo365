@@ -102,7 +102,7 @@ module.exports = {
         }
         else { gdColor == 'Green'; }
 
-        if (gdImport[guildId].levels == 'false' || !gdImport[guildId].levels) {
+        if (gdImport[guildId].levels == false || !gdImport[guildId].levels) {
             returnError(interaction, 'Levels are disabled for this server.');
             return;
         }

@@ -129,7 +129,7 @@ module.exports = {
         const guilddata = 'data/guilddata.json',
             gdImport = JSON.parse(fs.readFileSync(guilddata));
         const guildId = interaction.guild.id;
-        if (!gdImport[guildId] || !gdImport[guildId].colorroles || (gdImport[guildId].colorroles == 'false')) {
+        if (!gdImport[guildId] || !gdImport[guildId].colorroles || (gdImport[guildId].colorroles == false)) {
             returnError(interaction, 'Color roles are deactivated in this server!');
             return;
         }

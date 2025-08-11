@@ -3,6 +3,13 @@ const fs = require('fs');
 const { token } = require('../../config.json');
 const { returnError } = require('../../events/error.js');
 
+function writeData(data, iData) {
+    fs.writeFileSync(
+        data,
+        JSON.stringify(iData, null, 2),
+    );
+}
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('suggest')
@@ -81,17 +88,15 @@ module.exports = {
         // imports guild data and suggestion data
         const guilddata = 'data/guilddata.json',
             gdImport = JSON.parse(fs.readFileSync(guilddata));
-
         const suggestdata = 'data/suggestdata.json',
             sdImport = JSON.parse(fs.readFileSync(suggestdata));
-
         const guildId = interaction.guild.id;
         const iUser = interaction.user,
             nickname = iUser.nickname ?? iUser.displayName,
             avatar = iUser.displayAvatarURL();
 
         // checks all requirements
-        if (!gdImport[guildId] || gdImport[guildId].suggestionschannel == '') {
+        if (!gdImport[guildId] || !gdImport[guildId].suggestionschannel) {
             returnError(interaction, 'No suggestions channel found.'); return false;
         }
         if (!interaction.guild.channels.cache.get(gdImport[guildId].suggestionschannel)) return false;
@@ -101,10 +106,7 @@ module.exports = {
 
             };
             sdImport[guildId] = format;
-            fs.writeFileSync(
-                suggestdata,
-                JSON.stringify(sdImport, null, 2),
-            );
+            writeData(suggestdata, sdImport);
         }
 
         const subcommand = interaction.options.getSubcommand();
@@ -142,10 +144,7 @@ module.exports = {
                 'status': 'new',
             };
             sdImport[guildId][sid] = sFormat;
-            fs.writeFileSync(
-                suggestdata,
-                JSON.stringify(sdImport, null, 2),
-            );
+            writeData(suggestdata, sdImport);
 
             confirmEmbed.setDescription('Suggestion submitted.');
             const sMessage = await suggestChannel.send({ embeds: [suggestEmbed] });
@@ -205,10 +204,7 @@ module.exports = {
                 .setFooter({ text: `Suggestion ID: ${sid}` });
 
             sdImport[guildId][sid].status = 'approved';
-            fs.writeFileSync(
-                suggestdata,
-                JSON.stringify(sdImport, null, 2),
-            );
+            writeData(suggestdata, sdImport);
 
             confirmEmbed.setDescription('Suggestion approved.');
             suggestChannel.send({ embeds: [suggestEmbed] });
@@ -262,10 +258,7 @@ module.exports = {
                 .setFooter({ text: `Suggestion ID: ${sid}` });
 
             sdImport[guildId][sid].status = 'declined';
-            fs.writeFileSync(
-                suggestdata,
-                JSON.stringify(sdImport, null, 2),
-            );
+            writeData(suggestdata, sdImport);
 
             confirmEmbed.setDescription('Suggestion declined.');
             suggestChannel.send({ embeds: [suggestEmbed] });
@@ -318,10 +311,7 @@ module.exports = {
                 .setFooter({ text: `Suggestion ID: ${sid}` });
 
             sdImport[guildId][sid].status = 'considered';
-            fs.writeFileSync(
-                suggestdata,
-                JSON.stringify(sdImport, null, 2),
-            );
+            writeData(suggestdata, sdImport);
 
             confirmEmbed.setDescription('Suggestion marked as considered.');
             suggestChannel.send({ embeds: [suggestEmbed] });

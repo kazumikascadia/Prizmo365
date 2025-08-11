@@ -1,10 +1,10 @@
 /* eslint-disable quotes */
 const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, ChannelType } = require('discord.js'), fs = require('fs');
 
-function writeData(d, i) {
+function writeData(data, iData) {
     fs.writeFileSync(
-        d,
-        JSON.stringify(i, null, 2),
+        data,
+        JSON.stringify(iData, null, 2),
     );
 }
 
