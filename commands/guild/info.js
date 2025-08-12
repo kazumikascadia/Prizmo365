@@ -14,101 +14,119 @@ function gatherBaseInfo(interaction) {
     return infoEmbed;
 }
 
-function gatherUserInfo(interaction, server, mUser) {
-    const uid = mUser.id;
-    const mavatar = mUser.displayAvatarURL({ dynamic: true, size: 1024, format: 'png' }) ?? mUser.defaultAvatarURL({ dynamic: true, size: 960, format: 'png' });
-    const gUser = server.members.cache.get(uid);
-    const accentColor = mUser.hexAccentColor;
-    // find all of the roles of the selected user, then map and join them together in a string (all excluding @everyone)
-    // create a new variable just for the length of the roles string
-    // create a dictionary for all user flags (items that appear on the user as badges)
-    const flags = {
-        ActiveDeveloper: 'Active Developer',
-        BugHunterLevel1: 'Bug Hunter Level 1',
-        BugHunterLevel2: 'Bug Hunter Level 2',
-        CertifiedModerator: 'Certified Moderator Alumni',
-        HypeSquadOnlineHouse1: 'House Bravery Member',
-        HypeSquadOnlineHouse2: 'House Brilliance Member',
-        HypeSquadOnlineHouse3: 'House Balance Member',
-        HypeSquad: 'HypeSquad Events Member',
-        Parnter: 'Partnered Server Owner',
-        PremiumEarlySupporter: 'Early Nitro Supporter',
-        Staff: 'Discord Employee',
-        VerifiedBot: 'Verified Bot',
-        VerifiedDeveloper: 'Verified Bot Developer',
-    };
-    // create an array of all the user's flags
-    const uFlags = mUser.flags.toArray();
-    // create a dictionary for all user presences; specifically, this will differentiate if the user is offline or just hidden
-    const statuses = {
-        online: 'Online',
-        idle: 'Idle',
-        dnd: 'Do Not Disturb',
-        offline: 'Invisible',
-        off: 'Offline',
-    };
-    function gatherRoles() {
-        let roles = gUser.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).join(', ');
-        let rLength = roles.split(', ').length;
-        if (`${roles}` == '') {
-            roles = 'No roles';
-            rLength = '0';
-        }
+// async function gatherUserInfo(interaction, server) {
+//     const iUser = interaction.user;
+//     let mUser;
+//     if (!interaction.options.getUser('target')) {
+//         mUser = iUser.fetch(true);
 
-        return {
-            roles: roles,
-            length: rLength,
-        };
-    }
+//     }
+//     else {
+//         mUser = await interaction.options.getUser('target').fetch(true);
+//     }
+//     const uid = mUser.id;
+//     const mavatar = mUser.displayAvatarURL({ dynamic: true, size: 1024, format: 'png' }) ?? mUser.defaultAvatarURL({ dynamic: true, size: 960, format: 'png' });
+//     const gUser = server.members.cache.get(uid);
+//     const accentColor = mUser.hexAccentColor;
+//     // find all of the roles of the selected user, then map and join them together in a string (all excluding @everyone)
+//     // create a new variable just for the length of the roles string
+//     // create a dictionary for all user flags (items that appear on the user as badges)
+//     const flags = {
+//         ActiveDeveloper: 'Active Developer',
+//         BugHunterLevel1: 'Bug Hunter Level 1',
+//         BugHunterLevel2: 'Bug Hunter Level 2',
+//         CertifiedModerator: 'Certified Moderator Alumni',
+//         HypeSquadOnlineHouse1: 'House Bravery Member',
+//         HypeSquadOnlineHouse2: 'House Brilliance Member',
+//         HypeSquadOnlineHouse3: 'House Balance Member',
+//         HypeSquad: 'HypeSquad Events Member',
+//         Parnter: 'Partnered Server Owner',
+//         PremiumEarlySupporter: 'Early Nitro Supporter',
+//         Staff: 'Discord Employee',
+//         VerifiedBot: 'Verified Bot',
+//         VerifiedDeveloper: 'Verified Bot Developer',
+//     };
+//     // create an array of all the user's flags
+//     const uFlags = mUser.flags.toArray();
+//     // create a dictionary for all user presences; specifically, this will differentiate if the user is offline or just hidden
+//     const statuses = {
+//         online: 'Online',
+//         idle: 'Idle',
+//         dnd: 'Do Not Disturb',
+//         offline: 'Invisible',
+//         off: 'Offline',
+//     };
+//     function gatherRoles() {
+//         let roles = gUser.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).join(', ');
+//         let rLength = roles.split(', ').length;
+//         if (`${roles}` == '') {
+//             roles = 'No roles';
+//             rLength = '0';
+//         }
 
-    let title;
-    // if the user is NOT a bot, set the title to just be their username
-    if (!mUser.bot) {
-        title = mUser.username;
-    }
-    // if the user is a bot, add a bot tag to the title
-    else {
-        title = mUser.username + ' [BOT]';
-    }
+//         return {
+//             roles: roles,
+//             length: rLength,
+//         };
+//     }
 
-    // return an array of the userInfo
-    const mUI = {
-        title: title,
-        uid: uid,
-        gUser: gUser,
-        status: statuses[gUser.presence ? gUser.presence.status : 'off'],
-        uFlags: uFlags,
-        flags: flags,
-        roles: {
-            roles: gatherRoles().length,
-            length: gatherRoles().length,
-        },
-        accentColor: accentColor,
-        mavatar: mavatar,
-    };
-    return mUI;
-}
+//     let title;
+//     // if the user is NOT a bot, set the title to just be their username
+//     if (!mUser.bot) {
+//         title = mUser.username;
+//     }
+//     // if the user is a bot, add a bot tag to the title
+//     else {
+//         title = mUser.username + ' [BOT]';
+//     }
 
-async function generateUserInfoEmbed(interaction, server, mUser) {
-    const infoEmbed = await gatherBaseInfo(interaction);
-    const mUI = await gatherUserInfo(interaction, server, mUser);
-    console.log(mUI);
-    infoEmbed
-        .setTitle(mUI.title)
-        .setDescription(`Known as ${mUser}; currently set to ${mUI.status}`)
-        .addFields(
-            { name: `Roles [${mUI.roles.length}]:`, value: mUI.roles.roles ?? 'No roles' },
-            { name: 'Flags:', value: `${mUI.uFlags.length ? mUI.uFlags.map(flag => mUI.flags[flag]).join(', ') : 'None'}` },
-            { name: 'Joined Discord:', value: `${moment.utc(mUser.createdAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(mUser.createdAt).fromNow()})`, inline: true },
-            { name: 'Joined Server:', value: `${moment.utc(mUI.gUser.joinedAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(mUI.gUser.joinedAt).fromNow()})`, inline: true },
-        )
-        .setColor(mUI.accentColor)
-        .setThumbnail(mUI.mavatar)
-        .setFooter({ text: `ID: ${mUI.uid}` });
+//     // return an array of the userInfo
+//     const mUI = {
+//         title: title,
+//         uid: uid,
+//         gUser: gUser,
+//         status: statuses[gUser.presence ? gUser.presence.status : 'off'],
+//         uFlags: uFlags,
+//         flags: flags,
+//         roles: {
+//             roles: gatherRoles().length,
+//             length: gatherRoles().length,
+//         },
+//         accentColor: accentColor,
+//         mavatar: mavatar,
+//     };
+//     return mUI;
+// }
 
-    interaction.reply({ embeds: [infoEmbed] });
-}
+// async function generateUserInfoEmbed(interaction, server) {
+//     const iUser = interaction.user;
+//     let mUser;
+//     if (!interaction.options.getUser('target')) {
+//         mUser = iUser.fetch(true);
 
+//     }
+//     else {
+//         mUser = await interaction.options.getUser('target').fetch(true);
+//     }
+
+//     const mUI = await gatherUserInfo(interaction, server);
+//     const infoEmbed = new EmbedBuilder()
+//         .setTitle(mUI.title)
+//         .setDescription(`Known as ${mUser}; currently set to ${mUI.status}`)
+//         .addFields(
+//             { name: `Roles [${mUI.roles.length}]:`, value: mUI.roles.roles ?? 'No roles' },
+//             { name: 'Flags:', value: `${mUI.uFlags.length ? mUI.uFlags.map(flag => mUI.flags[flag]).join(', ') : 'None'}` },
+//             { name: 'Joined Discord:', value: `${moment.utc(mUser.createdAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(mUser.createdAt).fromNow()})`, inline: true },
+//             { name: 'Joined Server:', value: `${moment.utc(mUI.gUser.joinedAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(mUI.gUser.joinedAt).fromNow()})`, inline: true },
+//         )
+//         .setColor(mUI.accentColor)
+//         .setThumbnail(mUI.mavatar)
+//         .setFooter({ text: `ID: ${mUI.uid}` })
+//         .setAuthor({ name: iUser.nickname ?? iUser.displayName, iconURL: iUser.displayAvatarURL() })
+//         .setTimestamp(+new Date());
+
+//     interaction.reply({ embeds: [infoEmbed] });
+// }
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -141,7 +159,6 @@ module.exports = {
 
         // fetch the information of the user who used this command, as well as the guild they are in
         const iUser = interaction.user;
-        const mUser = await interaction.options.getUser('target') || iUser;
         const server = interaction.guild;
         const infoEmbed = gatherBaseInfo(interaction);
 
@@ -163,7 +180,97 @@ module.exports = {
         //         break;
         // }
         if (subcommand === 'user') {
-            generateUserInfoEmbed(interaction, server, mUser);
+            let mUser;
+            if (!interaction.options.getUser('target')) {
+                mUser = iUser.fetch(true);
+
+            }
+            else {
+                mUser = await interaction.options.getUser('target').fetch(true);
+            }
+            const uid = mUser.id;
+            const mavatar = mUser.displayAvatarURL({ dynamic: true, size: 1024, format: 'png' }) ?? mUser.defaultAvatarURL({ dynamic: true, size: 960, format: 'png' });
+            const gUser = server.members.cache.get(uid);
+            const accentColor = mUser.hexAccentColor;
+            // find all of the roles of the selected user, then map and join them together in a string (all excluding @everyone)
+            // create a new variable just for the length of the roles string
+            // create a dictionary for all user flags (items that appear on the user as badges)
+            const flags = {
+                ActiveDeveloper: 'Active Developer',
+                BugHunterLevel1: 'Bug Hunter Level 1',
+                BugHunterLevel2: 'Bug Hunter Level 2',
+                CertifiedModerator: 'Certified Moderator Alumni',
+                HypeSquadOnlineHouse1: 'House Bravery Member',
+                HypeSquadOnlineHouse2: 'House Brilliance Member',
+                HypeSquadOnlineHouse3: 'House Balance Member',
+                HypeSquad: 'HypeSquad Events Member',
+                Parnter: 'Partnered Server Owner',
+                PremiumEarlySupporter: 'Early Nitro Supporter',
+                Staff: 'Discord Employee',
+                VerifiedBot: 'Verified Bot',
+                VerifiedDeveloper: 'Verified Bot Developer',
+            };
+            // create an array of all the user's flags
+            const uFlags = mUser.flags.toArray();
+            // create a dictionary for all user presences; specifically, this will differentiate if the user is offline or just hidden
+            const statuses = {
+                online: 'Online',
+                idle: 'Idle',
+                dnd: 'Do Not Disturb',
+                offline: 'Invisible',
+                off: 'Offline',
+            };
+            let roles = gUser.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).join(', ');
+            let rLength = roles.split(', ').length;
+            if (`${roles}` == '') {
+                roles = 'No roles';
+                rLength = '0';
+            }
+
+            let title;
+            // if the user is NOT a bot, set the title to just be their username
+            if (!mUser.bot) {
+                title = mUser.username;
+            }
+            // if the user is a bot, add a bot tag to the title
+            else {
+                title = mUser.username + ' [BOT]';
+            }
+
+            // return an array of the userInfo
+            const mUI = {
+                title: title,
+                uid: uid,
+                gUser: gUser,
+                status: statuses[gUser.presence ? gUser.presence.status : 'off'],
+                uFlags: uFlags,
+                flags: flags,
+                roles: {
+                    roles: roles,
+                    length: rLength,
+                },
+                accentColor: accentColor,
+                mavatar: mavatar,
+            };
+
+            infoEmbed
+                .setTitle(mUI.title)
+                .setDescription(`Known as ${mUser}; currently set to ${mUI.status}`)
+                .addFields(
+                    { name: `Roles [${mUI.roles.length}]:`, value: mUI.roles.roles ?? 'No roles' },
+                    { name: 'Flags:', value: `${mUI.uFlags.length ? mUI.uFlags.map(flag => mUI.flags[flag]).join(', ') : 'None'}` },
+                )
+                .addFields(
+                    { name: 'Joined Discord:', value: `${moment.utc(mUser.createdAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(mUser.createdAt).fromNow()})`, inline: true },
+                    { name: 'Joined Server:', value: `${moment.utc(mUI.gUser.joinedAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(mUI.gUser.joinedAt).fromNow()})`, inline: true },
+                )
+                .setColor(mUI.accentColor)
+                .setThumbnail(mUI.mavatar)
+                .setFooter({ text: `ID: ${mUI.uid}` })
+                .setAuthor({ name: iUser.nickname ?? iUser.displayName, iconURL: iUser.displayAvatarURL() })
+                .setTimestamp(+new Date());
+
+            interaction.reply({ embeds: [infoEmbed] });
         }
 
         if (subcommand === 'server') {
