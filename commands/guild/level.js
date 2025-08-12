@@ -1,4 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js'), fs = require('fs');
+const { returnError } = require('../../events/error.js');
 
 function createPBar(reqXp, uXp) {
     let pBar = '[';
@@ -101,15 +102,9 @@ module.exports = {
         }
         else { gdColor == 'Green'; }
 
-        if (gdImport[guildId].levels == 'false') {
-            const failEmbed = new EmbedBuilder()
-                .setTitle('Error!')
-                .setDescription('Levels are disabled for this server. So sorry!')
-                .setColor('Red')
-                .setAuthor({ name: nickname, iconURL: avatar })
-                .setTimestamp(+new Date());
-
-            return interaction.reply({ embeds: [failEmbed], ephemeral: true });
+        if (gdImport[guildId].levels == false || !gdImport[guildId].levels) {
+            returnError(interaction, 'Levels are disabled for this server.');
+            return;
         }
 
         const allUsers = [];

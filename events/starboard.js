@@ -27,7 +27,7 @@ module.exports = {
         // do nothing if the author of the starred message is a bot
         if (reaction.message.author.bot) return false;
         // do nothing if the server doesn't have a starboard channel, if the channel can't be found/isn't a text channel, or if the server requires less than one star
-        if (!gdImport[guildId] || gdImport[guildId].starboardchannel == '') return false;
+        if (!gdImport[guildId] || !gdImport[guildId].starboardchannel) return false;
         if (!reaction.message.guild.channels.cache.get(gdImport[guildId].starboardchannel)) return false;
         if (gdImport[guildId].requiredstars < 1) return false;
         // do nothing if the reaction is not a star

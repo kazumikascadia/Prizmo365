@@ -67,7 +67,7 @@ module.exports = {
 			if (rollNum <= 1) {
 				rollEmbed.setTitle('Critical failure!');
 			}
-			else if (rollNum == inputNum - 1) {
+			else if (rollNum == inputNum) {
 				rollEmbed.setTitle('Critical success!');
 			}
 			else {

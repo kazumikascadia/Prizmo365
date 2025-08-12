@@ -1,33 +1,30 @@
 const { Events, EmbedBuilder } = require('discord.js');
 const { clientId, ownerId } = require('../config.json');
 const fs = require('fs');
+const level = require('../commands/guild/level');
+
+function writeData(data, iData) {
+    fs.writeFileSync(
+        data,
+        JSON.stringify(iData, null, 4),
+    );
+}
 
 function generateData(defaultSettings, guilddata, gdImport, leveldata, ldImport, guildId, userId) {
 
     if (!gdImport[guildId]) {
-        gdImport[guildId] = defaultSettings;
-        fs.writeFileSync(
-            guilddata,
-            JSON.stringify(gdImport, null, 4),
-        );
+        gdImport[guildId] = defaultSettings, writeData(guilddata, gdImport);
     }
 
     if (!ldImport[guildId]) {
         ldImport[guildId] = {
             'rewards': {},
         };
-        fs.writeFileSync(
-            leveldata,
-            JSON.stringify(ldImport, null, 4),
-        );
+        writeData(leveldata, ldImport);
     }
 
     if (!ldImport[guildId][userId]) {
-        ldImport[guildId][userId] = '0;0',
-            fs.writeFileSync(
-                leveldata,
-                JSON.stringify(ldImport, null, 4),
-            );
+        ldImport[guildId][userId] = '0;0', writeData(leveldata, ldImport);
     }
 }
 
@@ -76,10 +73,7 @@ function progressLvl(gdImport, leveldata, ldImport, guildId, userId, message) {
     // updates the leveldata file
     // set up as {lvl number} split by semi-colon followed by userXp
     gImport[userId] = `${lvl};${uXp}`;
-    fs.writeFileSync(
-        leveldata,
-        JSON.stringify(ldImport, null, 4),
-    );
+    writeData(leveldata, ldImport);
 
     // checks if user xp is greater than the required xp of 1 level higher
     if (uXp >= reqXp) {
@@ -93,10 +87,7 @@ function progressLvl(gdImport, leveldata, ldImport, guildId, userId, message) {
 
         // sets
         gImport[userId] = `${lvl + 1};${uXp}`;
-        fs.writeFileSync(
-            leveldata,
-            JSON.stringify(ldImport, null, 4),
-        );
+        writeData(leveldata, ldImport);
 
         // sets the level up one level
         lvl += 1;
@@ -142,7 +133,7 @@ module.exports = {
         const guilddata = 'data/guilddata.json',
             gdImport = JSON.parse(fs.readFileSync(guilddata));
         const leveldata = 'data/leveldata.json';
-        let ldImport = JSON.parse(fs.readFileSync(leveldata));
+        const ldImport = JSON.parse(fs.readFileSync(leveldata));
         const userId = message.author.id;
         const defaultSettings = {
             'owner': `${message.guild.ownerId}`,
@@ -166,7 +157,7 @@ module.exports = {
 
         // checks if the guild data features active guildimport data
         // if it does, use the level progress function
-        if (gdImport[guildId].levels == 'true') {
+        if (gdImport[guildId].levels == true) {
             progressLvl(gdImport, leveldata, ldImport, guildId, userId, message);
         }
 
@@ -185,55 +176,5 @@ module.exports = {
         if (message.mentions.has(clientId) && !message.mentions.everyone) {
             message.reply({ embeds: [repEmbed], ephemeral: true });
         }
-
-        // level database reset function
-        // used ONLY by the owner of the bot
-        if (message.author.id == ownerId && message.content == 'drl') {
-            ldImport = {
-                'guildId': {
-                    'rewards': {
-                        'level': 'roleid',
-                    },
-                    'lvlchannel': 'channelid',
-                    'userid': {
-                        'level': 'number',
-                        'progress': 'number',
-                    },
-                },
-            };
-            fs.writeFileSync(
-                leveldata,
-                JSON.stringify(ldImport, null, 4),
-            );
-            console.log('Database reset forcefully.');
-        }
-
-        // residual dev data; to be removed later
-        // if (message.author.id == ownerId && message.content == 'dr') {
-        //     gdImport = {
-        //         'default': {
-        //             'owner': '',
-        //             'color': '',
-        //             'levels': 'false',
-        //             'welcomechannel': '',
-        //             'exitchannel': '',
-        //             'autorole': '',
-        //             'suggestionschannel': '',
-        //             'starboardchannel': '',
-        //             'requiredstars': '',
-        //         },
-        //     };
-        //     fs.writeFileSync(
-        //         guilddata,
-        //         JSON.stringify(gdImport, null, 4),
-        //     );
-        //     console.log('Database reset forcefully.');
-        // }
-
-        // if (message.author.id == ownerId && message.content == 'r') {
-        //     console.log('Forced restart.');
-        //     await message.reply('Restarting...');
-        //     process.exit();
-        // }
     },
 };

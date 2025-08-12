@@ -2,6 +2,114 @@ const { ButtonBuilder, ButtonStyle, ActionRowBuilder, SlashCommandBuilder, Embed
 const moment = require('moment'), fs = require('fs');
 const { token, link } = require('../../config.json');
 
+function gatherBaseInfo(interaction) {
+    const iUser = interaction.user;
+    const nickname = iUser.nickname ?? iUser.displayName;
+    const avatar = iUser.displayAvatarURL();
+
+    const infoEmbed = new EmbedBuilder()
+        .setAuthor({ name: nickname, iconURL: avatar })
+        .setTimestamp(+new Date());
+
+    return infoEmbed;
+}
+
+function gatherUserInfo(interaction, server, mUser) {
+    const uid = mUser.id;
+    const mavatar = mUser.displayAvatarURL({ dynamic: true, size: 1024, format: 'png' }) ?? mUser.defaultAvatarURL({ dynamic: true, size: 960, format: 'png' });
+    const gUser = server.members.cache.get(uid);
+    const accentColor = mUser.hexAccentColor;
+    // find all of the roles of the selected user, then map and join them together in a string (all excluding @everyone)
+    // create a new variable just for the length of the roles string
+    // create a dictionary for all user flags (items that appear on the user as badges)
+    const flags = {
+        ActiveDeveloper: 'Active Developer',
+        BugHunterLevel1: 'Bug Hunter Level 1',
+        BugHunterLevel2: 'Bug Hunter Level 2',
+        CertifiedModerator: 'Certified Moderator Alumni',
+        HypeSquadOnlineHouse1: 'House Bravery Member',
+        HypeSquadOnlineHouse2: 'House Brilliance Member',
+        HypeSquadOnlineHouse3: 'House Balance Member',
+        HypeSquad: 'HypeSquad Events Member',
+        Parnter: 'Partnered Server Owner',
+        PremiumEarlySupporter: 'Early Nitro Supporter',
+        Staff: 'Discord Employee',
+        VerifiedBot: 'Verified Bot',
+        VerifiedDeveloper: 'Verified Bot Developer',
+    };
+    // create an array of all the user's flags
+    const uFlags = mUser.flags.toArray();
+    // create a dictionary for all user presences; specifically, this will differentiate if the user is offline or just hidden
+    const statuses = {
+        online: 'Online',
+        idle: 'Idle',
+        dnd: 'Do Not Disturb',
+        offline: 'Invisible',
+        off: 'Offline',
+    };
+    function gatherRoles() {
+        let roles = gUser.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).join(', ');
+        let rLength = roles.split(', ').length;
+        if (`${roles}` == '') {
+            roles = 'No roles';
+            rLength = '0';
+        }
+
+        return {
+            roles: roles,
+            length: rLength,
+        };
+    }
+
+    let title;
+    // if the user is NOT a bot, set the title to just be their username
+    if (!mUser.bot) {
+        title = mUser.username;
+    }
+    // if the user is a bot, add a bot tag to the title
+    else {
+        title = mUser.username + ' [BOT]';
+    }
+
+    // return an array of the userInfo
+    const mUI = {
+        title: title,
+        uid: uid,
+        gUser: gUser,
+        status: statuses[gUser.presence ? gUser.presence.status : 'off'],
+        uFlags: uFlags,
+        flags: flags,
+        roles: {
+            roles: gatherRoles().length,
+            length: gatherRoles().length,
+        },
+        accentColor: accentColor,
+        mavatar: mavatar,
+    };
+    return mUI;
+}
+
+async function generateUserInfoEmbed(interaction, server, mUser) {
+    const infoEmbed = await gatherBaseInfo(interaction);
+    const mUI = await gatherUserInfo(interaction, server, mUser);
+    console.log(mUI);
+    infoEmbed
+        .setTitle(mUI.title)
+        .setDescription(`Known as ${mUser}; currently set to ${mUI.status}`)
+        .addFields(
+            { name: `Roles [${mUI.roles.length}]:`, value: mUI.roles.roles ?? 'No roles' },
+            { name: 'Flags:', value: `${mUI.uFlags.length ? mUI.uFlags.map(flag => mUI.flags[flag]).join(', ') : 'None'}` },
+            { name: 'Joined Discord:', value: `${moment.utc(mUser.createdAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(mUser.createdAt).fromNow()})`, inline: true },
+            { name: 'Joined Server:', value: `${moment.utc(mUI.gUser.joinedAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(mUI.gUser.joinedAt).fromNow()})`, inline: true },
+        )
+        .setColor(mUI.accentColor)
+        .setThumbnail(mUI.mavatar)
+        .setFooter({ text: `ID: ${mUI.uid}` });
+
+    interaction.reply({ embeds: [infoEmbed] });
+}
+
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('info')
@@ -33,93 +141,29 @@ module.exports = {
 
         // fetch the information of the user who used this command, as well as the guild they are in
         const iUser = interaction.user;
-        const nickname = iUser.nickname ?? iUser.displayName;
-        const avatar = iUser.displayAvatarURL();
+        const mUser = await interaction.options.getUser('target') || iUser;
         const server = interaction.guild;
+        const infoEmbed = gatherBaseInfo(interaction);
 
         // grab the used subcommand and set up the embed with just two info variables
         const subcommand = interaction.options.getSubcommand();
-        const infoEmbed = new EmbedBuilder()
-            .setAuthor({ name: nickname, iconURL: avatar })
-            .setTimestamp(+new Date());
+
         // login again and grab all guilds, then fetching their memberbase
         // this keeps the info commands up to date, so that they will always display CURRENT information
         await client.login(token).then(client.guilds.fetch()).then(server.fetch()).then(server.members.fetch());
 
         // checks if the subcommand is the user subcommand
+        // switch (subcommand) {
+        //     case 'user':
+        //         generateUserInfoEmbed(interaction, server);
+        //         break;
+        //     case 'server':
+        //         break;
+        //     case 'bot':
+        //         break;
+        // }
         if (subcommand === 'user') {
-            // fetches user information on the desired target; if no target, use the interaction user
-            // since this command requires a target, it will always have a selected target (subject to change)
-            // this section grabs the targets id, avatar, their place in the current guild, their accent hex color, and their guild roles
-            const mUser = await interaction.options.getUser('target').fetch(true) || iUser.fetch(true);
-            const uid = mUser.id;
-            const mavatar = mUser.displayAvatarURL({ dynamic: true, size: 1024, format: 'png' }) ?? mUser.defaultAvatarURL({ dynamic: true, size: 960, format: 'png' });
-            const gUser = server.members.cache.get(uid);
-            const accentColor = mUser.hexAccentColor;
-            // find all of the roles of the selected user, then map and join them together in a string (all excluding @everyone)
-            let roles = gUser.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).join(', ');
-            // create a new variable just for the length of the roles string
-            let rLength = roles.split(', ').length;
-            // create a dictionary for all user flags (items that appear on the user as badges)
-            const flags = {
-                ActiveDeveloper: 'Active Developer',
-                BugHunterLevel1: 'Bug Hunter Level 1',
-                BugHunterLevel2: 'Bug Hunter Level 2',
-                CertifiedModerator: 'Certified Moderator Alumni',
-                HypeSquadOnlineHouse1: 'House Bravery Member',
-                HypeSquadOnlineHouse2: 'House Brilliance Member',
-                HypeSquadOnlineHouse3: 'House Balance Member',
-                HypeSquad: 'HypeSquad Events Member',
-                Parnter: 'Partnered Server Owner',
-                PremiumEarlySupporter: 'Early Nitro Supporter',
-                Staff: 'Discord Employee',
-                VerifiedBot: 'Verified Bot',
-                VerifiedDeveloper: 'Verified Bot Developer',
-            };
-            // create an array of all the user's flags
-            const uFlags = mUser.flags.toArray();
-            // create a dictionary for all user presences; specifically, this will differentiate if the user is offline or just hidden
-            const statuses = {
-                online: 'Online',
-                idle: 'Idle',
-                dnd: 'Do Not Disturb',
-                offline: 'Invisible',
-                off: 'Offline',
-            };
-            // create a variable for the title of the embed
-            let title;
-            // if the user is NOT a bot, set the title to just be their username
-            if (!mUser.bot) {
-                title = mUser.username;
-            }
-            // if the user is a bot, add a bot tag to the title
-            else {
-                title = mUser.username + ' [BOT]';
-            }
-
-            // check if the user has roles; if not, set their roles to say just 'No roles', and set rlength to 0
-            if (`${roles}` == '') {
-                roles = 'No roles';
-                rLength = '0';
-            }
-
-            // using the info embed from earlier, set the title, description, and create several fields to show information on the user
-            infoEmbed
-                .setTitle(title)
-                .setDescription(`Known as ${mUser}; currently set to ${statuses[gUser.presence ? gUser.presence.status : 'off']}`)
-                .addFields(
-                    { name: `Roles [${rLength}]:`, value: roles ?? 'No roles' },
-                    { name: 'Flags:', value: `${uFlags.length ? uFlags.map(flag => flags[flag]).join(', ') : 'None'}` },
-                    { name: 'Joined Discord:', value: `${moment.utc(mUser.createdAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(mUser.createdAt).fromNow()})`, inline: true },
-                    { name: 'Joined Server:', value: `${moment.utc(gUser.joinedAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(gUser.joinedAt).fromNow()})`, inline: true },
-                )
-                .setColor(accentColor)
-                .setThumbnail(mavatar)
-                .setFooter({ text: `ID: ${uid}` });
-
-            // finally, send the embed in a message
-            interaction.reply({ embeds: [infoEmbed] });
-
+            generateUserInfoEmbed(interaction, server, mUser);
         }
 
         if (subcommand === 'server') {

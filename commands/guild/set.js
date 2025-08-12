@@ -1,6 +1,47 @@
 /* eslint-disable quotes */
-const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js'), fs = require('fs');
-const { json } = require('sequelize');
+const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, ChannelType } = require('discord.js'), fs = require('fs');
+
+function writeData(data, iData) {
+    fs.writeFileSync(
+        data,
+        JSON.stringify(iData, null, 2),
+    );
+}
+
+function generateConfirmEmbed(subcommand, interaction) {
+    const setEmbed = new EmbedBuilder()
+        .setAuthor({ name: interaction.user.nickname ?? interaction.user.displayName, iconURL: interaction.user.displayAvatarURL() })
+        .setTimestamp(+new Date());
+    let statement, name;
+
+    switch (subcommand) {
+        case 'servercolor':
+            setEmbed.setDescription(`The server color has been set to **${interaction.options.getString('color')}**`)
+                .setColor(parseInt('0x' + interaction.options.getString('color')
+                    .slice(interaction.options.getString('color').indexOf('#') + 1, interaction.options.getString('color').indexOf('#') + 7)));
+            break;
+        case 'starboard':
+            setEmbed.setDescription(`Starboard channel set to **${interaction.options.getChannel('channel')}** with a required amount of **${interaction.options.getInteger('starcount').toString()}**.`)
+                .setColor('Gold');
+            break;
+        case 'suggestionschannel':
+            setEmbed.setDescription(`Suggestions channel set to **${interaction.options.getChannel('channel')}**.`).setColor('Green');
+            break;
+        case 'levels', 'colorroles':
+            switch (subcommand) {
+                case 'levels': name = 'Levels'; break;
+                case 'colorroles': name = 'Color Roles'; break;
+            }
+            switch (interaction.options.getBoolean('active').toString()) {
+                case 'true': statement = 'activated'; setEmbed.setColor('Green'); break;
+                case 'false': statement = 'deactivated'; setEmbed.setColor('Red'); break;
+            }
+            setEmbed.setDescription(`${name} have been ${statement} in this server.`);
+            break;
+    }
+
+    interaction.reply({ embeds: [setEmbed], ephemeral: true });
+}
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -33,7 +74,7 @@ module.exports = {
                             { name: 'Evergreen 🌲', value: 'Evergreen 🌲 (#3e721d)' },
                             { name: 'Coffee ☕', value: 'Coffee ☕ (#8a4b38)' },
                             { name: 'Salt 🧂', value: 'Salt 🧂 (#ffffff)' },
-                            { name: 'Random ❓', value: 'Random ❓ (random color)' },
+                            // { name: 'Random ❓', value: 'Random ❓ (random color)' },
                             { name: 'Blurple 🎮', value: 'Blurple 🎮 (#5865F2)' },
                         ),
                 ),
@@ -46,6 +87,7 @@ module.exports = {
                     option
                         .setName('channel')
                         .setDescription('Starboard Channel of your choosing.')
+                        .addChannelTypes(ChannelType.GuildText)
                         .setRequired(true),
                 )
                 .addIntegerOption(option =>
@@ -63,6 +105,7 @@ module.exports = {
                     option
                         .setName('channel')
                         .setDescription('Sets the channel you want to be the suggestions channel.')
+                        .addChannelTypes(ChannelType.GuildText)
                         .setRequired(true),
                 ),
         )
@@ -79,7 +122,8 @@ module.exports = {
                 .addChannelOption(option =>
                     option
                         .setName('levelschannel')
-                        .setDescription('The channel where you want level notifications to be sent.'),
+                        .setDescription('The channel where you want level notifications to be sent.')
+                        .addChannelTypes(ChannelType.GuildText),
                 ),
         )
         .addSubcommand(subcommand =>
@@ -97,6 +141,16 @@ module.exports = {
                         .setName('reward')
                         .setDescription('The reward you want this level to give.')
                         .setRequired(true),
+                ),
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('colorroles')
+                .setDescription('Allows you to set up user role colors in your server!')
+                .addBooleanOption(o => o
+                    .setName('active')
+                    .setDescription('Whether levels are turned on or off')
+                    .setRequired(true),
                 ),
         ),
     async execute(interaction) {
@@ -116,43 +170,19 @@ module.exports = {
         if (!gdImport[guildId]) {
             const defaultSettings = {
                 'owner': `${interaction.guild.ownerId}`,
-                'color': '',
-                'levels': 'false',
-                'welcomechannel': '',
-                'exitchannel': '',
-                'autorole': '',
-                'suggestionschannel': '',
-                'starboardchannel': '',
-                'requiredstars': '',
             };
             gdImport[guildId] = defaultSettings;
-            fs.writeFileSync(
-                guilddata,
-                JSON.stringify(gdImport, null, 4),
-            );
+            writeData(guilddata, gdImport);
             console.log(`Guild ${interaction.guild.name} added to database, ID${guildId}`);
         }
 
         if (subcommand == 'servercolor') {
-            const chColor = interaction.options.getString('color');
-            let nColor;
-
-            if (chColor !== 'Random ❓ (random color)') {
-                const cIndex = chColor.indexOf('#');
-                const cValue = chColor.slice(cIndex + 1, cIndex + 7);
-
-                nColor = parseInt('0x' + cValue);
-            }
-            else { nColor = 'Random'; }
+            const nColor = parseInt('0x' + interaction.options.getString('color')
+                .slice(interaction.options.getString('color').indexOf('#') + 1, interaction.options.getString('color').indexOf('#') + 7));
 
             gdImport[guildId].color = nColor;
-            fs.writeFileSync(
-                guilddata,
-                JSON.stringify(gdImport, null, 2),
-            );
-
-            setEmbed.setDescription(`Server color changed to ${chColor}.`).setColor(nColor);
-            interaction.reply({ embeds: [setEmbed], ephemeral: true });
+            writeData(guilddata, gdImport);
+            generateConfirmEmbed(subcommand, interaction);
         }
 
         if (subcommand == 'starboard') {
@@ -160,40 +190,22 @@ module.exports = {
             const starChannelId = starChannel.id;
             const reqStars = interaction.options.getInteger('starcount').toString();
 
-            gdImport[guildId].starboardchannel = starChannelId;
-            gdImport[guildId].requiredstars = reqStars;
-            fs.writeFileSync(
-                guilddata,
-                JSON.stringify(gdImport, null, 2),
-            );
-
             const channelEmbed = new EmbedBuilder()
                 .setDescription('This channel has been set to receive starboard messages!')
                 .setFooter({ text: `Channel ID: ${starChannelId}` })
                 .setColor('Gold')
                 .setTimestamp(+new Date());
 
-            if (interaction.guild.channels.cache.get(starChannelId).type == '0') {
-                setEmbed.setDescription(`Starboard channel set to **${starChannel}** with a required amount of **${reqStars}**.`).setColor('Gold');
-
-                starChannel.send({ embeds: [channelEmbed] });
-            }
-            else {
-                setEmbed.setDescription(`Starboard channel set to **${starChannel}** with a required amount of **${reqStars}**.\n However, since that is not a text channel, the starboard will not work.`).setColor('Red');
-            }
-
-            interaction.reply({ embeds: [setEmbed], ephemeral: true });
+            gdImport[guildId].starboardchannel = starChannelId;
+            gdImport[guildId].requiredstars = reqStars;
+            writeData(guilddata, gdImport);
+            starChannel.send({ embeds: [channelEmbed] });
+            generateConfirmEmbed(subcommand, interaction);
         }
 
         if (subcommand == 'suggestionschannel') {
             const suggestChannel = interaction.options.getChannel('channel');
             const suggestChannelId = suggestChannel.id;
-
-            gdImport[guildId].suggestionschannel = suggestChannelId;
-            fs.writeFileSync(
-                guilddata,
-                JSON.stringify(gdImport, null, 2),
-            );
 
             const channelEmbed = new EmbedBuilder()
                 .setDescription('This channel has been set to receive suggestion messages!')
@@ -201,76 +213,25 @@ module.exports = {
                 .setColor('Green')
                 .setTimestamp(+new Date());
 
-            if (interaction.guild.channels.cache.get(suggestChannelId).type == '0') {
-                setEmbed.setDescription(`Suggestions channel set to **${suggestChannel}**.`).setColor('Green');
-
-                suggestChannel.send({ embeds: [channelEmbed] });
-            }
-            else {
-                setEmbed.setDescription(`Suggestions channel set to **${suggestChannel}**.\n However, since that is not a text channel, the suggestions will not work.`).setColor('Red');
-            }
-
-            interaction.reply({ embeds: [setEmbed], ephemeral: true });
+            gdImport[guildId].suggestionschannel = suggestChannelId;
+            writeData(guilddata, gdImport);
+            suggestChannel.send({ embeds: [channelEmbed] });
+            generateConfirmEmbed(subcommand, interaction);
         }
 
         if (subcommand == 'levels') {
-            const levelTrue = interaction.options.getBoolean('active');
-            const levelchannel = interaction.options.getChannel('levelschannel');
-
-            const confirmEmbed = new EmbedBuilder()
-                .setDescription('This server has been set up to have an active level system!')
-                .setColor('Green')
-                .setTimestamp(+new Date());
-
-            if (levelTrue == true) {
-                gdImport[guildId].levels = 'true';
-                fs.writeFileSync(
-                    guilddata,
-                    JSON.stringify(gdImport, null, 2),
-                );
-
-                if (!levelchannel) {
-                    confirmEmbed.setDescription(`This server has been set up to have an active level system.\nHowever, since there is no level channel set, there will be no notifications when a user levels up.\nReuse the command to set this up again.`);
-                    interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
-                }
-                else {
-                    const levelchannelId = levelchannel.id;
-
-                    const channelEmbed = new EmbedBuilder()
-                        .setDescription('This channel has been set to receive level notification messages!')
-                        .setFooter({ text: `Channel ID: ${levelchannelId}` })
-                        .setColor('Green')
-                        .setTimestamp(+new Date());
-
-                    gdImport[guildId].levelchannel = levelchannelId;
-                    fs.writeFileSync(
-                        guilddata,
-                        JSON.stringify(gdImport, null, 2),
-                    );
-
-                    if (interaction.guild.channels.cache.get(levelchannelId).type == '0') {
-                        confirmEmbed.setDescription(`This server has been set up to have an active level system!\nLevel notifications channel set to **${levelchannel}**.`);
-
-                        levelchannel.send({ embeds: [channelEmbed] });
-                    }
-                    else {
-                        setEmbed.setDescription(`Level notification channel set to **${levelchannel}**.\n However, since that is not a text channel, the level notifications will not work.`);
-                    }
-
-                    interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
-                }
+            if (interaction.options.getChannel('levelschannel')) {
+                const channelEmbed = new EmbedBuilder()
+                    .setDescription('This channel has been set to receive level notification messages!')
+                    .setFooter({ text: `Channel ID: ${interaction.options.getChannel('levelschannel').id}` })
+                    .setColor('Green')
+                    .setTimestamp(+new Date());
+                interaction.options.getChannel('levelschannel').send({ embeds: [channelEmbed] });
             }
-            else {
-                gdImport[guildId].levels = 'false';
-                fs.writeFileSync(
-                    guilddata,
-                    JSON.stringify(gdImport, null, 2),
-                );
 
-                confirmEmbed.setDescription('Levels have been deactivated for this server.');
-
-                interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
-            }
+            gdImport[guildId].levels = interaction.options.getBoolean('active');
+            writeData(guilddata, gdImport);
+            generateConfirmEmbed(subcommand, interaction);
         }
 
         if (subcommand == 'lvlrewards') {
@@ -286,10 +247,7 @@ module.exports = {
                 }
                 else {
                     ldImport[guildId].rewards[lvl] = role.id;
-                    fs.writeFileSync(
-                        lvldata,
-                        JSON.stringify(ldImport, null, 2),
-                    );
+                    writeData(lvldata, ldImport);
                 }
 
                 confirmEmbed.setDescription(`${role} has been set as the reward for level ${lvl} in this server.`).setColor('Green');
@@ -299,6 +257,12 @@ module.exports = {
                 confirmEmbed.setDescription('That role does not exist, so it was unable to be set.').setColor('Red');
                 interaction.reply({ embeds: [confirmEmbed], ephemeral: true });
             }
+        }
+
+        if (subcommand == 'colorroles') {
+            gdImport[guildId].colorroles = interaction.options.getBoolean('active');
+            writeData(guilddata, gdImport);
+            generateConfirmEmbed(subcommand, interaction);
         }
     },
 };

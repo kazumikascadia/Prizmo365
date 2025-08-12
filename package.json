@@ -1,6 +1,6 @@
 {
     "name": "prizmo365",
-    "version": "b2.5.3",
+    "version": "b2.9.10",
     "description": "A multipurpose Discord bot.",
     "main": "index.js",
     "scripts": {
@@ -14,10 +14,7 @@
     "dependencies": {
         "@napi-rs/canvas": "^0.1.44",
         "@sapphire/snowflake": "^3.5.3",
-        "canvas": "^2.11.2",
-        "canvas-constructor": "^7.0.1",
         "chalk": "^4.1.2",
-        "common-tags": "^1.8.2",
         "convert": "^4.13.2",
         "dayjs": "^1.11.10",
         "discord.js": "^14.12.1",

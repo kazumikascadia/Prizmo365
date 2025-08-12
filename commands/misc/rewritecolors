@@ -1,0 +1,31 @@
+const { SlashCommandBuilder } = require('discord.js');
+const fs = require('fs');
+
+function rewriteColors() {
+    const colorList = 'database/colors.json',
+        clImport = JSON.parse(fs.readFileSync(colorList));
+    const roleColorList = 'database/rolecolors.json',
+        rclImport = JSON.parse(fs.readFileSync(roleColorList));
+
+    let i = 0;
+
+    while (clImport[i]) {
+        // rc = clImport[i].name: cl
+        clImport[i];
+        console.log(`${clImport[i].name}: ${clImport[i].hex}`);
+        rclImport[clImport[i].name.toUpperCase()] = clImport[i].hex;
+        i++;
+    }
+    fs.writeFileSync(
+        roleColorList,
+        JSON.stringify(rclImport, null, 4),
+    );
+}
+
+module.exports = {
+    data: new SlashCommandBuilder().setName('rewritecolors').setDescription('ugh'),
+    async execute(interaction) {
+        rewriteColors();
+        interaction.reply('working give me a sec please');
+    },
+};
