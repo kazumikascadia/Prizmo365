@@ -1,26 +1,43 @@
 // derived from https://discordjs.guide/
 const { Events } = require('discord.js');
-const { returnError } = require ('./error.js');
+const { returnError } = require('./error.js');
 
 module.exports = {
 	name: Events.InteractionCreate,
 	async execute(interaction) {
+		if (interaction.isChatInputCommand()) {
+			const command = interaction.client.commands.get(interaction.commandName);
 
-		// if (!interaction.isChatInputCommand() || !interaction.isUserContextMenuCommand()) return;
+			if (!command) {
+				returnError(interaction, `No command matching ${interaction.commandName} was found.`);
+			}
 
-		const command = interaction.client.commands.get(interaction.commandName);
+			try {
+				await command.execute(interaction);
+			}
+			catch (error) {
+				console.log(`Error executing ${interaction.commandName}.`);
+				console.log(error);
+				returnError(interaction, `Something failed behind the scenes when executing ${interaction.commandName}.`);
+			}
+		}
+		else if (interaction.isAutocomplete()) {
+			const command = interaction.client.commands.get(interaction.commandName);
 
-		if (!command) {
-			returnError(interaction, `No command matching ${interaction.commandName} was found.`);
+			if (!command) {
+				returnError(interaction, `No command matching ${interaction.commandName} was found.`);
+			}
+
+			try {
+				await command.autocomplete(interaction);
+			}
+			catch (error) {
+				console.log(`Error executing ${interaction.commandName}.`);
+				console.log(error);
+				returnError(interaction, `Something failed behind the scenes when executing ${interaction.commandName}.`);
+			}
 		}
 
-		try {
-			await command.execute(interaction);
-		}
-		catch (error) {
-			console.log(`Error executing ${interaction.commandName}.`);
-			console.log(error);
-			returnError(interaction, `Something failed behind the scenes when executing ${interaction.commandName}.`);
-		}
+
 	},
 };

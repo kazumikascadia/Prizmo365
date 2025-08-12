@@ -4,29 +4,64 @@ const { clientId } = require('../../config.json');
 const { createCanvas } = require('@napi-rs/canvas');
 const fs = require('fs');
 
-function createColor(c, interaction) {
-    const c2 = c.value ?? c;
-    let color;
-    if (c2.includes('#')) {
-        const cIndex = c2.indexOf('#');
-        const cValue = c2.slice(cIndex + 1, cIndex + 7);
-        color = parseInt('0x' + cValue);
-    }
-    // else if (clImport[c.toTitle]) {
-    //     color = clImport[c].hex;
-    // }
-    else {
-        returnError(interaction, 'No such color exists!');
-        color = false;
-    }
+function toTitleCase(w) {
+    const wArr = w.toLowerCase().split(' ');
+    let title = [], word, fL, i = 0;
 
-    return color;
+    while (wArr[i]) {
+        if (wArr[i].startsWith('(') || wArr[i].endsWith(')')) {
+            word = wArr[i].toUpperCase();
+        }
+        else {
+            word = wArr[i].split('');
+            fL = word[0].toUpperCase();
+            word = word.slice(1).join('');
+            word = fL + word;
+        }
+        title.push(word);
+        i++;
+    }
+    title = title.join(' ');
+    return title;
 }
 
-function createImage(c) {
+function createColor(c, interaction) {
+    const c2 = c.value ?? c;
+    let hex;
+    if (c2.includes('#') && c2.length == 7) {
+        const c3 = c2.slice(c2.indexOf('#') + 1, c2.indexOf('#') + 7);
+        hex = parseInt('0x' + c3);
+    }
+    else {
+        returnError(interaction, 'No such color exists!');
+        hex = false;
+    }
+
+    return hex;
+}
+
+function grabColor(c, interaction, rclImport) {
+    const color = c.value.toUpperCase();
+    let hex;
+    const c2 = rclImport[color];
+    if (c2.includes('#') && c2.length == 7) {
+        const c3 = c2.slice(c2.indexOf('#') + 1, c2.indexOf('#') + 7);
+        hex = parseInt('0x' + c3);
+    }
+    else {
+        returnError(interaction, 'No such color exists!');
+        hex = false;
+    }
+
+    return hex;
+}
+
+function createImage(c, subcommand) {
     const canvas = createCanvas(500, 500);
     const ctx = canvas.getContext('2d');
-    const c2 = c.value ?? c;
+    let c2;
+    if (subcommand == 'create-from-library') { c2 = c; }
+    if (subcommand == 'create-from-hex') { c2 = c.value ?? c; }
     const cIndex = c2.indexOf('#');
     const hex = c2.slice(cIndex + 1, cIndex + 7);
     ctx.fillStyle = '#' + hex;
@@ -73,16 +108,34 @@ async function createColorRole(interaction, color, posit) {
     interaction.member.roles.add(uRole);
 }
 
+function createColorList(rclImport) {
+    const colorList = [];
+    for (let i in rclImport) {
+        colorList.push(toTitleCase(i));
+    }
+    return colorList;
+}
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('rolecolor')
         .setDescription('Create and modify color roles!')
         .addSubcommand(s =>
-            s.setName('create')
+            s.setName('create-from-library')
                 .setDescription('Create a new color role of your liking.')
                 .addStringOption(o =>
                     o.setName('color')
-                        .setDescription('The color you want. You can either use a preset color or a hex color.')
+                        .setDescription('The color you want. Choose from a library of preset colors!')
+                        .setAutocomplete(true)
+                        .setRequired(true),
+                ),
+        )
+        .addSubcommand(s =>
+            s.setName('create-from-hex')
+                .setDescription('Create a new color role of your liking.')
+                .addStringOption(o =>
+                    o.setName('color')
+                        .setDescription('The color you want. Input a 7 character hex starting with #.')
                         .setRequired(true),
                 ),
         )
@@ -124,22 +177,35 @@ module.exports = {
                         .setRequired(true),
                 ),
         ),
+    async autocomplete(interaction) {
+        const roleColorList = 'database/rolecolors.json',
+            rclImport = JSON.parse(fs.readFileSync(roleColorList));
+        const colorList = await createColorList(rclImport);
+        const focusedValue = interaction.options.getFocused();
+        const choices = colorList;
+        const filtered = choices.filter(choice => choice.startsWith(focusedValue));
+        await interaction.respond(
+            filtered.slice(0, 25).map(choice => ({ name: choice, value: choice })),
+        );
+    },
+
     async execute(interaction) {
-        // checks if the command is active
         const guilddata = 'data/guilddata.json',
             gdImport = JSON.parse(fs.readFileSync(guilddata));
         const guildId = interaction.guild.id;
+
+        // checks if the command is active
         if (!gdImport[guildId] || !gdImport[guildId].colorroles || (gdImport[guildId].colorroles == false)) {
             returnError(interaction, 'Color roles are deactivated in this server!');
             return;
         }
 
-
         // sets up all necessary constants for the embed
         const crData = 'data/colorroledata.json',
             crImport = JSON.parse(fs.readFileSync(crData));
-        const colorList = 'database/colors.json',
-            clImport = JSON.parse(fs.readFileSync(colorList));
+        const roleColorList = 'database/rolecolors.json',
+            rclImport = JSON.parse(fs.readFileSync(roleColorList));
+        createColorList(rclImport);
         const iUser = interaction.user;
         const uId = iUser.id;
         const nickname = iUser.nickname ?? iUser.displayName;
@@ -165,14 +231,25 @@ module.exports = {
         }
 
         switch (subcommand) {
-            case 'create':
+            case 'create-from-hex':
                 color = createColor(c, interaction);
                 if (color == false) { break; }
-                attachment = createImage(c);
+                attachment = createImage(c, subcommand, rclImport);
                 posit = await findHighestRole(interaction);
                 await createColorRole(interaction, color, posit);
 
-                cEmbed.setTitle('Set your new Color Role!').setDescription(`Your color has been set to ${c.value}`).setColor(color).setImage('attachment://color.jpg');
+                cEmbed.setTitle('Set your new Color Role!').setDescription(`Your color has been set to **${c.value.toUpperCase()}**.`).setColor(color).setImage('attachment://color.jpg');
+                interaction.reply({ embeds: [cEmbed], files: [attachment] });
+                break;
+
+            case 'create-from-library':
+                color = grabColor(c, interaction, rclImport);
+                if (color == false) { break; }
+                attachment = createImage(rclImport[c.value.toUpperCase()], subcommand, rclImport);
+                posit = await findHighestRole(interaction);
+                await createColorRole(interaction, color, posit);
+
+                cEmbed.setTitle('Set your new Color Role!').setDescription(`Your color has been set to **${toTitleCase(c.value)} (${rclImport[c.value.toUpperCase()]})**.`).setColor(color).setImage('attachment://color.jpg');
                 interaction.reply({ embeds: [cEmbed], files: [attachment] });
                 break;
 
