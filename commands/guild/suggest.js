@@ -58,6 +58,12 @@ module.exports = {
                         .setName('suggestionid')
                         .setDescription('The ID of the suggestion you want to decline.')
                         .setRequired(true),
+                )
+                .addStringOption(option =>
+                    option
+                        .setName('comment')
+                        .setDescription('The comment you want to provide to your acceptance message.')
+                        .setMaxLength(1000),
                 ),
         )
         .addSubcommand(subcommand =>
@@ -69,6 +75,12 @@ module.exports = {
                         .setName('suggestionid')
                         .setDescription('The ID of the suggestion you want to consider.')
                         .setRequired(true),
+                )
+                .addStringOption(option =>
+                    option
+                        .setName('comment')
+                        .setDescription('The comment you want to provide to your acceptance message.')
+                        .setMaxLength(1000),
                 ),
         ),
     async execute(interaction) {
@@ -204,6 +216,7 @@ module.exports = {
                 .setFooter({ text: `Suggestion ID: ${sid}` });
 
             sdImport[guildId][sid].status = 'approved';
+            sdImport[guildId][sid].comment = sComm;
             writeData(suggestdata, sdImport);
 
             confirmEmbed.setDescription('Suggestion approved.');
@@ -258,6 +271,7 @@ module.exports = {
                 .setFooter({ text: `Suggestion ID: ${sid}` });
 
             sdImport[guildId][sid].status = 'declined';
+            sdImport[guildId][sid].comment = sComm;
             writeData(suggestdata, sdImport);
 
             confirmEmbed.setDescription('Suggestion declined.');
@@ -311,6 +325,7 @@ module.exports = {
                 .setFooter({ text: `Suggestion ID: ${sid}` });
 
             sdImport[guildId][sid].status = 'considered';
+            sdImport[guildId][sid].comment = sComm;
             writeData(suggestdata, sdImport);
 
             confirmEmbed.setDescription('Suggestion marked as considered.');
