@@ -45,6 +45,42 @@ async function gatherUserInfo(interaction) {
         offline: 'Invisible',
         off: 'Offline',
     };
+    const activitietypes = {
+        0: 'Playing',
+        1: 'Streaming',
+        2: 'Listening to',
+        3: 'Watching',
+        4: '',
+        5: 'Competing',
+    };
+    function gatherActivities() {
+        if (statuses[gUser.presence ? gUser.presence.status : 'off'] == 'Offline') {
+            return {
+                activities: 'No current activities',
+                customStatus: 'No current custom status',
+            };
+        }
+        let activities = gUser.presence.activities ?? 'No activities set';
+        let customStatus;
+
+        for (let a in activities) {
+            if (activities[a].type === 4) {
+                customStatus = `${activities[a].emoji} ${activities[a].state}`;
+                break;
+            }
+            else { continue; }
+        }
+
+        activities = activities.filter(a => a.type !== 4).map(a => `${activitietypes[a.type]} **${a}**`).join('\n');
+        if (`${activities}` == '') {
+            activities = 'No activities';
+        }
+
+        return {
+            activities: activities,
+            customStatus: customStatus,
+        };
+    }
     function gatherRoles() {
         let roles = gUser.roles.cache.filter(r => r.name !== '@everyone').map(r => `${r}`).join(', ');
         let rLength = roles.split(', ').length;
@@ -80,7 +116,9 @@ async function gatherUserInfo(interaction) {
         roles: gatherRoles().roles,
         rolesLength: gatherRoles().length,
         accentColor: tUser.hexAccentColor,
-        mavatar: tUser.displayAvatarURL({ dynamic: true, size: 1024, format: 'png' }) ?? tUser.defaultAvatarURL({ dynamic: true, size: 960, format: 'png' }),
+        avatar: tUser.displayAvatarURL({ dynamic: true, size: 1024, format: 'png' }) ?? tUser.defaultAvatarURL({ dynamic: true, size: 960, format: 'png' }),
+        activities: gatherActivities().activities,
+        customStatus: gatherActivities().customStatus ?? 'No custom status',
     };
     return tUI;
 }
@@ -89,16 +127,17 @@ async function generateUserInfoEmbed(interaction, server) {
     const tUser = await interaction.options.getUser('target').fetch(true) ?? interaction.fetch();
     const tUI = await gatherUserInfo(interaction);
     const infoEmbed = gatherBaseInfo(interaction)
-        .setTitle(tUI.name)
-        .setDescription(`Known as ${tUser}; currently set to ${tUI.status}`)
+        .setTitle(`${tUI.name}`)
+        .setDescription(`Known as ${tUser}`)
         .addFields(
+            { name: `Presence:`, value: `${tUI.status} (${tUI.customStatus ?? 'No custom status'})\n${tUI.activities ?? 'Offline'}` },
             { name: `Roles [${tUI.rolesLength}]:`, value: tUI.roles ?? 'No roles' },
             { name: 'Flags:', value: `${tUI.uFlags.length ? tUI.uFlags.map(flag => tUI.flags[flag]).join(', ') : 'None'}` },
             { name: 'Joined Discord:', value: `${moment.utc(tUser.createdAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(tUser.createdAt).fromNow()})`, inline: true },
             { name: 'Joined Server:', value: `${moment.utc(tUI.gUser.joinedAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(tUI.gUser.joinedAt).fromNow()})`, inline: true },
         )
         .setColor(tUI.accentColor)
-        .setThumbnail(tUI.mavatar)
+        .setThumbnail(tUI.avatar)
         .setFooter({ text: `ID: ${tUI.uid}` });
 
     interaction.reply({ embeds: [infoEmbed] });
