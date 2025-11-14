@@ -6,4 +6,4 @@ config.json
 /images
 /data
 src/discordapp/modules/commands/backup
-src/jsondata
+src//data/jsondata
