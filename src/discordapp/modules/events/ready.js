@@ -1,7 +1,7 @@
 // derived from https://discordjs.guide/
 
 const { Events, ActivityType, EmbedBuilder } = require('discord.js');
-const { version, channelId } = require('../config.json');
+const { version, channelId } = require('../../config.json');
 const chalk = require('chalk');
 
 module.exports = {

@@ -1,6 +1,6 @@
 const { EmbedBuilder, SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
 const { returnError } = require('../../events/error.js');
-const { clientId } = require('../../config.json');
+const { clientId } = require('../../../config.json');
 const { createCanvas } = require('@napi-rs/canvas');
 const fs = require('fs');
 
@@ -110,7 +110,7 @@ async function createColorRole(interaction, color, posit) {
 
 function createColorList(rclImport) {
     const colorList = [];
-    for (let i in rclImport) {
+    for (const i in rclImport) {
         colorList.push(toTitleCase(i));
     }
     return colorList;

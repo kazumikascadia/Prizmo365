@@ -1,6 +1,6 @@
 const { EmbedBuilder, SlashCommandBuilder, Client, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
-const { token } = require('../../config.json');
+const { token } = require('../../../config.json');
 const { returnError } = require('../../events/error.js');
 
 function writeData(data, iData) {

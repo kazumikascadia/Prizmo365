@@ -1,6 +1,6 @@
 const { EmbedBuilder, Client, GatewayIntentBits, ContextMenuCommandBuilder, ApplicationCommandType } = require('discord.js');
 const moment = require('moment'), fs = require('fs');
-const { token, link } = require('../../config.json');
+const { token, link } = require('../../../config.json');
 
 module.exports = {
     data: new ContextMenuCommandBuilder()

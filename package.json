@@ -2,7 +2,7 @@
     "name": "prizmo365",
     "version": "b2.9.14",
     "description": "A multipurpose Discord bot.",
-    "main": "index.js",
+    "main": "src/discordapp/index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node .",

@@ -1,0 +1,21 @@
+{
+  "default": {
+    "owner": "",
+    "color": "",
+    "levels": "false",
+    "levelchannel": "",
+    "welcomechannel": "",
+    "exitchannel": "",
+    "autorole": "",
+    "suggestionschannel": "",
+    "starboardchannel": "",
+    "requiredstars": ""
+  },
+  "1156762040866717816": {
+    "owner": "306372629650997260",
+    "colorroles": true,
+    "color": 10749472,
+    "levels": true,
+    "suggestionschannel": "1193289961403842620"
+  }
+}

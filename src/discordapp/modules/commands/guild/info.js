@@ -1,6 +1,6 @@
 const { ButtonBuilder, ButtonStyle, ActionRowBuilder, SlashCommandBuilder, EmbedBuilder, Client, GatewayIntentBits, AttachmentBuilder, ContextMenuCommandBuilder, ApplicationCommandType, Application } = require('discord.js');
 const moment = require('moment'), fs = require('fs');
-const { token, link } = require('../../config.json');
+const { token, link } = require('../../../config.json');
 
 function gatherBaseInfo(interaction) {
     const iUser = interaction.user;
@@ -63,7 +63,7 @@ async function gatherUserInfo(interaction) {
         let activities = gUser.presence.activities ?? 'No activities set';
         let customStatus;
 
-        for (let a in activities) {
+        for (const a in activities) {
             if (activities[a].type === 4) {
                 customStatus = `${activities[a].emoji} ${activities[a].state}`;
                 break;
@@ -130,7 +130,7 @@ async function generateUserInfoEmbed(interaction, server) {
         .setTitle(`${tUI.name}`)
         .setDescription(`Known as ${tUser}`)
         .addFields(
-            { name: `Presence:`, value: `${tUI.status} (${tUI.customStatus ?? 'No custom status'})\n${tUI.activities ?? 'Offline'}` },
+            { name: 'Presence:', value: `${tUI.status} (${tUI.customStatus ?? 'No custom status'})\n${tUI.activities ?? 'Offline'}` },
             { name: `Roles [${tUI.rolesLength}]:`, value: tUI.roles ?? 'No roles' },
             { name: 'Flags:', value: `${tUI.uFlags.length ? tUI.uFlags.map(flag => tUI.flags[flag]).join(', ') : 'None'}` },
             { name: 'Joined Discord:', value: `${moment.utc(tUser.createdAt).format('MMM Do, YYYY hh:mm A')} UTC (${moment.utc(tUser.createdAt).fromNow()})`, inline: true },

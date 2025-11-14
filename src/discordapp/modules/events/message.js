@@ -1,5 +1,5 @@
 const { Events, EmbedBuilder } = require('discord.js');
-const { clientId, ownerId } = require('../config.json');
+const { clientId, ownerId } = require('../../config.json');
 const fs = require('fs');
 const level = require('../commands/guild/level');
 
@@ -130,9 +130,9 @@ module.exports = {
     async execute(message) {
         // if (message.author.bot) return false;
         const guildId = message.guild.id;
-        const guilddata = 'data/guilddata.json',
+        const guilddata = 'src/data/jsondata/guilddata.json',
             gdImport = JSON.parse(fs.readFileSync(guilddata));
-        const leveldata = 'data/leveldata.json';
+        const leveldata = 'src/data/jsondata/leveldata.json';
         const ldImport = JSON.parse(fs.readFileSync(leveldata));
         const userId = message.author.id;
         const defaultSettings = {
