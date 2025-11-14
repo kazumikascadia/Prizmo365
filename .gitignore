@@ -7,3 +7,4 @@ devIndex.js
 package-lock.json 
 /.ssh
 rsync-e.txt
+commands/backup
