@@ -1,5 +1,6 @@
 /* eslint-disable quotes */
-const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, ChannelType } = require('discord.js'), fs = require('fs');
+const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, ChannelType } = require('discord.js'),
+    fs = require('fs');
 
 function writeData(data, iData) {
     fs.writeFileSync(
