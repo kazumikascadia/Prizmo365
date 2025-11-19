@@ -3,8 +3,6 @@ devIndex.js
 package-lock.json 
 config.json
 /node_modules
-/images
-/data
 src/discordapp/modules/commands/backup
 src/data/jsondata
 src/data/images
